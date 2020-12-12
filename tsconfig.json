@@ -1,0 +1,9 @@
+{
+  "extends": "@quasar/app/tsconfig-preset",
+	"compilerOptions": {
+		"target": "es6",
+    "moduleResolution": "node",
+    "baseUrl": "."
+	},
+	"include": [ "./src/**/*.ts" ],
+}
