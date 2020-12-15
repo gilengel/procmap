@@ -13,77 +13,70 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import * as d3 from "d3";
-import { Delaunay } from "d3-delaunay";
+import Vue from 'vue'
+import * as d3 from 'd3'
+import { Voronoi } from 'd3-delaunay'
 
 export default Vue.extend({
-  name: "SVGRenderer",
+  name: 'SVGRenderer',
 
-  props: ["geometry"],
+  props: ['geometry'],
 
   watch: {
-    geometry: function(newValue, oldValue) {
-      this.repaint();
+    geometry: function (newValue, oldValue) {
+      this.repaint()
     }
   },
 
-  data() {
+  data () {
     return {
       context: CanvasRenderingContext2D,
-      width: 600,
-      height: 600
-    };
+      width: 512,
+      height: 512
+    }
   },
 
-  mounted() {
-    const canvasElement = this.$refs.renderer as HTMLCanvasElement;
+  mounted () {
+    const canvasElement = this.$refs.renderer as HTMLCanvasElement
     this.$data.context = canvasElement.getContext(
-      "2d"
-    ) as CanvasRenderingContext2D;
+      '2d'
+    ) as CanvasRenderingContext2D
 
-    this.repaint();
+    this.repaint()
   },
 
   methods: {
-    repaint(): void {
-      let ctx = this.$data.context;
+    repaint (): void {
+      const ctx = this.$data.context as CanvasRenderingContext2D
 
-      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-      ctx.clearRect(0, 0, 8000, 8000);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
+      ctx.clearRect(0, 0, 8000, 8000)
 
-      const geometry = this.$props.geometry;
+      if (this.$props.geometry instanceof Voronoi) {
+        const voronoi = this.$props.geometry
+        ctx.beginPath()
+        voronoi.render(ctx)
+        ctx.stroke()
 
-      if (geometry.points !== undefined) {
-        
-        geometry.points.forEach((point: Array<number>) => {
-          //console.log(point[0])
-          ctx.beginPath();
-          ctx.arc(point[0], point[1], 2, 0, 2 * Math.PI);
-          ctx.fill();
-        });
+        /*
+        ctx.beginPath()
+        voronoi.delaunay.renderPoints(ctx)
+        ctx.fill()
+        */
       }
-      
-      ctx.beginPath();
-      ctx.lineWidth = 1;
-      if (geometry.lines !== undefined) {
-        for (let i = 0, n = geometry.lines.length; i < n; ++i) {
-          const j = geometry.lines[i];
-          if (j < i) continue;
-          const ti = geometry.triangles[i] * 2;
-          const tj = geometry.triangles[j] * 2;
 
-          
-          ctx.moveTo(geometry.points[ti], geometry.points[ti + 1]);
-          ctx.lineTo(geometry.points[tj], geometry.points[tj + 1]);
-          
-        }
+      if (this.$props.geometry.points !== undefined) {
+        this.$props.geometry.points.forEach((point: Array<number>) => {
+          // console.log(point[0])
+          ctx.beginPath()
+          ctx.arc(point[0], point[1], 2, 0, 2 * Math.PI)
+          ctx.fill()
+        })
       }
-      ctx.stroke();
     }
   }
-});
+})
 </script>
 
 <style>

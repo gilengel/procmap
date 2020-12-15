@@ -8,16 +8,16 @@ import Node from './Node.vue'
 
 const registeredSockets = new Map([
   ['points', new Socket('points')],
-  ['cells', new Socket('cells')],
+  ['voronoi', new Socket('voronoi')],
   ['dimension', new Socket('dimension')]
 ])
 
 function createControl (
   Control: typeof FlowPointsControl,
-  component: any,
+  component: VueConstructor<Vue>,
   emitter: NodeEditor,
   key: string,
-  value: any
+  value: unknown
 ): Control {
   return new Control(component, emitter, key, value)
 }
@@ -27,16 +27,13 @@ export class FlowPointsControl<
 > extends Rete.Control {
   component: VueConstructor<Vue>;
 
-  constructor (component: T, emitter: NodeEditor, key: string, value: any) {
+  props: unknown;
+
+  constructor (component: T, emitter: NodeEditor, key: string, value: unknown) {
     // console.log(value)
     super(key)
     this.component = component
     this.props = { emitter, ikey: key, value: value }
-  }
-
-  setValue (val: string) {
-    console.log(this)
-    // this.vueContext.value = val
   }
 }
 
@@ -44,6 +41,8 @@ export class DimensionControl<
   T extends VueConstructor<Vue>
 > extends Rete.Control {
   component: VueConstructor<Vue>;
+
+  props: unknown;
 
   constructor (
     component: T,
@@ -58,6 +57,21 @@ export class DimensionControl<
 
   setValue (val: string) {
     this.vueContext.value = val
+  }
+}
+
+export class VoronoiRelaxationControl<
+  T extends VueConstructor<Vue>
+> extends Rete.Control {
+  component: VueConstructor<Vue>;
+
+  props: unknown;
+
+  constructor (component: T, emitter: NodeEditor, key: string, value: unknown) {
+    // console.log(value)
+    super(key)
+    this.component = component
+    this.props = { emitter, ikey: key, value: value }
   }
 }
 
@@ -89,7 +103,7 @@ interface ControlSchema {
 interface ParameterSchema {
   identifier: string;
   label: string;
-  value?: any;
+  value?: unknown;
 
   control?: ControlSchema;
 }

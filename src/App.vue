@@ -11,7 +11,7 @@ import { RandomMap } from 'components/models'
 export default defineComponent({
   name: 'App',
 
-  data() {
+  data () {
     return {
       map: new RandomMap(800, 800, [])
     }

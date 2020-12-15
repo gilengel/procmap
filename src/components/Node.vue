@@ -121,6 +121,14 @@ $socket-margin: 10px;
         padding-right: 8px;
       }
 
+      .input {
+        padding-right: 6px;
+      }
+
+      .ouptut {
+        padding-left: 6px;
+      }
+      
       .input,
       .output {
         display: flex;

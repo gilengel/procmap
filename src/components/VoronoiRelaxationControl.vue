@@ -1,11 +1,14 @@
 <template>
   <div>
-    <div class="q-gutter-md" style="max-width: 300px">
+    <div class="q-gutter-md">
+        Summer of love
+    </div>
+    <div class="q-gutter-md">
       <q-input
         dark
         dense
         filled
-        v-model="numPoints"
+        v-model="numIterations"
         type="number"
         @input="change($event)"
       />
@@ -15,21 +18,23 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import * as d3 from 'd3'
+import { Voronoi } from 'd3-delaunay'
 
 export default Vue.extend({
-  name: 'PointsControl',
+  name: 'VoronoiRelaxationControl',
 
-  props: ['readonly', 'emitter', 'ikey', 'getData', 'putData'],
+  props: ['emitter', 'ikey', 'getData', 'putData'],
 
   data () {
     return {
-      numPoints: 20
+      numIterations: 2
     }
   },
 
   methods: {
     change (e: string) {
-      this.putData('numPoints', e)
+      this.putData('numIterations', e)
       this.update()
     },
     update () {

@@ -11,7 +11,7 @@
     </q-header>
 
     <q-page-container>
-      <MapEditorComponent />    
+      <MapEditorComponent />
       <router-view />
     </q-page-container>
 
@@ -24,14 +24,13 @@
           Title
         </q-toolbar-title>
       </q-toolbar>
-    </q-footer>  
-     
+    </q-footer>
+
   </q-layout>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from '@vue/composition-api'
-import EssentialLink from 'components/EssentialLink.vue'
+import { defineComponent } from '@vue/composition-api'
 import MapEditorComponent from 'components/MapEditorComponent.vue'
 
 export default defineComponent({
@@ -45,10 +44,10 @@ export default defineComponent({
 <style lang="scss">
   body {
     background: rgb(30, 30, 30);
-    
+
   }
 
   html,body {
       height:100%;
-  }  
+  }
 </style>

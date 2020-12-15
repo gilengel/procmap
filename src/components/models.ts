@@ -1,17 +1,18 @@
 export interface Map {
-  dimension: Dimension
+  dimension: Dimension;
 }
 
 export interface Dimension {
-  width: number
-  height: number
+  width: number;
+  height: number;
 }
 export interface Point {
-  x: number
-  y: number
+  x: number;
+  y: number;
 }
 export class RandomMap implements Map {
-  points: Array<Point>
+  dimension: Dimension;
+  points: Array<Point>;
 
   constructor (dimension: Dimension, points: Array<Point>) {
     this.dimension = dimension

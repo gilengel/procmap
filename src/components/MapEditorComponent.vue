@@ -39,13 +39,13 @@
 </template>
 
 <script lang="ts">
-import FlowGraphComponent from "components/FlowGraphComponent.vue";
+import FlowGraphComponent from 'components/FlowGraphComponent.vue'
 import SVGRenderer from 'components/SVGRenderer.vue'
 
 export default {
   components: { FlowGraphComponent, SVGRenderer },
 
-  data() {
+  data () {
     return {
       horizontalSplitter: 70,
       map: {
@@ -56,10 +56,10 @@ export default {
 
         points: []
       },
-      geometry: [[100, 100], [200, 200]]      
-    };
-  },
-};
+      geometry: [[100, 100], [200, 200]]
+    }
+  }
+}
 </script>
 
 <style></style>

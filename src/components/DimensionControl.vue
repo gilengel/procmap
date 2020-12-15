@@ -5,7 +5,7 @@
       dense
       filled
       v-model="value.width"
-      @input="changeWidth($event)"
+      @input="changeWidth()"
     >
       <template v-slot:prepend>
         <q-icon name="las la-arrows-alt-h" />
@@ -17,7 +17,7 @@
       dense
       filled
       v-model="value.height"
-      @input="changeHeight($event)"
+      @input="changeHeight()"
     >
       <template v-slot:prepend>
         <q-icon name="las la-arrows-alt-v" />
@@ -28,39 +28,39 @@
 
 <script lang="ts">
 export default {
-  name: "DimensionControl",
+  name: 'DimensionControl',
 
-  props: ["value", "emitter", "ikey", "getData", "putData"],
+  props: ['value', 'emitter', 'ikey', 'getData', 'putData'],
 
   methods: {
-    changeWidth(e: string) {
-      this.updateWidth();
+    changeWidth () {
+      this.updateWidth()
     },
-    changeHeight(e: string) {
-      this.updateHeight();
+    changeHeight () {
+      this.updateHeight()
     },
 
-    updateWidth() {
+    updateWidth () {
       try {
-        this.value.width = eval(this.value.width.replace(/[^-()\d/*+.]/g, ""));
+        this.value.width = eval(this.value.width.replace(/[^-()\d/*+.]/g, ''))
       } catch (e) {
-        console.log("Show error that value is not valid");
+        console.log('Show error that value is not valid')
       }
-      this.emitter.trigger("process");
+      this.emitter.trigger('process')
     },
 
-    updateHeight() {
+    updateHeight () {
       try {
         this.value.height = eval(
-          this.value.height.replace(/[^-()\d/*+.]/g, "")
-        );
+          this.value.height.replace(/[^-()\d/*+.]/g, '')
+        )
       } catch (e) {
-        console.log("Show error that value is not valid");
+        console.log('Show error that value is not valid')
       }
-      this.emitter.trigger("process");
+      this.emitter.trigger('process')
     }
   }
-};
+}
 </script>
 
 <style></style>
