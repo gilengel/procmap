@@ -11,7 +11,7 @@
     </q-header>
 
     <q-page-container>
-      <FlowGraphComponent/>    
+      <MapEditorComponent />    
       <router-view />
     </q-page-container>
 
@@ -24,18 +24,19 @@
           Title
         </q-toolbar-title>
       </q-toolbar>
-    </q-footer>   
+    </q-footer>  
+     
   </q-layout>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from '@vue/composition-api'
 import EssentialLink from 'components/EssentialLink.vue'
-import FlowGraphComponent from 'components/FlowGraphComponent.vue'
+import MapEditorComponent from 'components/MapEditorComponent.vue'
 
 export default defineComponent({
   name: 'MainLayout',
-  components: { FlowGraphComponent },
+  components: { MapEditorComponent },
 
   setup () {
   }

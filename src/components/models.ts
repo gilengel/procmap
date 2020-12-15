@@ -1,8 +1,21 @@
-export interface Todo {
-  id: number;
-  content: string;
+export interface Map {
+  dimension: Dimension
 }
 
-export interface Meta {
-  totalCount: number;
+export interface Dimension {
+  width: number
+  height: number
+}
+export interface Point {
+  x: number
+  y: number
+}
+export class RandomMap implements Map {
+  points: Array<Point>
+
+  constructor (dimension: Dimension, points: Array<Point>) {
+    this.dimension = dimension
+
+    this.points = points
+  }
 }
