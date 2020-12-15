@@ -26,6 +26,7 @@ import * as d3 from 'd3'
 
 import DimensionControlVue from './DimensionControl.vue'
 import { Delaunay, Voronoi } from 'd3-delaunay'
+import { select } from 'd3'
 
 export default Vue.extend({
   name: 'FlowGraphComponent',
@@ -114,6 +115,58 @@ export default Vue.extend({
       }
     })
 
+    const growComponent = new FlowComponent({
+      label: 'grow',
+
+      inputs: [
+        {
+          identifier: 'voronoi',
+          label: 'voronoi'
+        },
+        {
+          identifier: 'indices',
+          label: 'indices'
+        }
+      ],
+
+      outputs: [
+        {
+          identifier: 'indices',
+          label: 'indices',
+
+          control: {
+            control: FlowPointsControl,
+            component: PointsControl
+          }
+        }
+      ],
+
+      workerFn: (
+        node: NodeData,
+        inputs: WorkerInputs,
+        outputs: WorkerOutputs
+      ) => {
+        const voronoi: Voronoi<number> = inputs.voronoi[0] as Voronoi<number>
+        const indices: Array<number> = inputs.indices[0] as Array<number>
+
+        const selectedKeys = new Set<number>(inputs.indices[0] as Array<number>)
+
+        for (let i = 0; i < node.data.numPoints; i++) {
+          const indices = Array.from(selectedKeys)
+          for (const index of indices) {
+            for (const neighbour of voronoi.neighbors(index)) {
+              selectedKeys.add(neighbour)
+            }
+          }
+        }
+
+        node.data.voronoi = voronoi
+        node.data.indices = selectedKeys
+        outputs.voronoi = voronoi
+        outputs.indices = selectedKeys
+      }
+    })
+
     const voronoiComponent = new FlowComponent({
       label: 'voronoi',
 
@@ -142,33 +195,16 @@ export default Vue.extend({
         inputs: WorkerInputs,
         outputs: WorkerOutputs
       ) => {
-        /*
-        const delaunay: Delaunay<number> = Delaunay.from(inputs.points[0])
-        const voronoi = delaunay.voronoi([0, 0, 512, 512])
-
-        for (let i = 0; i < 1; i++) {
-          for (let i = 0; i < delaunay.points.length; i += 2) {
-            const cell = voronoi.cellPolygon(i >> 1)
-            if (cell === null) continue
-
-            const x0 = delaunay.points[i],
-              y0 = delaunay.points[i + 1]
-            const [x1, y1] = d3.polygonCentroid(cell)
-
-            delaunay.points[i] = x0 + (x1 - x0)
-            delaunay.points[i + 1] = y0 + (y1 - y0)
-          }
-
-          voronoi.delaunay.update()
+        const points = inputs.points[0] as Array<number>
+        if (!points) {
+          node.data.voronoi = null
+          return
         }
 
-        node.data.voronoi = voronoi
-        node.data.delaunay = delaunay
-        // outputs.voronoi = voronoi
-        outputs.voronoi = node.data.voronoi
-        */
-
-        const iterations = node.data.numPoints || (node.data.numPoints as number > 0) ? node.data.numPoints : 1
+        const iterations =
+          node.data.numPoints || (node.data.numPoints as number) > 0
+            ? node.data.numPoints
+            : 1
 
         const delaunay: Delaunay<number> = Delaunay.from(inputs.points[0])
         const voronoi = delaunay.voronoi([0, 0, 512, 512])
@@ -191,16 +227,34 @@ export default Vue.extend({
         }
 
         node.data.voronoi = voronoi.delaunay.voronoi([0, 0, 512, 512])
+        outputs.voronoi = node.data.voronoi
       }
     })
 
-    const svgComponent = new FlowComponent({
-      label: 'svg',
+    const selectRandomComponent = new FlowComponent({
+      label: 'select random',
+
       inputs: [
         {
-          identifier: 'cells',
-          label: 'geometry',
-          value: 'Test'
+          identifier: 'voronoi',
+          label: 'voronoi',
+          value: '',
+
+          control: {
+            control: FlowPointsControl,
+            component: PointsControl
+          }
+        }
+      ],
+
+      outputs: [
+        {
+          identifier: 'voronoi',
+          label: 'voronoi'
+        },
+        {
+          identifier: 'indices',
+          label: 'indices'
         }
       ],
 
@@ -208,11 +262,48 @@ export default Vue.extend({
         node: NodeData,
         inputs: WorkerInputs,
         outputs: WorkerOutputs
-      ) => {}
+      ) => {
+        const voronoi: Voronoi<number> = inputs.voronoi[0] as Voronoi<number>
+
+        if (voronoi) {
+          const cells = new Map<number, Delaunay.Polygon>()
+          for (const cell of voronoi.cellPolygons()) {
+            cells.set(cell.index, cell)
+            // cells.push(cell);
+          }
+
+          const keys = Array.from(cells.keys())
+          let keysLength = keys.length
+          const numSelected = (node.data.numPoints as number > keysLength) ? keysLength : (node.data.numPoints as number)
+
+          let selectedKeys = []
+          for (let i = 0; i < numSelected; i++) {
+            const randomIndex = Math.floor(Math.random() * keysLength)
+            const newKey = keys[randomIndex]
+            selectedKeys.push(newKey)
+
+            keys.splice(randomIndex, 1)
+            keysLength--
+          }
+          selectedKeys = selectedKeys.sort()
+
+          node.data.voronoi = voronoi.delaunay.voronoi([0, 0, 512, 512])
+          node.data.indices = selectedKeys
+
+          outputs.voronoi = voronoi
+          outputs.indices = selectedKeys
+        }
+      }
     })
 
     const engine = new Rete.Engine('demo@0.1.0')
-    var components = [mapComponent, randomComponent, voronoiComponent]
+    var components = [
+      mapComponent,
+      randomComponent,
+      voronoiComponent,
+      selectRandomComponent,
+      growComponent
+    ]
     components.map(c => {
       editor.register(c)
       engine.register(c)
@@ -232,6 +323,14 @@ export default Vue.extend({
     voroniNode.position = [80 + 800, 200]
     editor.addNode(voroniNode)
 
+    const selectRandomNode = await components[3].createNode({ numPoints: 20 })
+    selectRandomNode.position = [80 + 1210, 200]
+    editor.addNode(selectRandomNode)
+
+    const growNode = await components[4].createNode({ numPoints: 20 })
+    growNode.position = [80, 450]
+    editor.addNode(growNode)
+
     editor.connect(
       mapNode.outputs.get('dimension') as Output,
       randNode.inputs.get('dimension') as Input
@@ -239,6 +338,21 @@ export default Vue.extend({
     editor.connect(
       randNode.outputs.get('points') as Output,
       voroniNode.inputs.get('points') as Input
+    )
+
+    editor.connect(
+      voroniNode.outputs.get('voronoi') as Output,
+      selectRandomNode.inputs.get('voronoi') as Input
+    )
+
+    editor.connect(
+      selectRandomNode.outputs.get('voronoi') as Output,
+      growNode.inputs.get('voronoi') as Input
+    )
+
+    editor.connect(
+      selectRandomNode.outputs.get('indices') as Output,
+      growNode.inputs.get('indices') as Input
     )
 
     editor.on(
@@ -278,8 +392,13 @@ export default Vue.extend({
           this.$emit('update:geometry', node.data.voronoi)
           break
         }
-        case 'voronoi relaxation': {
-          this.$emit('update:geometry', node.data.voronoi)
+        case 'select random': {
+          this.$emit('update:geometry', { voronoi: node.data.voronoi, selected: node.data.indices })
+          break
+        }
+        case 'grow': {
+          console.log(node.data)
+          this.$emit('update:geometry', { voronoi: node.data.voronoi, selected: node.data.indices })
           break
         }
 

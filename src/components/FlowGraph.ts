@@ -9,7 +9,8 @@ import Node from './Node.vue'
 const registeredSockets = new Map([
   ['points', new Socket('points')],
   ['voronoi', new Socket('voronoi')],
-  ['dimension', new Socket('dimension')]
+  ['dimension', new Socket('dimension')],
+  ['indices', new Socket('indices')]
 ])
 
 function createControl (

@@ -1,9 +1,9 @@
 <template>
-  <div class="node shadow-4">
+  <div :class="[selected(), 'node shadow-4']">
     <div class="title">
       {{ node.name }}
 
-      <q-checkbox dark v-model="preview" />
+      <q-checkbox dark v-model="node.data.preview" v-show="node.data.preview == true || node.data.preview == false"/>
     </div>
     <q-separator dark inset />
     <div class="content">
@@ -59,22 +59,22 @@
 </template>
 
 <script>
-import VueRender from "rete-vue-render-plugin";
-import Socket from "./Socket";
+import VueRender from 'rete-vue-render-plugin'
+import Socket from './Socket'
 
 export default {
   components: {
     Socket
   },
 
-  data() {
+  data () {
     return {
       preview: false
-    };
+    }
   },
 
   mixins: [VueRender.mixin]
-};
+}
 </script>
 
 <style lang="scss">
@@ -89,23 +89,37 @@ $context-menu-round: 7px;
 $socket-size: 16px;
 $socket-margin: 10px;
 
+.selected::before {
+  display: block;
+  content: ' ';
+  position: absolute;
+  z-index: -1;
+  border: solid 2px orange;
+  border-radius: 2px;
+
+left: -2px;
+  right: -2px;
+  top: -2px;
+  bottom: -2px;
+  //right: 0;
+
+}
 .node {
+
   background: $node-color;
   cursor: pointer;
   height: auto;
   min-height: 200px;
-  box-sizing: content-box;
+  //box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
-
   .content {
     display: flex;
     flex-grow: 2;
-
-
+  padding-top: 20px;
     //
 
     .node-column {
@@ -128,7 +142,7 @@ $socket-margin: 10px;
       .ouptut {
         padding-left: 6px;
       }
-      
+
       .input,
       .output {
         display: flex;

@@ -57,7 +57,8 @@ export default {
       } catch (e) {
         console.log('Show error that value is not valid')
       }
-      this.emitter.trigger('process')
+
+      console.log(this.emitter)
     }
   }
 }
