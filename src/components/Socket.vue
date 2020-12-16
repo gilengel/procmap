@@ -1,16 +1,16 @@
 <template>
-    <div class="socket" :class="[type, socket.name, used ? 'used' : ''] | kebab" :title="socket.name+'\\n'+socket.hint"></div>
+    <div class="socket" :class="[type, socket.name, used ? 'used' : ''] | kebab" :title="socket.name+'\\n'+socket.hint">
+
+    </div>
+    <!-- Hello World -->
 </template>
 
-
-<script>
-import VueRender from 'rete-vue-render-plugin';
-export default {
-  extends: VueRender.Socket,
-  props: ['used']
-}
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
+  props: ['type', 'socket', 'used']
+})
 </script>
-
 
 <style lang="sass" scoped>
 $socket-size: 16px

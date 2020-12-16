@@ -2,47 +2,53 @@
   <div :class="[selected(), 'node shadow-4']">
     <div class="title">
       {{ node.name }}
-
-      <q-checkbox dark v-model="node.data.preview" v-show="node.data.preview == true || node.data.preview == false"/>
+      <q-btn
+        flat
+        round
+        :color="node.data.preview ? 'primary' : ''"
+        :icon="node.data.preview ? 'las la-video' : 'las la-video-slash'"
+        @click="togglePreview"
+      />
+      <!--v-show="node.data.preview == true || node.data.preview == false"-->
     </div>
     <q-separator dark inset />
     <div class="content">
       <div
-        class="node-column row"
+        class="column inputs"
         v-if="node.controls.size > 0 || node.inputs.size > 0"
       >
-        <div class="inputs" v-for="input in inputs()">
-          <div class="input">
-            <!-- Pin -->
-            <Socket
-              v-socket:input="input"
-              type="input"
-              :socket="input.socket"
-              :used="input.connections.length > 0"
-            />
+        <div v-for="input in inputs()" :key="input.name" class="input">
+          <!-- Pin -->
+          <Socket
+            v-socket:input="input"
+            type="input"
+            :socket="input.socket"
+            :used="input.connections.length > 0"
+          />
 
-            <!-- Pin Name -->
-            <div class="input-title" v-show="!input.showControl()">
-              {{ input.name }}
-            </div>
-
-            <!-- Pin Control -->
-            <div
-              class="input-control"
-              v-show="input.showControl()"
-              v-control="input.control"
-            ></div>
+          <!-- Pin Name -->
+          <div class="input-title" v-show="!input.showControl()">
+            {{ input.name }}
           </div>
+
+          <!-- Pin Control -->
+          <div
+            class="input-control"
+            v-show="input.showControl()"
+            v-control="input.control"
+          ></div>
         </div>
+      </div>
+      <div class="column">
         <div
           class="control"
-          v-for="control in controls()"
+          v-for="(control, index) in controls()"
           v-control="control"
+          :key="index"
         ></div>
       </div>
-      <div class="node-column">
-        <div class="outputs" v-for="output in outputs()">
-          <div class="output">
+      <div class="column outputs">
+        <div class="output" v-for="output in outputs()" :key="output.name">
             <div class="output-title">{{ output.name }}</div>
             <Socket
               v-socket:output="output"
@@ -50,21 +56,25 @@
               :socket="output.socket"
               :used="output.connections.length > 0"
             ></Socket>
-          </div>
+
         </div>
       </div>
     </div>
+    <!--
     <q-linear-progress dark query class="q-mt-sm" />
+    -->
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import VueRender from 'rete-vue-render-plugin'
-import Socket from './Socket'
+import Socket from './Socket.vue'
 
-export default {
+import Vue from 'vue'
+
+export default Vue.extend({
   components: {
-    Socket
+    Socket: Socket
   },
 
   data () {
@@ -73,8 +83,19 @@ export default {
     }
   },
 
+  methods: {
+    togglePreview () {
+      this.editor.trigger('previewnode', this.node)
+
+      this.preview = !this.preview
+      this.node.data.preview = !this.node.data.preview
+
+      this.$forceUpdate()
+    }
+  },
+
   mixins: [VueRender.mixin]
-}
+})
 </script>
 
 <style lang="scss">
@@ -91,21 +112,19 @@ $socket-margin: 10px;
 
 .selected::before {
   display: block;
-  content: ' ';
+  content: " ";
   position: absolute;
   z-index: -1;
   border: solid 2px orange;
   border-radius: 2px;
 
-left: -2px;
+  left: -2px;
   right: -2px;
   top: -2px;
   bottom: -2px;
   //right: 0;
-
 }
 .node {
-
   background: $node-color;
   cursor: pointer;
   height: auto;
@@ -119,7 +138,7 @@ left: -2px;
   .content {
     display: flex;
     flex-grow: 2;
-  padding-top: 20px;
+    padding-top: 20px;
     //
 
     .node-column {
@@ -134,23 +153,20 @@ left: -2px;
         padding-left: 8px;
         padding-right: 8px;
       }
-
-      .input {
-        padding-right: 6px;
-      }
-
-      .ouptut {
-        padding-left: 6px;
-      }
-
-      .input,
-      .output {
-        display: flex;
-        align-items: center;
-        color: white;
-      }
     }
   }
+}
+
+.input, .output {
+  padding-right: 6px;
+  display: flex;
+  align-items: center;
+
+  color: white;
+}
+
+.ouptut {
+  padding-left: 6px;
 }
 
 .node:hover {
@@ -177,11 +193,16 @@ left: -2px;
   padding-right: 20px;
 }
 
-/*
-.inputs {
+.inputs, .outputs {
   text-align: left;
+
+  display: flex;
+  flex-direction: column;
+
+  div {
+    display: flex;
+  }
 }
-*/
 
 .outputs {
   text-align: right;

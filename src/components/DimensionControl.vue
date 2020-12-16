@@ -5,7 +5,7 @@
       dense
       filled
       v-model="value.width"
-      @input="changeWidth()"
+      @input="changeWidth"
     >
       <template v-slot:prepend>
         <q-icon name="las la-arrows-alt-h" />
@@ -17,7 +17,7 @@
       dense
       filled
       v-model="value.height"
-      @input="changeHeight()"
+      @input="changeHeight"
     >
       <template v-slot:prepend>
         <q-icon name="las la-arrows-alt-v" />
@@ -27,41 +27,60 @@
 </template>
 
 <script lang="ts">
-export default {
+
+import { defineComponent, PropType } from '@vue/composition-api'
+
+import { NodeEditor } from 'rete'
+import { Dimension } from 'components/models'
+
+export default defineComponent({
   name: 'DimensionControl',
 
-  props: ['value', 'emitter', 'ikey', 'getData', 'putData'],
+  props: {
+    value: {
+      type: Object as () => Dimension,
+      default: {
+        width: 0,
+        height: 0
+      }
+    },
+    emitter: NodeEditor,
+    ikey: String,
+    getData: {
+      type: Function as PropType<(key: string) => unknown>
+    },
+    putData: {
+      type: Function as PropType<(key: string, data: unknown) => void>
+    }
+  },
 
   methods: {
-    changeWidth () {
-      this.updateWidth()
-    },
-    changeHeight () {
-      this.updateHeight()
-    },
-
-    updateWidth () {
+    changeWidth (value: string) {
       try {
-        this.value.width = eval(this.value.width.replace(/[^-()\d/*+.]/g, ''))
-      } catch (e) {
-        console.log('Show error that value is not valid')
-      }
-      this.emitter.trigger('process')
-    },
-
-    updateHeight () {
-      try {
-        this.value.height = eval(
-          this.value.height.replace(/[^-()\d/*+.]/g, '')
-        )
+        // eslint-disable-next-line no-eval
+        this.value.width = eval(value.replace(/[^-()\d/*+.]/g, '')) as number
       } catch (e) {
         console.log('Show error that value is not valid')
       }
 
-      console.log(this.emitter)
+      if (this.emitter) {
+        this.emitter.trigger('process')
+      }
+    },
+    changeHeight (value: string) {
+      try {
+        // eslint-disable-next-line no-eval
+        this.value.height = eval(value.replace(/[^-()\d/*+.]/g, '')) as number
+      } catch (e) {
+        console.log('Show error that value is not valid')
+      }
+
+      if (this.emitter) {
+        this.emitter.trigger('process')
+      }
     }
   }
-}
+})
 </script>
 
 <style></style>

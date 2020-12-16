@@ -31,7 +31,7 @@
 
       <template v-slot:after>
         <q-page>
-          <SVGRenderer :geometry="geometry" />
+          <Preview2D :geometry="geometry" />
         </q-page>
       </template>
     </q-splitter>
@@ -39,26 +39,22 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import FlowGraphComponent from 'components/FlowGraphComponent.vue'
-import SVGRenderer from 'components/SVGRenderer.vue'
+import Preview2D from 'components/Preview2D.vue'
 
-export default {
-  components: { FlowGraphComponent, SVGRenderer },
+import Component from 'vue-class-component'
+import { Map as GeneratedMap, RandomMap } from 'components/models'
 
-  data () {
-    return {
-      horizontalSplitter: 70,
-      map: {
-        dimension: {
-          width: 512,
-          height: 512
-        },
+@Component({
+  components: { FlowGraphComponent, Preview2D }
+})
+export default class MapEditorComponent extends Vue {
+  map: RandomMap = new RandomMap({ width: 512, height: 512 }, []);
 
-        points: []
-      },
-      geometry: [[100, 100], [200, 200]]
-    }
-  }
+  geometry: Record<string, unknown> = {};
+
+  horizontalSplitter = 70;
 }
 </script>
 

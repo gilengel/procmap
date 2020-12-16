@@ -6,4 +6,5 @@
     "baseUrl": "."
 	},
 	"include": [ "./src/**/*.ts", "./src/**/*.vue" ],
+	"experimentalDecorators": true
 }

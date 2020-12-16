@@ -13,7 +13,10 @@ export default defineComponent({
 
   data () {
     return {
-      map: new RandomMap(800, 800, [])
+      map: new RandomMap({
+        width: 1024,
+        height: 1024
+      }, [])
     }
   }
 })

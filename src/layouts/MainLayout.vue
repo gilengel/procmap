@@ -35,10 +35,7 @@ import MapEditorComponent from 'components/MapEditorComponent.vue'
 
 export default defineComponent({
   name: 'MainLayout',
-  components: { MapEditorComponent },
-
-  setup () {
-  }
+  components: { MapEditorComponent }
 })
 </script>
 <style lang="scss">

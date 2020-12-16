@@ -1,10 +1,16 @@
 import Vue, { VueConstructor } from 'vue'
-import Rete, { Socket, Control } from 'rete'
-import { NodeEditor, Input, Output } from 'rete/types'
+import Rete, { Socket, Node as ReteNode } from 'rete'
+import { NodeEditor, Input, Output, Control as ReteControl } from 'rete/types'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import * as StringSimilarity from 'string-similarity'
 import { Dimension } from './models'
 import Node from './Node.vue'
+
+declare module 'rete/types/events' {
+  interface EventsTypes {
+    previewnode: { node: ReteNode}
+  }
+}
 
 const registeredSockets = new Map([
   ['points', new Socket('points')],
@@ -19,10 +25,9 @@ function createControl (
   emitter: NodeEditor,
   key: string,
   value: unknown
-): Control {
+): ReteControl {
   return new Control(component, emitter, key, value)
 }
-
 export class FlowPointsControl<
   T extends VueConstructor<Vue>
 > extends Rete.Control {
@@ -54,10 +59,6 @@ export class DimensionControl<
     super(key)
     this.component = component
     this.props = { emitter, ikey: key, value }
-  }
-
-  setValue (val: string) {
-    this.vueContext.value = val
   }
 }
 
@@ -98,7 +99,7 @@ enum Direction {
 
 interface ControlSchema {
   control: typeof FlowPointsControl;
-  component: any;
+  component: VueConstructor<Vue>;
 }
 
 interface ParameterSchema {
@@ -125,7 +126,7 @@ export class FlowComponent extends Rete.Component {
 
   private buildParameterPin (
     editor: NodeEditor,
-    node: Node,
+    node: ReteNode,
     parameter: ParameterSchema,
     direction: Direction
   ) {
@@ -168,7 +169,7 @@ export class FlowComponent extends Rete.Component {
     }
   }
 
-  builder (node: Node): Promise<void> {
+  builder (node: ReteNode): Promise<void> {
     if (this.schema.inputs) {
       this.schema.inputs.forEach(parameter => {
         this.buildParameterPin(
