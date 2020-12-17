@@ -2,7 +2,7 @@
   <div class="flex">
     <q-toolbar class="bg-black text-white">
       <q-toolbar-title>
-        SVG Preview
+        Preview
       </q-toolbar-title>
       <q-btn flat round dense icon="sim_card" class="q-mr-xs" />
       <q-btn flat round dense icon="gamepad" />
@@ -23,18 +23,11 @@
 
 <script lang="ts">
 import { Voronoi } from 'd3-delaunay'
-import { Context } from 'rete/types/core/context'
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-
-const Preview2DProps = Vue.extend({
-  props: {
-    geometry: Object
-  }
-})
 
 @Component
 export default class Preview2D extends Vue {
-  @Prop(Object) geometry: Object | undefined;
+  @Prop(Object) geometry: Record<string, unknown> | undefined;
 
   mounted () {
     const canvasElement = this.$refs.renderer as HTMLCanvasElement

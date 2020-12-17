@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import '@babel/polyfill'
 import Rete, { Node as ReteNode } from 'rete'
 import { Input, Output } from 'rete/types'
@@ -13,11 +13,12 @@ import { Input, Output } from 'rete/types'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import ConnectionPlugin from 'rete-connection-plugin'
 import VueRenderPlugin from 'rete-vue-render-plugin'
+import Minimap from './Minimap/Minimap'
+
 import PointsControl from './PointsControl.vue'
 
-import { RandomMap, Dimension } from './models'
 
-import Component from 'vue-class-component'
+import { RandomMap, Dimension } from './models'
 
 import {
   FlowPointsControl,
@@ -30,15 +31,11 @@ import * as d3 from 'd3'
 import DimensionControlVue from './DimensionControl.vue'
 import { Delaunay, Voronoi } from 'd3-delaunay'
 
-const FlowGraphProps = Vue.extend({
-  props: {
-    map: Object,
-    geometry: Object
-  }
-})
-
 @Component
-export default class FlowGraphComponent extends FlowGraphProps {
+export default class FlowGraphComponent extends Vue {
+  @Prop(RandomMap) map: RandomMap | undefined;
+  @Prop(Object) geometry: Record<string, unknown> | undefined;
+
    previewNode: Record<string, unknown> = {};
 
    async mounted () {
@@ -48,6 +45,7 @@ export default class FlowGraphComponent extends FlowGraphProps {
      editor.bind('previewnode')
      editor.use(ConnectionPlugin)
      editor.use(VueRenderPlugin)
+     editor.use(Minimap)
 
      const mapComponent = new FlowComponent({
        label: 'map',
@@ -56,7 +54,7 @@ export default class FlowGraphComponent extends FlowGraphProps {
          {
            identifier: 'dimension',
            label: 'Dimension',
-           value: this.map.dimension,
+           value: (this.map as RandomMap).dimension,
 
            control: {
              control: DimensionControl,
@@ -322,7 +320,7 @@ export default class FlowGraphComponent extends FlowGraphProps {
      })
 
      const mapNode = await components[0].createNode({
-       dimension: this.map ? (this.map as RandomMap).dimension : { width: 256, height: 256 }
+       dimension: this.map ? this.map.dimension : { width: 256, height: 256 }
      })
      mapNode.position = [80, 200]
      editor.addNode(mapNode)

@@ -7,24 +7,11 @@
             <q-toolbar-title>
               Control Flow
             </q-toolbar-title>
-            <q-btn flat round dense icon="sim_card" class="q-mr-xs" />
-            <q-btn flat round dense icon="gamepad" />
+            
+            <q-btn flat round dense icon="las la-map" />
           </q-toolbar>
           <q-page>
             <FlowGraphComponent :map="map" :geometry.sync="geometry" />
-            {{ map.dimension }}
-
-            <q-input dark filled v-model="map.dimension.width">
-              <template v-slot:prepend>
-                <q-icon name="las la-arrows-alt-h" />
-              </template>
-            </q-input>
-
-            <q-input dark filled v-model="map.dimension.height">
-              <template v-slot:prepend>
-                <q-icon name="las la-arrows-alt-v" />
-              </template>
-            </q-input>
           </q-page>
         </q-page>
       </template>
@@ -44,7 +31,7 @@ import FlowGraphComponent from 'components/FlowGraphComponent.vue'
 import Preview2D from 'components/Preview2D.vue'
 
 import Component from 'vue-class-component'
-import { Map as GeneratedMap, RandomMap } from 'components/models'
+import { RandomMap } from 'components/models'
 
 @Component({
   components: { FlowGraphComponent, Preview2D }

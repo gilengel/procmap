@@ -70,32 +70,30 @@
 import VueRender from 'rete-vue-render-plugin'
 import Socket from './Socket.vue'
 
-import Vue from 'vue'
+import { Component, Mixins } from 'vue-property-decorator'
+import { NodeEditor, Node as ReteNode } from 'rete'
 
-export default Vue.extend({
+@Component({
   components: {
     Socket: Socket
-  },
-
-  data () {
-    return {
-      preview: false
-    }
-  },
-
-  methods: {
-    togglePreview () {
-      this.editor.trigger('previewnode', this.node)
-
-      this.preview = !this.preview
-      this.node.data.preview = !this.node.data.preview
-
-      this.$forceUpdate()
-    }
-  },
-
-  mixins: [VueRender.mixin]
+  }
 })
+export default class Node extends Mixins(VueRender.mixin) {
+  editor: NodeEditor | undefined
+  node: ReteNode | undefined
+
+  togglePreview () {
+    if (this.editor === undefined || this.node === undefined) {
+      return
+    }
+
+    this.editor.trigger('previewnode', this.node)
+
+    this.node.data.preview = !this.node.data.preview
+
+    this.$forceUpdate()
+  }
+}
 </script>
 
 <style lang="scss">
