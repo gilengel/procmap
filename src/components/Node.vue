@@ -60,9 +60,9 @@
         </div>
       </div>
     </div>
-    <!--
-    <q-linear-progress dark query class="q-mt-sm" />
-    -->
+
+    <q-linear-progress dark class="q-mt-sm" size="8px" :value="node.data.progress" v-if="node.data.working"/>
+
   </div>
 </template>
 

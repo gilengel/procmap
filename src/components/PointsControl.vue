@@ -6,8 +6,10 @@
         dense
         filled
         v-model="numPoints"
+        max=400
         type="number"
         @input="change"
+        :rules="[ val => val >= 0 && val <= 2000 || 'Use a number between 0 and 2000']"
       />
     </div>
   </div>

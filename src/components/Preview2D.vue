@@ -4,8 +4,6 @@
       <q-toolbar-title>
         Preview
       </q-toolbar-title>
-      <q-btn flat round dense icon="sim_card" class="q-mr-xs" />
-      <q-btn flat round dense icon="gamepad" />
     </q-toolbar>
     <div class="canvas">
       <canvas ref="renderer" v-show="geometry" :width="width" :height="height">
@@ -22,12 +20,16 @@
 </template>
 
 <script lang="ts">
+import { color } from 'd3'
 import { Voronoi } from 'd3-delaunay'
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+
+import { Color } from './models'
 
 @Component
 export default class Preview2D extends Vue {
   @Prop(Object) geometry: Record<string, unknown> | undefined;
+  @Prop() colors: Map<number, Color> | undefined;
 
   mounted () {
     const canvasElement = this.$refs.renderer as HTMLCanvasElement
@@ -36,7 +38,7 @@ export default class Preview2D extends Vue {
     this.repaint()
   }
 
-  repaint () {
+  async repaint () {
     const geometry: unknown = this.$props.geometry
     if (!geometry) {
       return
@@ -74,6 +76,27 @@ export default class Preview2D extends Vue {
         voronoi.renderCell(index, ctx)
         ctx.stroke()
       })
+    }
+
+    if ((geometry as Record<string, unknown>)?.voronoi !== undefined && (geometry as Record<string, unknown>)?.colors != undefined) {
+      const voronoi = (geometry as Record<string, unknown>).voronoi as Voronoi<number>
+      const colors = (geometry as Record<string, unknown>).colors as Map<number, Color>
+
+      ctx.fillStyle = 'black'
+      ctx.fillRect(0, 0, 512, 512)
+
+      const t0 = performance.now()
+      for (const cell of voronoi.cellPolygons()) {
+        if (!colors.has(cell.index)) continue
+
+        ctx.fillStyle = colors.get(cell.index)?.toCanvasString() as string
+        ctx.beginPath()
+        voronoi.renderCell(cell.index, ctx)
+        ctx.fill()
+      }
+
+      const t1 = performance.now()
+      console.log(`Call to doSomething took ${t1 - t0} milliseconds.`)
     }
 
     if ((geometry as Record<string, unknown>)?.points !== undefined) {

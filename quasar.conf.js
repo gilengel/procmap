@@ -69,6 +69,14 @@ module.exports = configure(function (ctx) {
       // extractCSS: false,
       // https://quasar.dev/quasar-cli/handling-webpack
       extendWebpack (cfg) {
+        cfg.module.rules.push({
+          test: /\.worker\.(c|m)?js$/i,
+          loader: "worker-loader",
+          options: {
+            esModule: false,
+          },
+        })
+
         // linting is slow in TS projects, we execute it only for production builds
         if (ctx.prod) {
           cfg.module.rules.push({

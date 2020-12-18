@@ -1,42 +1,116 @@
 <template>
-  <q-page style="display: flex;">
-    <q-splitter v-model="horizontalSplitter" style="flex-grow: 2">
-      <template v-slot:before>
-        <q-page>
-          <q-toolbar class="bg-black text-white">
-            <q-toolbar-title>
-              Control Flow
-            </q-toolbar-title>
-            
-            <q-btn flat round dense icon="las la-map" />
-          </q-toolbar>
-          <q-page>
-            <FlowGraphComponent :map="map" :geometry.sync="geometry" />
-          </q-page>
-        </q-page>
-      </template>
+  <div class="map-editor">
+    <div class="content column">
+      <div class="left">
+        <q-toolbar class="bg-black text-white">
+          <q-toolbar-title>
+            Notes
+          </q-toolbar-title>
+          <div class="q-gutter-sm">
 
-      <template v-slot:after>
-        <q-page>
-          <Preview2D :geometry="geometry" />
-        </q-page>
-      </template>
-    </q-splitter>
-  </q-page>
+          </div>
+        </q-toolbar>
+        <q-list dark padding>
+          <q-item-label header>Elementary Nodes</q-item-label>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="las la-map-marked" />
+            </q-item-section>
+            <q-item-section>Random</q-item-section>
+          </q-item>
+
+          <q-separator spaced inset="item" />
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-map-marked" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Voronoi</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-separator spaced inset="item" />
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-map-marked" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Select Random</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-separator spaced inset="item" />
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-map-marked" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Grow</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
+
+      <!-- ITEM LIST -->
+
+      <div class="middle">
+        <q-splitter v-model="horizontalSplitter" style="flex-grow: 2">
+          <template v-slot:before>
+            <q-toolbar class="bg-black text-white">
+              <q-toolbar-title>
+                Preview
+              </q-toolbar-title>
+              <ToggleButton icon="las la-map-marked" v-model="showMinimap" />
+            </q-toolbar>
+
+            <FlowGraphComponent
+              :map="map"
+              :geometry.sync="geometry"
+              :showMinimap="showMinimap"
+            />
+          </template>
+
+          <template v-slot:after>
+            <q-page>
+              <Preview2D :geometry="geometry" />
+
+              <div class="layers">
+                <div>Layer 1</div>
+                <div>Layer 2</div>
+                <div>Layer 3</div>
+                <div>Layer 4</div>
+                <div>Layer 5</div>
+              </div>
+            </q-page>
+          </template>
+        </q-splitter>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import ToggleButton from 'components/ToggleButton.vue'
 import FlowGraphComponent from 'components/FlowGraphComponent.vue'
 import Preview2D from 'components/Preview2D.vue'
 
-import Component from 'vue-class-component'
 import { RandomMap } from 'components/models'
+import { Vue, Component } from 'vue-property-decorator'
 
 @Component({
-  components: { FlowGraphComponent, Preview2D }
+  components: { ToggleButton, FlowGraphComponent, Preview2D }
 })
 export default class MapEditorComponent extends Vue {
+  showMinimap = true;
+
+  left = true;
+
   map: RandomMap = new RandomMap({ width: 512, height: 512 }, []);
 
   geometry: Record<string, unknown> = {};
@@ -45,4 +119,83 @@ export default class MapEditorComponent extends Vue {
 }
 </script>
 
-<style></style>
+<style lang="scss">
+.left {
+  min-width: 200px;
+  width: 10%;
+}
+
+.middle {
+  flex-grow: 2;
+}
+
+.right {
+  background: rgba(0, 0, 255, 0.1);
+
+  min-width: 200px;
+  width: 20%;
+}
+
+.map-editor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  > .content {
+    flex-grow: 2;
+
+    display: flex;
+    flex-direction: row;
+  }
+  .q-toolbar {
+  }
+}
+
+.layers:hover {
+  @for $i from 1 through 10 {
+    > div:nth-last-child(#{$i}) {
+      // multiply by 10 for larger hue increments
+      transform: rotateX(45deg) rotateY(0deg) rotateZ(25deg) translateX(50%) translateZ($i * 50px);
+      width: 100px;
+      height: 100px;
+    }
+  }
+}
+.layers {
+  border: solid 1px orange;
+  z-index: 999;
+
+  min-height: 500px;
+
+  position: relative;
+
+  > div {
+    position: absolute;
+    bottom: 0;
+    display: block;
+    width: 100px;
+    height: 100px;
+
+    transition: all 0.3s ease-out;
+
+  }
+
+  > div:hover {
+    border: solid 5px orange;
+    background: orange !important;
+    z-index: 999;
+  }
+  @for $i from 1 through 10 {
+    > div:nth-child(#{$i}) {
+      // multiply by 10 for larger hue increments
+      background: lighten($primary, $i * 10);
+      z-index: -$i;
+    }
+  }
+}
+</style>

@@ -5,7 +5,6 @@ import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import * as StringSimilarity from 'string-similarity'
 import { Dimension } from './models'
 import Node from './Node.vue'
-
 declare module 'rete/types/events' {
   interface EventsTypes {
     previewnode: { node: ReteNode}
@@ -89,7 +88,7 @@ interface ComponentSchema {
     node: NodeData,
     inputs: WorkerInputs,
     outputs: WorkerOutputs
-  ) => void;
+  ) => Promise<void>;
 }
 
 enum Direction {
@@ -195,9 +194,9 @@ export class FlowComponent extends Rete.Component {
     return new Promise(resolve => resolve())
   }
 
-  worker (node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs): void {
+  async worker (node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs): Promise<void> {
     if (this.schema.workerFn !== undefined) {
-      this.schema.workerFn(node, inputs, outputs)
+      await this.schema.workerFn(node, inputs, outputs)
     }
   }
 }

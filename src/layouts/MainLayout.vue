@@ -1,5 +1,36 @@
 <template>
   <q-layout view="hHh lpR fFf">
+
+    <q-header class="bg-primary text-white">
+      <q-toolbar>
+        <q-toolbar-title>
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
+          </q-avatar>
+          Procedure Map Generator
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+
+      <q-page-container>
+        <q-page>
+          <MapEditorComponent />
+        </q-page>
+      </q-page-container>
+
+    <q-footer class="bg-grey-8 text-white">
+      <q-toolbar>
+        <q-toolbar-title>
+          Options
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-footer>
+
+  </q-layout>
+</template>
+
+<!--<template>
+  <q-layout view="hHh lpR fFf">
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title>
@@ -10,11 +41,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-page-container>
-      <MapEditorComponent />
-      <router-view />
-    </q-page-container>
-
+    
      <q-footer elevated class="bg-grey-8 text-white">
       <q-toolbar>
         <q-toolbar-title>
@@ -28,7 +55,7 @@
 
   </q-layout>
 </template>
-
+-->
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 import MapEditorComponent from 'components/MapEditorComponent.vue'
@@ -41,7 +68,6 @@ export default defineComponent({
 <style lang="scss">
   body {
     background: rgb(30, 30, 30);
-
   }
 
   html,body {
