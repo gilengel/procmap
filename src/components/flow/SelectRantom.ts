@@ -1,4 +1,4 @@
-import { FlowComponent, FlowNumberControl } from '../FlowGraph'
+import { FlowComponent, FlowNumberControl, FlowOutput, getInputValue, setDataForUnconnectedInput, setOutputValue } from '../FlowGraph'
 import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi, Delaunay } from 'd3-delaunay'
@@ -9,12 +9,23 @@ export default new FlowComponent({
   inputs: [
     {
       identifier: 'voronoi',
-      label: 'voronoi',
-      value: '',
+      label: 'Voronoi',
+      value: ''
+    },
+
+    {
+      identifier: 'number',
+      label: 'Amount',
 
       control: {
+        identifier: 'amount',
         control: FlowNumberControl,
-        component: NumberControl
+        component: NumberControl,
+        isValid: (input: unknown) : boolean => {
+          const number = input as number
+
+          return (number >= 0)
+        }
       }
     }
   ],
@@ -36,21 +47,21 @@ export default new FlowComponent({
     outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve) => {
-      const voronoi: Voronoi<number> = inputs.voronoi[0] as Voronoi<number>
+      const voronoi: FlowOutput<Voronoi<number>> = getInputValue<Voronoi<number>>('voronoi', inputs, node)
+      const amount: FlowOutput<number> = getInputValue<number>('amount', inputs, node)
+      // const iterations: FlowOutput<number> = getInputValue<number>('number', inputs, node)
 
       if (voronoi) {
         const cells = new Map<number, Delaunay.Polygon>()
-        for (const cell of voronoi.cellPolygons()) {
+        for (const cell of voronoi.value.cellPolygons()) {
           cells.set(cell.index, cell)
-        // cells.push(cell);
         }
 
         const keys = Array.from(cells.keys())
         let keysLength = keys.length
-        const numSelected = (node.data.numPoints as number > keysLength) ? keysLength : (node.data.numPoints as number)
 
         let selectedKeys = []
-        for (let i = 0; i < numSelected; i++) {
+        for (let i = 0; i < amount.value; i++) {
           const randomIndex = Math.floor(Math.random() * keysLength)
           const newKey = keys[randomIndex]
           selectedKeys.push(newKey)
@@ -60,11 +71,10 @@ export default new FlowComponent({
         }
         selectedKeys = selectedKeys.sort()
 
-        node.data.voronoi = voronoi.delaunay.voronoi([0, 0, 512, 512])
-        node.data.indices = selectedKeys
+        setDataForUnconnectedInput(node, inputs, 'amount', amount)
 
-        outputs.voronoi = voronoi
-        outputs.indices = selectedKeys
+        setOutputValue(node, outputs, 'voronoi', voronoi.value.delaunay.voronoi([0, 0, 512, 512]))
+        setOutputValue(node, outputs, 'indices', selectedKeys)
       }
 
       resolve()

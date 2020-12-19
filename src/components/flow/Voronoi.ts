@@ -1,5 +1,5 @@
 
-import { FlowComponent, FlowNumberControl } from '../FlowGraph'
+import { FlowComponent, FlowNumberControl, FlowOutput, getInputValue, setOutputValue } from '../FlowGraph'
 import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Delaunay, Voronoi } from 'd3-delaunay'
@@ -13,8 +13,23 @@ export default new FlowComponent({
 
   inputs: [
     {
+      identifier: 'dimension',
+      label: 'Dimension'
+    },
+
+    {
       identifier: 'points',
-      label: 'points'
+      label: 'Points'
+    },
+
+    {
+      identifier: 'number',
+      label: 'Iterartions',
+      control: {
+        identifier: 'iterations',
+        control: FlowNumberControl,
+        component: NumberControl
+      }
     }
   ],
 
@@ -22,12 +37,7 @@ export default new FlowComponent({
     {
       identifier: 'voronoi',
       label: 'voronoi',
-      value: '',
-
-      control: {
-        control: FlowNumberControl,
-        component: NumberControl
-      }
+      value: ''
     }
   ],
 
@@ -37,18 +47,16 @@ export default new FlowComponent({
     outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve) => {
-      const dimension: Dimension = (inputs.dimension && inputs.dimension.length)
-        ? (inputs.dimension[0] as Dimension)
-        : (node.data.dimenion as Dimension)
+      const dimension: FlowOutput<Dimension> = getInputValue<Dimension>('dimension', inputs, node)
+      const points: FlowOutput<Array<[number, number]>> = getInputValue<Array<[number, number]>>('points', inputs, node)
+      const iterations: FlowOutput<number> = getInputValue<number>('number', inputs, node)
 
-      const amount: number = node.data.numPoints as number
+      // Stop calculation if input values haven't changed
+      if (points.processed) {
+        console.log('nothing to calc')
+        outputs.voronoi = node.data.voronoi
+        resolve()
 
-      const iterations : number =
-      node.data.numPoints || (node.data.numPoints as number) > 0
-        ? node.data.numPoints as number
-        : 1
-
-      if (inputs.points[0] === undefined || !(inputs.points[0] instanceof Array)) {
         return
       }
 
@@ -56,20 +64,24 @@ export default new FlowComponent({
 
       node.data.working = true
 
-      worker.postMessage({ points: inputs.points[0] as Array<Delaunay.Point>, relaxIterations: iterations, dimension: { width: 512, height: 512 } })
+      worker.postMessage({ points: points.value, relaxIterations: 1, dimension: dimension.value })
       worker.onmessage = (event) => {
         const data = event.data as Record<string, unknown>
         const progress = data.progress as number
         if (progress === 1.0) {
           node.data.working = false
 
-          node.data.voronoi = data.voronoi as Voronoi<number>
-          node.data.voronoi.__proto__ = Voronoi.prototype
-          node.data.voronoi.delaunay.__proto__ = Delaunay.prototype
+          node.data.voronoi = { value: data.voronoi as Voronoi<number>, processed: true }
+          node.data.voronoi.value.__proto__ = Voronoi.prototype
+          node.data.voronoi.value.delaunay.__proto__ = Delaunay.prototype
 
           node.data.progress = 1.0
 
-          outputs.voronoi = node.data.voronoi
+          node.data.points = points
+          node.data.iterations = iterations
+
+          setOutputValue(node, outputs, 'voronoi', node.data.voronoi.value)
+
           resolve()
         } else {
           node.data.progress = progress

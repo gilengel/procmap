@@ -1,18 +1,14 @@
 <template>
-  <div>
-    <div class="q-gutter-md" style="max-width: 300px">
-      <q-input
-        dark
-        dense
-        filled
-        v-model="numPoints"
-        max=400
-        type="number"
-        @input="change"
-        :rules="[ val => isValid(val) || 'Use a number between 0 and 2000']"
-      />
-    </div>
-  </div>
+  <q-input style="max-width: 120px"
+    dark
+    dense
+    filled
+    v-model="value"
+
+    type="number"
+    @input="change"
+    :rules="[ val => isValid(val) || 'Use a number between 0 and 2000']"
+  />
 </template>
 
 <script lang="ts">
@@ -22,7 +18,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component
 export default class NumberControl extends Vue {
-  numPoints = 20;
+  value = 20;
 
   @Prop(NodeEditor) emitter: NodeEditor | undefined;
   @Prop(String) ikey: string | undefined;
@@ -35,24 +31,19 @@ export default class NumberControl extends Vue {
       return
     }
 
-    this.putData(this.ikey, e)
-    this.update()
-  }
-
-  update () {
-    // const numbers = this.getData('amount')
-    // if (this.ikey) this.putData(this.ikey, amount);
-
     if (!this.emitter) {
       return
     }
 
+    this.putData(this.ikey, { value: parseInt(e), processed: false })
     this.emitter.trigger('process')
   }
 
   mounted () {
-    // this.putData('number', this.getData(this.ikey))
-    this.update()
+    const property = (this.getData as (v: string) => unknown)(this.ikey as string)
+    if (property !== undefined && (property as Record<string, unknown>).value !== undefined) {
+      this.value = (property as Record<string, unknown>).value as number
+    }
   }
 }
 </script>

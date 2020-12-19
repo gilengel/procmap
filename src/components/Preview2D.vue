@@ -39,6 +39,7 @@ export default class Preview2D extends Vue {
 
   repaint () {
     const geometry: unknown = this.$props.geometry
+
     if (!geometry) {
       return
     }

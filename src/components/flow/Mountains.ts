@@ -10,23 +10,34 @@ export default new FlowComponent({
   inputs: [
     {
       identifier: 'voronoi',
-      label: 'voronoi'
+      label: 'Voronoi'
     },
     {
       identifier: 'indices',
-      label: 'indices'
+      label: 'Indices'
+    },
+
+    {
+      identifier: 'number',
+      label: 'Amount',
+
+      control: {
+        identifier: 'amount',
+        control: FlowNumberControl,
+        component: NumberControl,
+        isValid: (input: unknown) : boolean => {
+          const number = input as number
+
+          return (number >= 0)
+        }
+      }
     }
   ],
 
   outputs: [
     {
       identifier: 'indices',
-      label: 'indices',
-
-      control: {
-        control: FlowNumberControl,
-        component: NumberControl
-      }
+      label: 'indices'
     }
   ],
 

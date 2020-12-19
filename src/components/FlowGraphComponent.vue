@@ -22,6 +22,8 @@ import selectRandomComponent from './flow/SelectRantom'
 
 import { RandomMap } from './models'
 
+import { FlowDataObject } from './FlowGraph'
+
 @Component
 export default class FlowGraphComponent extends Vue {
   @Prop(RandomMap) map: RandomMap | undefined;
@@ -32,7 +34,6 @@ export default class FlowGraphComponent extends Vue {
 
   @Watch('showMinimap')
   onShowMinimap (val: boolean) {
-    console.log(this.editor.plugins)
     const minimapPlugin = this.editor.plugins.get('minimap')
 
     if (minimapPlugin instanceof Object && 'enable' in minimapPlugin) {
@@ -66,31 +67,39 @@ export default class FlowGraphComponent extends Vue {
      })
 
      const mapNode = await components[0].createNode({
-       dimension: this.map ? this.map.dimension : { width: 256, height: 256 }
+       dimension: { value: this.map ? this.map.dimension : { width: 256, height: 256 }, processed: false }
      })
      mapNode.position = [80, 200]
      this.editor.addNode(mapNode)
 
-     const randNode = await components[1].createNode({ numPoints: 200, preview: false, progress: 1 })
+     const randNode = await components[1].createNode({ amount: { value: 200, processed: false }, preview: false, progress: 1 })
      randNode.position = [80 + 375, 200]
      this.editor.addNode(randNode)
 
-     const voroniNode = await components[2].createNode({ numPoints: 20, preview: false, progress: 1 })
+     const voroniNode = await components[2].createNode({ iterations: { value: 2, processed: false }, preview: false, progress: 1 })
      voroniNode.position = [80 + 800, 200]
      this.editor.addNode(voroniNode)
 
-     const selectRandomNode = await components[3].createNode({ numPoints: 20, preview: false, progress: 1 })
+     const selectRandomNode = await components[3].createNode({ amount: 2, preview: false, progress: 1 })
      selectRandomNode.position = [80 + 1210, 200]
      this.editor.addNode(selectRandomNode)
 
-     const mountainNode = await components[4].createNode({ numPoints: 20, preview: false, progress: 1 })
+     /*
+     const mountainNode = await components[4].createNode({ amount: 20, preview: false, progress: 1 })
      mountainNode.position = [80, 450]
      this.editor.addNode(mountainNode)
+     */
 
      this.editor.connect(
       mapNode.outputs.get('dimension') as Output,
       randNode.inputs.get('dimension') as Input
      )
+
+     this.editor.connect(
+      randNode.outputs.get('dimension') as Output,
+      voroniNode.inputs.get('dimension') as Input
+     )
+
      this.editor.connect(
       randNode.outputs.get('points') as Output,
       voroniNode.inputs.get('points') as Input
@@ -101,6 +110,7 @@ export default class FlowGraphComponent extends Vue {
       selectRandomNode.inputs.get('voronoi') as Input
      )
 
+     /*
      this.editor.connect(
       selectRandomNode.outputs.get('voronoi') as Output,
       mountainNode.inputs.get('voronoi') as Input
@@ -110,6 +120,7 @@ export default class FlowGraphComponent extends Vue {
       selectRandomNode.outputs.get('indices') as Output,
       mountainNode.inputs.get('indices') as Input
      )
+     */
 
      this.editor.on('previewnode', node => {
        if (this.previewNode instanceof ReteNode) {
@@ -148,15 +159,15 @@ export default class FlowGraphComponent extends Vue {
      const node = this.previewNode as ReteNode
      switch (node.name) {
        case 'random': {
-         this.$emit('update:geometry', { points: node.data.points })
+         this.$emit('update:geometry', { points: node.data.points.value })
          break
        }
        case 'voronoi': {
-         this.$emit('update:geometry', node.data.voronoi)
+         this.$emit('update:geometry', node.data.voronoi.value)
          break
        }
        case 'select random': {
-         this.$emit('update:geometry', { voronoi: node.data.voronoi, selected: node.data.indices })
+         this.$emit('update:geometry', { voronoi: node.data.voronoi.value, selected: node.data.indices.value })
          break
        }
        case 'grow': {

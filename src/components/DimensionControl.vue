@@ -1,7 +1,7 @@
 <template>
   <div class="linked-control">
     <div class="inputs">
-      <q-input
+      <q-input style="max-width: 120px"
         dark
         dense
         filled
@@ -13,7 +13,7 @@
         </template>
       </q-input>
 
-      <q-input
+      <q-input style="max-width: 120px"
         dark
         dense
         filled
@@ -48,13 +48,20 @@ export default class DimensionControl extends Vue {
   @Prop(String) ikey: string | undefined;
   @Prop(Function) getData: unknown
   @Prop(Function) putData: unknown
-  @Prop({ default: { width: 0, height: 0 } }) value!: undefined
   @Prop({ type: Function, default: () => { return true } }) isValid!: undefined
 
   width = 512;
   height = 512;
 
   linked = false;
+
+  mounted () {
+    const property = (this.getData as (v: string) => unknown)(this.ikey as string) as Record<string, unknown>
+    if (property !== undefined && property.value !== undefined) {
+      this.width = (property.value as Record<string, unknown>).width as number
+      this.height = (property.value as Record<string, unknown>).height as number
+    }
+  }
 
   change (value: string, property: string) {
     let numValue: string | number = value
@@ -82,7 +89,7 @@ export default class DimensionControl extends Vue {
       }
 
       if (typeof this.width === 'number' && typeof this.height === 'number' && this.putData instanceof Function && this.emitter) {
-        this.putData(this.ikey, { width: this.width, height: this.height })
+        this.putData(this.ikey, { value: { width: this.width, height: this.height }, processed: false })
 
         this.emitter.trigger('process')
       }

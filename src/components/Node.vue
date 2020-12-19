@@ -140,12 +140,8 @@ $socket-margin: 10px;
     //
 
     .node-column {
-      //display: flex;
-      //flex-direction: row;
       align-items: center;
       align-content: space-between;
-
-      //border: solid 1px green;
 
       .control {
         padding-left: 8px;
@@ -197,12 +193,10 @@ $socket-margin: 10px;
   display: flex;
   flex-direction: column;
 
-  div {
-    display: flex;
-  }
 }
 
 .outputs {
+  align-items: flex-end;
   text-align: right;
 }
 /*
@@ -214,12 +208,9 @@ $socket-margin: 10px;
   margin: $socket-margin 0;
   line-height: $socket-size;
 }
-.input-control {
-  z-index: 1;
-  vertical-align: middle;
-  display: inline-block;
-}
+*/
 
+/*
 .control {
   width: 100%;
   padding: $socket-margin $socket-size/2 + $socket-margin;
