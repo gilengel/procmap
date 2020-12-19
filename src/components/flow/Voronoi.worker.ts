@@ -35,9 +35,9 @@ function relax (voronoi: Voronoi<number>, size: Dimension, iterations: number): 
 }
 
 ctx.addEventListener('message', (event) => {
-  const points = event.data.points as ArrayLike<Delaunay.Point>
-  const size = event.data.dimension as Dimension
-  const relaxIterations = event.data.relaxIterations as number
+  const data = event.data as Record<string, unknown>
+  const points = data.points as ArrayLike<Delaunay.Point>
+  const size = data.dimension as Dimension
 
   const voronoi = relax(constructVoronoi(points, size), size, 0)
   ctx.postMessage({ progress: 1, voronoi: voronoi })

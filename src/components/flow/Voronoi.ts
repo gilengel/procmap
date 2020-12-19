@@ -1,9 +1,10 @@
 
-import * as d3 from 'd3'
-import { FlowComponent, FlowPointsControl } from '../FlowGraph'
-import PointsControl from '../PointsControl.vue'
+import { FlowComponent, FlowNumberControl } from '../FlowGraph'
+import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Delaunay, Voronoi } from 'd3-delaunay'
+
+import { Dimension } from '../models'
 
 import VoronoiWorker from 'worker-loader!./Voronoi.worker'
 
@@ -24,8 +25,8 @@ export default new FlowComponent({
       value: '',
 
       control: {
-        control: FlowPointsControl,
-        component: PointsControl
+        control: FlowNumberControl,
+        component: NumberControl
       }
     }
   ],
@@ -35,7 +36,7 @@ export default new FlowComponent({
     inputs: WorkerInputs,
     outputs: WorkerOutputs
   ) : Promise<void> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const dimension: Dimension = (inputs.dimension && inputs.dimension.length)
         ? (inputs.dimension[0] as Dimension)
         : (node.data.dimenion as Dimension)
@@ -57,19 +58,21 @@ export default new FlowComponent({
 
       worker.postMessage({ points: inputs.points[0] as Array<Delaunay.Point>, relaxIterations: iterations, dimension: { width: 512, height: 512 } })
       worker.onmessage = (event) => {
-        if (event.data.progress === 1.0) {
+        const data = event.data as Record<string, unknown>
+        const progress = data.progress as number
+        if (progress === 1.0) {
           node.data.working = false
 
-          node.data.voronoi = event.data.voronoi
+          node.data.voronoi = data.voronoi as Voronoi<number>
           node.data.voronoi.__proto__ = Voronoi.prototype
           node.data.voronoi.delaunay.__proto__ = Delaunay.prototype
 
-          event.data.progress = 1.0
+          node.data.progress = 1.0
 
           outputs.voronoi = node.data.voronoi
           resolve()
         } else {
-          node.data.progress = event.data.progress
+          node.data.progress = progress
         }
       }
     })

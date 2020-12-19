@@ -54,6 +54,96 @@
               <q-item-label>Grow</q-item-label>
             </q-item-section>
           </q-item>
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-mountain" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Mountain</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-tree" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Forrests</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-route" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Road</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-frog" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Animals</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-apple-alt" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Farms</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-city" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>City</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-coins" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Economic</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-snowflake" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Biomes</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <q-item-section top avatar>
+              <q-icon name="las la-water" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Ocean</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-list>
       </div>
 

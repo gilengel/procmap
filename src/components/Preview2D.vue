@@ -20,7 +20,6 @@
 </template>
 
 <script lang="ts">
-import { color } from 'd3'
 import { Voronoi } from 'd3-delaunay'
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 
@@ -38,7 +37,7 @@ export default class Preview2D extends Vue {
     this.repaint()
   }
 
-  async repaint () {
+  repaint () {
     const geometry: unknown = this.$props.geometry
     if (!geometry) {
       return
@@ -78,7 +77,7 @@ export default class Preview2D extends Vue {
       })
     }
 
-    if ((geometry as Record<string, unknown>)?.voronoi !== undefined && (geometry as Record<string, unknown>)?.colors != undefined) {
+    if ((geometry as Record<string, unknown>)?.voronoi !== undefined && (geometry as Record<string, unknown>)?.colors !== undefined) {
       const voronoi = (geometry as Record<string, unknown>).voronoi as Voronoi<number>
       const colors = (geometry as Record<string, unknown>).colors as Map<number, Color>
 

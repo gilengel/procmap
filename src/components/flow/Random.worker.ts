@@ -1,12 +1,14 @@
 
-const ctx: Worker = self as any
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const ctx: Worker = self as never
 
 import * as d3 from 'd3'
 import { Dimension } from '../models'
 
 ctx.addEventListener('message', (event) => {
-  const amount = event.data.amount as number
-  const dimension = event.data.dimension as Dimension
+  const data = event.data as Record<string, unknown>
+  const amount = data.amount as number
+  const dimension = data.dimension as Dimension
 
   const randomX = d3.randomNormal(
     dimension.width / 2,

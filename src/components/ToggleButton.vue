@@ -4,9 +4,9 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch, VModel } from 'vue-property-decorator'
+import { Vue, Component, Prop, VModel } from 'vue-property-decorator'
 
-@Component()
+@Component
 export default class ToggleButton extends Vue {
     @Prop({ default: 'default value' }) readonly icon!: string
 

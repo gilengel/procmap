@@ -19,7 +19,7 @@ const registeredSockets = new Map([
 ])
 
 function createControl (
-  Control: typeof FlowPointsControl,
+  Control: typeof FlowNumberControl,
   component: VueConstructor<Vue>,
   emitter: NodeEditor,
   key: string,
@@ -27,7 +27,7 @@ function createControl (
 ): ReteControl {
   return new Control(component, emitter, key, value)
 }
-export class FlowPointsControl<
+export class FlowNumberControl<
   T extends VueConstructor<Vue>
 > extends Rete.Control {
   component: VueConstructor<Vue>;
@@ -35,7 +35,6 @@ export class FlowPointsControl<
   props: unknown;
 
   constructor (component: T, emitter: NodeEditor, key: string, value: unknown) {
-    // console.log(value)
     super(key)
     this.component = component
     this.props = { emitter, ikey: key, value: value }
@@ -97,7 +96,7 @@ enum Direction {
 }
 
 interface ControlSchema {
-  control: typeof FlowPointsControl;
+  control: typeof FlowNumberControl;
   component: VueConstructor<Vue>;
 }
 

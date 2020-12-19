@@ -22,7 +22,11 @@ export default new FlowComponent({
     node: NodeData,
     inputs: WorkerInputs,
     outputs: WorkerOutputs
-  ) => {
-    outputs.dimension = node.data.dimension
+  ) : Promise<void> => {
+    return new Promise((resolve) => {
+      outputs.dimension = node.data.dimension
+
+      resolve()
+    })
   }
 })

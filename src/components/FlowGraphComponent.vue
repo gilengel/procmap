@@ -10,11 +10,8 @@ import '@babel/polyfill'
 import Rete, { Node as ReteNode, NodeEditor } from 'rete'
 import { Input, Output } from 'rete/types'
 
-import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import ConnectionPlugin from 'rete-connection-plugin'
 import VueRenderPlugin from 'rete-vue-render-plugin'
-
-import PointsControl from './PointsControl.vue'
 
 import mapComponent from './flow/Map'
 import voronoiComponent from './flow/Voronoi'
@@ -23,17 +20,7 @@ import randomComponent from './flow/Random'
 import growComponent from './flow/Grow'
 import selectRandomComponent from './flow/SelectRantom'
 
-import { RandomMap, Dimension, Color } from './models'
-
-import {
-  FlowPointsControl,
-  DimensionControl,
-  FlowComponent
-} from './FlowGraph'
-
-import * as d3 from 'd3'
-
-import { Delaunay, Voronoi } from 'd3-delaunay'
+import { RandomMap } from './models'
 
 @Component
 export default class FlowGraphComponent extends Vue {
@@ -49,7 +36,7 @@ export default class FlowGraphComponent extends Vue {
     const minimapPlugin = this.editor.plugins.get('minimap')
 
     if (minimapPlugin instanceof Object && 'enable' in minimapPlugin) {
-      minimapPlugin.enable = val
+      (minimapPlugin as Record<string, unknown>).enable = val
     }
   }
 

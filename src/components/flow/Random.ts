@@ -1,5 +1,5 @@
-import { FlowComponent, FlowPointsControl } from '../FlowGraph'
-import PointsControl from '../PointsControl.vue'
+import { FlowComponent, FlowNumberControl } from '../FlowGraph'
+import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Dimension } from '../models'
 
@@ -20,8 +20,8 @@ export default new FlowComponent({
       label: 'Points',
 
       control: {
-        control: FlowPointsControl,
-        component: PointsControl
+        control: FlowNumberControl,
+        component: NumberControl
       }
     }
   ],
@@ -42,18 +42,24 @@ export default new FlowComponent({
 
       node.data.working = true
       worker.postMessage({ amount: amount, dimension: dimension })
+      worker.onerror = (e) => {
+        console.error(`random web worker failed with error ${e.message}`)
+        reject(e)
+      }
       worker.onmessage = (event) => {
-        if (event.data.progress === 1.0) {
+        const data = event.data as Record<string, unknown>
+        const progress = data.progress as number
+        if (progress === 1.0) {
           node.data.working = false
 
-          outputs.points = event.data.points
+          outputs.points = data.points as Array<[number, number]>
           node.data.points = outputs.points
 
-          event.data.progress = 1.0
+          node.data.progress = 1.0
 
           resolve()
         } else {
-          node.data.progress = event.data.progress
+          node.data.progress = progress
         }
       }
     })

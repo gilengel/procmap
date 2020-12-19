@@ -21,7 +21,7 @@ import { NodeEditor } from 'rete'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component
-export default class PointsControl extends Vue {
+export default class NumberControl extends Vue {
   numPoints = 20;
 
   @Prop(NodeEditor) emitter: NodeEditor | undefined;
