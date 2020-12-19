@@ -41,6 +41,8 @@ export default new FlowComponent({
         ? (inputs.dimension[0] as Dimension)
         : (node.data.dimenion as Dimension)
 
+      console.log(dimension)
+
       const amount: number = node.data.numPoints as number
 
       const worker = new RandomWorker()
