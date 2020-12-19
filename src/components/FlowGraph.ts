@@ -23,21 +23,22 @@ function createControl (
   component: VueConstructor<Vue>,
   emitter: NodeEditor,
   key: string,
-  value: unknown
+  value: unknown,
+  isValid: (input: unknown) => boolean
 ): ReteControl {
-  return new Control(component, emitter, key, value)
+  return new Control(component, emitter, key, value, isValid)
 }
 export class FlowNumberControl<
   T extends VueConstructor<Vue>
 > extends Rete.Control {
-  component: VueConstructor<Vue>;
+  component: VueConstructor<Vue>
 
   props: unknown;
 
-  constructor (component: T, emitter: NodeEditor, key: string, value: unknown) {
+  constructor (component: T, emitter: NodeEditor, key: string, value: unknown, isValid: (input: unknown) => boolean) {
     super(key)
     this.component = component
-    this.props = { emitter, ikey: key, value: value }
+    this.props = { emitter, ikey: key, value: value, isValid: isValid }
   }
 }
 
@@ -98,6 +99,7 @@ enum Direction {
 interface ControlSchema {
   control: typeof FlowNumberControl;
   component: VueConstructor<Vue>;
+  isValid?(input: unknown) : boolean;
 }
 
 interface ParameterSchema {
@@ -161,7 +163,9 @@ export class FlowComponent extends Rete.Component {
           parameter.control.component,
           editor,
           parameter.identifier,
-          parameter.value
+          parameter.value,
+          // eslint-disable-next-line @typescript-eslint/unbound-method
+          parameter.control.isValid !== undefined ? parameter.control.isValid : () => true
         )
       )
     }

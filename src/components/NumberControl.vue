@@ -9,7 +9,7 @@
         max=400
         type="number"
         @input="change"
-        :rules="[ val => val >= 0 && val <= 2000 || 'Use a number between 0 and 2000']"
+        :rules="[ val => isValid(val) || 'Use a number between 0 and 2000']"
       />
     </div>
   </div>
@@ -26,8 +26,9 @@ export default class NumberControl extends Vue {
 
   @Prop(NodeEditor) emitter: NodeEditor | undefined;
   @Prop(String) ikey: string | undefined;
-  @Prop(Function) getData: unknown;
-  @Prop(Function) putData: unknown;
+  @Prop(Function) getData: unknown
+  @Prop(Function) putData: unknown
+  @Prop({ type: Function, default: () => { return true } }) isValid!: undefined
 
   change (e: string) {
     if (!(this.putData instanceof Function)) {
@@ -50,6 +51,8 @@ export default class NumberControl extends Vue {
   }
 
   mounted () {
+    console.log(this.isValid)
+
     // this.putData('number', this.getData(this.ikey))
     this.update()
   }

@@ -21,7 +21,12 @@ export default new FlowComponent({
 
       control: {
         control: FlowNumberControl,
-        component: NumberControl
+        component: NumberControl,
+        isValid: (input: unknown) : boolean => {
+          const number = input as number
+
+          return (number >= 0 && number <= 20000)
+        }
       }
     }
   ],
