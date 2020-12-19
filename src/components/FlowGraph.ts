@@ -100,6 +100,10 @@ interface ControlSchema {
   control: typeof FlowNumberControl;
   component: VueConstructor<Vue>;
   isValid?(input: unknown) : boolean;
+  // Node property key, this is set automatically to the key of the input/output the control is connected to.
+  // However sometimes you want to specify it by yourself for example if you want to add a control to an array of
+  // random numbers and the control should control how many random numbers are generated.
+  identifier?: string;
 }
 
 interface ParameterSchema {
@@ -162,7 +166,7 @@ export class FlowComponent extends Rete.Component {
           parameter.control.control,
           parameter.control.component,
           editor,
-          parameter.identifier,
+          parameter.control.identifier !== undefined ? parameter.control.identifier : parameter.identifier,
           parameter.value,
           // eslint-disable-next-line @typescript-eslint/unbound-method
           parameter.control.isValid !== undefined ? parameter.control.isValid : () => true

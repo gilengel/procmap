@@ -20,6 +20,7 @@ export default new FlowComponent({
       label: 'Points',
 
       control: {
+        identifier: 'numPoints',
         control: FlowNumberControl,
         component: NumberControl,
         isValid: (input: unknown) : boolean => {
@@ -39,11 +40,14 @@ export default new FlowComponent({
     return new Promise((resolve, reject) => {
       const dimension: Dimension = inputs.dimension.length
         ? (inputs.dimension[0] as Dimension)
-        : (node.data.dimenion as Dimension)
-
-      console.log(dimension)
-
+        : (node.data.dimension as Dimension)
       const amount: number = node.data.numPoints as number
+
+      // avoid recalculating random points if no input values changed
+      if (node.data.oldDimension && node.data.oldDimension === dimension && node.data.oldAmount === amount) {
+        resolve()
+        return
+      }
 
       const worker = new RandomWorker()
 
@@ -64,6 +68,8 @@ export default new FlowComponent({
 
           node.data.progress = 1.0
 
+          node.data.oldDimension = dimension
+          node.data.oldAmount = amount
           resolve()
         } else {
           node.data.progress = progress

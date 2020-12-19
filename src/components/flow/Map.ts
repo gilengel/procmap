@@ -26,8 +26,6 @@ export default new FlowComponent({
     return new Promise((resolve) => {
       outputs.dimension = node.data.dimension
 
-      console.log(node.data)
-
       resolve()
     })
   }

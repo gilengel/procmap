@@ -35,7 +35,7 @@ export default class NumberControl extends Vue {
       return
     }
 
-    this.putData('numPoints', e)
+    this.putData(this.ikey, e)
     this.update()
   }
 
@@ -51,8 +51,6 @@ export default class NumberControl extends Vue {
   }
 
   mounted () {
-    console.log(this.isValid)
-
     // this.putData('number', this.getData(this.ikey))
     this.update()
   }
