@@ -63,16 +63,14 @@ export default class FlowGraphComponent extends Vue {
        engine.register(c.component)
      })
 
-     const mapNode = await components[0].component.createNode({
-       dimension: { value: this.map ? this.map.dimension : { width: 256, height: 256 }, processed: false }
-     })
+     const mapNode = await components[0].component.createNode(components[0].defaultData)
      mapNode.position = [80, 200]
      this.editor.addNode(mapNode)
 
-     const randNode = await components[1].component.createNode({ amount: { value: 200, processed: false }, preview: false, progress: 1 })
+     const randNode = await components[1].component.createNode(components[1].defaultData)
      randNode.position = [80 + 375, 200]
      this.editor.addNode(randNode)
-
+/*
      const voroniNode = await components[2].component.createNode({ iterations: { value: 2, processed: false }, preview: false, progress: 1 })
      voroniNode.position = [80 + 800, 200]
      this.editor.addNode(voroniNode)
@@ -80,7 +78,7 @@ export default class FlowGraphComponent extends Vue {
      const selectRandomNode = await components[3].component.createNode({ amount: { value: 2, processed: false }, preview: false, progress: 1 })
      selectRandomNode.position = [80 + 1210, 200]
      this.editor.addNode(selectRandomNode)
-
+*/
      /*
      const mountainNode = await components[4].createNode({ amount: 20, preview: false, progress: 1 })
      mountainNode.position = [80, 450]
@@ -92,6 +90,7 @@ export default class FlowGraphComponent extends Vue {
       randNode.inputs.get('dimension') as Input
      )
 
+/*
      this.editor.connect(
       randNode.outputs.get('dimension') as Output,
       voroniNode.inputs.get('dimension') as Input
@@ -106,6 +105,7 @@ export default class FlowGraphComponent extends Vue {
       voroniNode.outputs.get('voronoi') as Output,
       selectRandomNode.inputs.get('voronoi') as Input
      )
+     */
 
      /*
      this.editor.connect(
@@ -143,14 +143,36 @@ export default class FlowGraphComponent extends Vue {
        }
      )
 
+          this.editor.on(
+       [
+         'connectioncreate',
+       ],
+       async (data) => {
+
+       }
+     )
+
+     this.editor.on([
+       'connectionremoved'
+     ], async(c) => {
+       // remove cached values in the node
+       delete c.input.node.data['old_'+c.input.key]
+       delete c.input.node.data[c.input.key]
+
+      await engine.abort()
+      await engine.process(this.editor.toJSON())
+
+      this.updatePreviewGeometry()
+     })
+
      this.editor.on(
        [
          'noderemoved',
-         'connectionremoved'
        ],
        async () => {
          await engine.abort()
-
+        await engine.process(this.editor.toJSON())
+        
          this.updatePreviewGeometry()
        }
      )
@@ -179,11 +201,11 @@ export default class FlowGraphComponent extends Vue {
      const node = this.previewNode as ReteNode
      switch (node.name) {
        case 'random': {
-         this.$emit('update:geometry', { points: node.data.points.value })
+         this.$emit('update:geometry', { points: node.data.points })
          break
        }
        case 'voronoi': {
-         this.$emit('update:geometry', node.data.voronoi.value)
+          this.$emit('update:geometry', node.data.voronoi ? node.data.voronoi.value : null)     
          break
        }
        case 'select random': {

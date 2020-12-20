@@ -35,15 +35,18 @@ export default class NumberControl extends Vue {
       return
     }
 
-    this.putData(this.ikey, { value: parseInt(e), processed: false })
+    this.putData(this.ikey, parseInt(e))
     this.emitter.trigger('process')
   }
 
   mounted () {
-    const property = (this.getData as (v: string) => unknown)(this.ikey as string)
-    if (property !== undefined && (property as Record<string, unknown>).value !== undefined) {
-      this.value = (property as Record<string, unknown>).value as number
+    const property = (this.getData as (v: string) => unknown)(this.ikey as string) as number
+
+    if(property === undefined) {
+      throw new Error(`could not set value for number control since the property with key ${this.ikey} is not specified as data on the node`)
     }
+    
+    this.value = property
   }
 }
 </script>

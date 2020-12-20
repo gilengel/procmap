@@ -1,4 +1,4 @@
-import { FlowComponent, FlowNumberControl, FlowOutput, setOutputValue, getInputValue, setDataForUnconnectedInput } from '../FlowGraph'
+import { FlowComponent, FlowNumberControl, FlowOutput, setOutputValue, getInputValue, rejectMessage } from '../FlowGraph'
 import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Dimension } from '../models'
@@ -48,12 +48,19 @@ export default new FlowComponent({
     outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve, reject) => {
-      const dimension: FlowOutput<Dimension> = getInputValue<Dimension>('dimension', inputs, node)
-      const amount: FlowOutput<number> = getInputValue<number>('amount', inputs, node)
+      const dimension: Dimension = getInputValue<Dimension>('dimension', inputs, node)
+      const amount: number = getInputValue<number>('amount', inputs, node)
+
+      if (dimension === undefined) {
+        node.data.preview = false
+        delete node.data.points
+        reject(rejectMessage('random', 'dimension'))
+        return
+      }
 
       // avoid recalculating random points if no input values changed
+      /*
       if (dimension.processed && amount.processed) {
-        console.log('No change in random')
         setOutputValue(node, outputs, 'points', node.data.points.value)
         setOutputValue(node, outputs, 'dimension', dimension.value)
 
@@ -61,9 +68,10 @@ export default new FlowComponent({
 
         return
       }
+      */
 
       const worker = new RandomWorker()
-      worker.postMessage({ amount: amount.value, dimension: dimension.value })
+      worker.postMessage({ amount: amount, dimension: dimension })
       worker.onerror = (e) => {
         console.error(`random web worker failed with error ${e.message}`)
         reject(e)
@@ -73,13 +81,13 @@ export default new FlowComponent({
         const progress = data.progress as number
         if (progress === 1.0) {
           node.data.progress = 1.0
-          // node.data.amount = amount
-          // node.data.points = data.points
+          node.data.amount = amount
+          node.data.points = data.points
 
-          setDataForUnconnectedInput(node, inputs, 'amount', amount.value)
+          // setDataForUnconnectedInput(node, inputs, 'amount', amount.value)
 
           setOutputValue(node, outputs, 'points', data.points)
-          setOutputValue(node, outputs, 'dimension', dimension.value)
+          setOutputValue(node, outputs, 'dimension', dimension)
           resolve()
         } else {
           node.data.progress = progress

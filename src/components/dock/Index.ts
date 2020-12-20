@@ -11,6 +11,7 @@ function install (editor: NodeEditor) {
     if (!e.dataTransfer) return
 
     const id = e.dataTransfer.getData('componentId')
+
     const component = getRegisteredFlowComponents().find(component => component.id === id)
 
     if (!component) throw new Error(`Component ${id} not found`)
@@ -18,7 +19,7 @@ function install (editor: NodeEditor) {
     // force update the mouse position
     editor.view.area.pointermove(e as any)
 
-    createNode(component.component, editor.view.area.mouse).then((node : Node) => {
+    createNode(component.component, editor.view.area.mouse, component.defaultData).then((node : Node) => {
       editor.addNode(node)
     }).catch(e => {
       console.error(e)

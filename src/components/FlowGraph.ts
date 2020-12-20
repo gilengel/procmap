@@ -30,16 +30,6 @@ function createControl (
   return new Control(component, emitter, key, value, isValid)
 }
 
-export interface FlowOutput<T> {
-  processed: boolean;
-  value: T;
-}
-
-export interface FlowData<T> {
-  changed: boolean;
-  value: T
-}
-
 export function setNodeValue (node: NodeData, key: string, value: unknown) {
   const oldValue: unknown = node.data['old_' + key]
   if (!oldValue) {
@@ -47,6 +37,10 @@ export function setNodeValue (node: NodeData, key: string, value: unknown) {
   }
 
   node.data[key] = value
+}
+
+export function rejectMessage (nodeIdentifier: string, keyIdentifier: string) : string {
+  return `FlowNode[${nodeIdentifier}.${keyIdentifier}] is not set. Check that the pin is connected or a value is provided via a control element`
 }
 
 export function hasNodeDataPropertyChanged (node: NodeData, key: string, value: unknown): boolean {
@@ -58,45 +52,44 @@ export function hasNodeDataPropertyChanged (node: NodeData, key: string, value: 
   return oldValue !== value
 }
 
-export function setDataForUnconnectedInput (node: NodeData, inputs: WorkerInputs, key: string, value: unknown) {
-  // inputs[key] is undefined means that we don't have any connections to this value
-  if (!inputs[key]) {
-    if (node.data[key] && node.data[key].value === value) {
-      node.data[key].processed = true
-    }
-  }
-}
-
 export function setOutputValue (node: NodeData, outputs: WorkerOutputs, key: string, value: unknown) {
   const oldValue: unknown = node.data['old_' + key]
 
   if (!oldValue) {
-    node.data['old_' + key] = { processed: false, value: value }
+    node.data['old_' + key] = value
     node.data[key] = node.data['old_' + key]
 
     outputs[key] = node.data['old_' + key]
     return
   }
-
-  const dataDidNotChanged = node.data['old_' + key].value === value
   node.data['old_' + key] = node.data[key]
-  node.data[key] = { processed: dataDidNotChanged, value: value }
+  node.data[key] = value
 
   outputs[key] = node.data[key]
 }
 
-export function getInputValue<T> (key: string, inputs: WorkerInputs, node: NodeData) : FlowOutput<T> {
+/**
+ * Trys to get the value of an input pin with the key parameter.
+ * You can specify the key index in case your node has multiple inputs with the same key.
+ *
+ * In case no input is connected for the key, the function will try to extract the value from the node data value.
+ * If this also fails an error is thrown
+ *
+ * @param key
+ * @param inputs
+ * @param node
+ */
+export function getInputValue<T> (key: string, inputs: WorkerInputs, node: NodeData, index = 0) : T {
   if (inputs[key] === undefined && node.data[key] === undefined) {
     throw new Error(`input[${key}] of ${node.name} has no value`)
   }
 
-  if (inputs[key] !== undefined && inputs[key][0] !== undefined) {
-    return inputs[key][0] as FlowOutput<T>
+  if (inputs[key] !== undefined && inputs[key][index] !== undefined) {
+    return inputs[key][index] as T
   }
 
-  return node.data[key] as FlowOutput<T>
+  return node.data[key] as T
 }
-
 export class FlowNumberControl<
   T extends VueConstructor<Vue>
 > extends Rete.Control {
@@ -151,6 +144,8 @@ interface ComponentSchema {
   outputs?: ParameterSchema[];
 
   data?: unknown;
+
+  hasValidInputsFn?: (node: NodeData, inputs: WorkerInputs, keys: [string]) => boolean;
 
   workerFn?: (
     node: NodeData,

@@ -1,5 +1,5 @@
 
-import { FlowComponent, FlowNumberControl, FlowOutput, getInputValue, setOutputValue, setDataForUnconnectedInput } from '../FlowGraph'
+import { FlowComponent, FlowNumberControl, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
 import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Delaunay, Voronoi } from 'd3-delaunay'
@@ -42,35 +42,57 @@ export default new FlowComponent({
     }
   ],
 
+  hasValidInputsFn (node: NodeData, inputs: WorkerInputs, keys: [string]) : boolean {
+    const undefinedKeys = []
+    for (const key in keys) {
+      if (getInputValue<any>(key, inputs, node) === undefined) {
+        undefinedKeys.push(key)
+      }
+    }
+    // reset internal data
+    for (const key in undefinedKeys) {
+      delete node.data[key]
+    }
+
+    node.data.preview = false
+    node.data.validData = false
+
+    return undefinedKeys.length === 0
+  },
+
   workerFn: (
     node: NodeData,
     inputs: WorkerInputs,
     outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve, reject) => {
-      const dimension: FlowOutput<Dimension> = getInputValue<Dimension>('dimension', inputs, node)
-      const points: FlowOutput<Array<[number, number]>> = getInputValue<Array<[number, number]>>('points', inputs, node)
-      const iterations: FlowOutput<number> = getInputValue<number>('iterations', inputs, node)
+      const dimension: Dimension = getInputValue<Dimension>('dimension', inputs, node)
+      const points: Array<[number, number]> = getInputValue<Array<[number, number]>>('points', inputs, node)
+      const iterations: number = getInputValue<number>('iterations', inputs, node)
 
-      if (dimension === undefined || points === undefined || iterations === undefined) {
-        reject('one of the input pins has no valid value. Make sure the pins are connected or a valid value is provided via the node control')
-        return
+      let rejectCalc = false
+      if (dimension === undefined) {
+        reject(rejectMessage('voronoi', 'dimension'))
+        rejectCalc = true
       }
 
-      // Stop calculation if input values haven't changed
-      if (points.processed && iterations.processed) {
-        console.log('nothing to calc')
-        outputs.voronoi = node.data.voronoi
-        resolve()
-
-        return
+      if (points === undefined) {
+        reject(rejectMessage('voronoi', 'points'))
+        rejectCalc = true
       }
+
+      if (points === undefined) {
+        reject(rejectMessage('voronoi', 'iterations'))
+        rejectCalc = true
+      }
+
+      if (rejectCalc) return
 
       const worker = new VoronoiWorker()
 
       node.data.working = true
 
-      worker.postMessage({ points: points.value, relaxIterations: iterations.value, dimension: dimension.value })
+      worker.postMessage({ points: points, relaxIterations: isNaN(iterations) ? 1 : iterations, dimension: dimension })
       worker.onmessage = (event) => {
         const data = event.data as Record<string, unknown>
         const progress = data.progress as number
@@ -86,9 +108,7 @@ export default new FlowComponent({
           node.data.points = points
           node.data.iterations = iterations
 
-          setDataForUnconnectedInput(node, inputs, 'iterations', iterations.value)
-
-          setOutputValue(node, outputs, 'voronoi', node.data.voronoi.value)
+          setOutputValue(node, outputs, 'voronoi', node.data.voronoi)
 
           resolve()
         } else {
