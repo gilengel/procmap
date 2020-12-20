@@ -49,7 +49,6 @@ export default new FlowComponent({
     return new Promise((resolve) => {
       const voronoi: FlowOutput<Voronoi<number>> = getInputValue<Voronoi<number>>('voronoi', inputs, node)
       const amount: FlowOutput<number> = getInputValue<number>('amount', inputs, node)
-      // const iterations: FlowOutput<number> = getInputValue<number>('number', inputs, node)
 
       if (voronoi) {
         const cells = new Map<number, Delaunay.Polygon>()

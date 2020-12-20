@@ -1,5 +1,5 @@
 
-import { FlowComponent, FlowNumberControl, FlowOutput, getInputValue, setOutputValue } from '../FlowGraph'
+import { FlowComponent, FlowNumberControl, FlowOutput, getInputValue, setOutputValue, setDataForUnconnectedInput } from '../FlowGraph'
 import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Delaunay, Voronoi } from 'd3-delaunay'
@@ -49,10 +49,10 @@ export default new FlowComponent({
     return new Promise((resolve) => {
       const dimension: FlowOutput<Dimension> = getInputValue<Dimension>('dimension', inputs, node)
       const points: FlowOutput<Array<[number, number]>> = getInputValue<Array<[number, number]>>('points', inputs, node)
-      const iterations: FlowOutput<number> = getInputValue<number>('number', inputs, node)
+      const iterations: FlowOutput<number> = getInputValue<number>('iterations', inputs, node)
 
       // Stop calculation if input values haven't changed
-      if (points.processed) {
+      if (points.processed && iterations.processed) {
         console.log('nothing to calc')
         outputs.voronoi = node.data.voronoi
         resolve()
@@ -64,7 +64,7 @@ export default new FlowComponent({
 
       node.data.working = true
 
-      worker.postMessage({ points: points.value, relaxIterations: 1, dimension: dimension.value })
+      worker.postMessage({ points: points.value, relaxIterations: iterations.value, dimension: dimension.value })
       worker.onmessage = (event) => {
         const data = event.data as Record<string, unknown>
         const progress = data.progress as number
@@ -79,6 +79,8 @@ export default new FlowComponent({
 
           node.data.points = points
           node.data.iterations = iterations
+
+          setDataForUnconnectedInput(node, inputs, 'iterations', iterations.value)
 
           setOutputValue(node, outputs, 'voronoi', node.data.voronoi.value)
 

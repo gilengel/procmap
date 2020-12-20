@@ -1,6 +1,6 @@
 <template>
   <div class="map-editor">
-    <div class="content column">
+    <div class="content column dock">
       <div class="left">
         <q-toolbar class="bg-black text-white">
           <q-toolbar-title>
@@ -11,6 +11,13 @@
           </div>
         </q-toolbar>
         <q-list dark padding>
+          <q-item v-for="component in availableComponents" :key="component.id" draggable="true" v-on:dragstart="dragstart(component.id, $event)" >
+            <q-item-section avatar>
+              <q-icon :name="component.icon" />
+            </q-item-section>
+            <q-item-section>{{component.label}}</q-item-section>
+          </q-item>
+
           <q-item-label header>Elementary Nodes</q-item-label>
           <q-item>
             <q-item-section avatar>
@@ -193,6 +200,9 @@ import Preview2D from 'components/Preview2D.vue'
 import { RandomMap } from 'components/models'
 import { Vue, Component } from 'vue-property-decorator'
 
+import { getRegisteredFlowComponents } from './flow'
+
+
 @Component({
   components: { ToggleButton, FlowGraphComponent, Preview2D }
 })
@@ -203,9 +213,22 @@ export default class MapEditorComponent extends Vue {
 
   map: RandomMap = new RandomMap({ width: 512, height: 512 }, []);
 
+  availableComponents = new Map<string, unknown>();
+
   geometry: Record<string, unknown> = {};
 
   horizontalSplitter = 70;
+
+  mounted() {
+    this.availableComponents = getRegisteredFlowComponents()
+  }
+
+  
+  dragstart(id, ev) {
+   if(!ev.dataTransfer) return;
+
+   ev.dataTransfer.setData("componentId", id);
+  }
 }
 </script>
 

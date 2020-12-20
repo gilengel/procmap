@@ -1,6 +1,7 @@
 <template>
   <q-page>
     <div id="rete" ref="rete"></div>
+    <div class="dock">Hello?</div>
   </q-page>
 </template>
 
@@ -20,9 +21,11 @@ import randomComponent from './flow/Random'
 import growComponent from './flow/Grow'
 import selectRandomComponent from './flow/SelectRantom'
 
+import DockPlugin from './dock'
+import { getRegisteredFlowComponents, MetaFlowComponent } from './flow'
+
 import { RandomMap } from './models'
 
-import { FlowDataObject } from './FlowGraph'
 
 @Component
 export default class FlowGraphComponent extends Vue {
@@ -51,36 +54,30 @@ export default class FlowGraphComponent extends Vue {
      this.editor.bind('previewnode')
      this.editor.use(ConnectionPlugin)
      this.editor.use(VueRenderPlugin)
+    this.editor.use(DockPlugin);
 
      const engine = new Rete.Engine('demo@0.1.0')
-     var components = [
-       mapComponent,
-       randomComponent,
-       voronoiComponent,
-       selectRandomComponent,
-       mountainsComponent,
-       growComponent
-     ]
+     let components = getRegisteredFlowComponents()
      components.map(c => {
-       this.editor.register(c)
-       engine.register(c)
+       this.editor.register(c.component)
+       engine.register(c.component)
      })
 
-     const mapNode = await components[0].createNode({
+     const mapNode = await components[0].component.createNode({
        dimension: { value: this.map ? this.map.dimension : { width: 256, height: 256 }, processed: false }
      })
      mapNode.position = [80, 200]
      this.editor.addNode(mapNode)
 
-     const randNode = await components[1].createNode({ amount: { value: 200, processed: false }, preview: false, progress: 1 })
+     const randNode = await components[1].component.createNode({ amount: { value: 200, processed: false }, preview: false, progress: 1 })
      randNode.position = [80 + 375, 200]
      this.editor.addNode(randNode)
 
-     const voroniNode = await components[2].createNode({ iterations: { value: 2, processed: false }, preview: false, progress: 1 })
+     const voroniNode = await components[2].component.createNode({ iterations: { value: 2, processed: false }, preview: false, progress: 1 })
      voroniNode.position = [80 + 800, 200]
      this.editor.addNode(voroniNode)
 
-     const selectRandomNode = await components[3].createNode({ amount: 2, preview: false, progress: 1 })
+     const selectRandomNode = await components[3].component.createNode({ amount: { value: 2, processed: false }, preview: false, progress: 1 })
      selectRandomNode.position = [80 + 1210, 200]
      this.editor.addNode(selectRandomNode)
 
@@ -184,6 +181,20 @@ export default class FlowGraphComponent extends Vue {
        }
      }
    }
+
+            dragstart(item, e) {
+                //this.draggingItem = item; // 一旦保存
+                //e.target.style.opacity = 0.5;
+                //e.dataTransfer.setData('text/plain', 'dummy'); // Firefox用 http://stackoverflow.com/questions/21507189/dragenter-dragover-and-drop-events-not-working-in-firefox
+            }
+            dragend (e) {
+                //e.target.style.opacity = 1;
+            }
+            dragenter(e) {
+                //const tempIndex = item.sort;
+                //item.sort = this.draggingItem.sort;
+                //this.draggingItem.sort = tempIndex;
+            }   
 }
 </script>
 
