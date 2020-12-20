@@ -128,13 +128,12 @@ export default class FlowGraphComponent extends Vue {
        this.updatePreviewGeometry()
      })
 
+
      this.editor.on(
        [
          'process',
          'nodecreated',
-         'noderemoved',
          'connectioncreated',
-         'connectionremoved'
        ],
        async () => {
          await engine.abort()
@@ -144,8 +143,32 @@ export default class FlowGraphComponent extends Vue {
        }
      )
 
+     this.editor.on(
+       [
+         'noderemoved',
+         'connectionremoved'
+       ],
+       async () => {
+         await engine.abort()
+
+         this.updatePreviewGeometry()
+       }
+     )
+
+     this.editor.on(['keyup'], async(e) => {
+       await engine.abort()
+
+       this.keyUpEvent(e)
+     })
+
      this.editor.view.resize()
      this.editor.trigger('process')
+   }
+
+   async keyUpEvent(e: KeyboardEvent) {
+     if(e.code == 'Delete') {
+        this.editor.selected.each(n => this.editor.removeNode(n))
+     }
    }
 
    updatePreviewGeometry () {
@@ -181,20 +204,6 @@ export default class FlowGraphComponent extends Vue {
        }
      }
    }
-
-            dragstart(item, e) {
-                //this.draggingItem = item; // 一旦保存
-                //e.target.style.opacity = 0.5;
-                //e.dataTransfer.setData('text/plain', 'dummy'); // Firefox用 http://stackoverflow.com/questions/21507189/dragenter-dragover-and-drop-events-not-working-in-firefox
-            }
-            dragend (e) {
-                //e.target.style.opacity = 1;
-            }
-            dragenter(e) {
-                //const tempIndex = item.sort;
-                //item.sort = this.draggingItem.sort;
-                //this.draggingItem.sort = tempIndex;
-            }   
 }
 </script>
 

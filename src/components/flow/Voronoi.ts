@@ -7,6 +7,7 @@ import { Delaunay, Voronoi } from 'd3-delaunay'
 import { Dimension } from '../models'
 
 import VoronoiWorker from 'worker-loader!./Voronoi.worker'
+import { rejects } from 'assert'
 
 export default new FlowComponent({
   label: 'voronoi',
@@ -46,10 +47,15 @@ export default new FlowComponent({
     inputs: WorkerInputs,
     outputs: WorkerOutputs
   ) : Promise<void> => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const dimension: FlowOutput<Dimension> = getInputValue<Dimension>('dimension', inputs, node)
       const points: FlowOutput<Array<[number, number]>> = getInputValue<Array<[number, number]>>('points', inputs, node)
       const iterations: FlowOutput<number> = getInputValue<number>('iterations', inputs, node)
+
+      if (dimension === undefined || points === undefined || iterations === undefined) {
+        reject('one of the input pins has no valid value. Make sure the pins are connected or a valid value is provided via the node control')
+        return
+      }
 
       // Stop calculation if input values haven't changed
       if (points.processed && iterations.processed) {
