@@ -61,7 +61,7 @@ export default new FlowComponent({
         rejectCalc = true
       }
 
-      if (points === undefined) {
+      if (iterations === undefined || isNaN(iterations)) {
         reject(rejectMessage('voronoi', 'iterations'))
         rejectCalc = true
       }

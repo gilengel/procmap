@@ -59,7 +59,6 @@ export default class FunctionControl extends Vue {
     //width *= ratio;
     //height *= ratio;
 
-    console.log(width)
 
     functionPlot({
       target: graphElement,

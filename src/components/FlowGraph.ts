@@ -40,7 +40,7 @@ export function setNodeValue (node: NodeData, key: string, value: unknown) {
 }
 
 export function rejectMessage (nodeIdentifier: string, keyIdentifier: string) : string {
-  return `FlowNode[${nodeIdentifier}.${keyIdentifier}] is not set. Check that the pin is connected or a value is provided via a control element`
+  return `FlowNode[${nodeIdentifier}.${keyIdentifier}] is not set or invalid. Check that the pin is connected or a value is provided via a control element`
 }
 
 export function hasNodeDataPropertyChanged (node: NodeData, key: string, value: unknown): boolean {

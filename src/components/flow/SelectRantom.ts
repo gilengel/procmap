@@ -54,7 +54,6 @@ export default new FlowComponent({
         return
       }
 
-      console.log(voronoi)
       const cells = new Map<number, Delaunay.Polygon>()
       for (const cell of voronoi.cellPolygons()) {
         cells.set(cell.index, cell)
