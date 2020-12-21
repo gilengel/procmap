@@ -1,5 +1,5 @@
 import { FlowComponent } from '../FlowGraph'
-import NumberControl from '../NumberControl.vue'
+import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi } from 'd3-delaunay'
 import { Color } from '../models'

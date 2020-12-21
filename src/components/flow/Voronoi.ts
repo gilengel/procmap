@@ -1,6 +1,6 @@
 
 import { FlowComponent, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
-import NumberControl from '../NumberControl.vue'
+import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Delaunay, Voronoi } from 'd3-delaunay'
 
@@ -88,7 +88,9 @@ export default new FlowComponent({
           node.data.points = points
           node.data.iterations = iterations
 
-          setOutputValue(node, outputs, 'voronoi', node.data.voronoi)
+          setOutputValue(node, outputs, 'voronoi', data.voronoi, node.outputs.voronoi !== undefined)
+          setOutputValue(node, outputs, 'points', data.points, node.outputs.points !== undefined)
+          setOutputValue(node, outputs, 'iterations', iterations, node.outputs.iterations !== undefined)
 
           resolve()
         } else {
@@ -98,46 +100,3 @@ export default new FlowComponent({
     })
   }
 })
-/*
-
-  workerFn: (
-    node: NodeData,
-    inputs: WorkerInputs,
-    outputs: WorkerOutputs
-  ) => {
-
-    let t0 = performance.now()
-    const delaunay: Delaunay<number> = Delaunay.from(inputs.points[0] as ArrayLike<Delaunay.Point>)
-    const voronoi = delaunay.voronoi([0, 0, 512, 512])
-    let t1 = performance.now()
-    console.log(`Calc voronoi took ${t1 - t0} ms.`)
-
-    t0 = performance.now()
-    for (let s = 0; s < iterations; ++s) {
-      const sVoronoi = voronoi.delaunay.voronoi([0, 0, 512, 512])
-      const points = sVoronoi.delaunay.points as Array<number>
-
-      for (let i = 0; i < points.length; i += 2) {
-        const polygon = sVoronoi.cellPolygon(i >> 1)
-        if (polygon === null) continue
-        const x0 = sVoronoi.delaunay.points[i],
-          y0 = points[i + 1]
-
-        const [x1, y1] = d3.polygonCentroid(polygon as Array<[number, number]>)
-
-        points[i] = x0 + (x1 - x0) * 1.0
-        points[i + 1] = y0 + (y1 - y0)
-      }
-
-      voronoi.delaunay.update()
-      // UPDATE!
-    }
-    t1 = performance.now()
-    console.log(`Relaxing voronoi took ${t1 - t0} ms.`)
-
-    // node.data.voronoi = voronoi.delaunay.voronoi([0, 0, 512, 512])
-
-  }
-
-})
-*/

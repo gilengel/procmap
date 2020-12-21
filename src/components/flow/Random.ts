@@ -1,5 +1,5 @@
-import { FlowComponent, setOutputValue, getInputValue, rejectMessage } from '../FlowGraph'
-import NumberControl from '../NumberControl.vue'
+import { FlowComponent, setOutputValue, getInputValue, rejectMessage, hasInputValueChanged } from '../FlowGraph'
+import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Dimension } from '../models'
 
@@ -58,16 +58,17 @@ export default new FlowComponent({
       }
 
       // avoid recalculating random points if no input values changed
-      /*
-      if (dimension.processed && amount.processed) {
-        setOutputValue(node, outputs, 'points', node.data.points.value)
-        setOutputValue(node, outputs, 'dimension', dimension.value)
+
+      if (!hasInputValueChanged('amount', inputs, node) && !hasInputValueChanged('dimension', inputs, node)) {
+        console.log('Everything stays the same at random :)')
+
+        setOutputValue(node, outputs, 'points', node.data.points, node.outputs.points !== undefined)
+        setOutputValue(node, outputs, 'dimension', dimension, node.outputs.dimension !== undefined)
 
         resolve()
 
         return
       }
-      */
 
       const worker = new RandomWorker()
       worker.postMessage({ amount: amount, dimension: dimension })
@@ -80,13 +81,10 @@ export default new FlowComponent({
         const progress = data.progress as number
         if (progress === 1.0) {
           node.data.progress = 1.0
-          node.data.amount = amount
-          node.data.points = data.points
 
-          // setDataForUnconnectedInput(node, inputs, 'amount', amount.value)
-
-          setOutputValue(node, outputs, 'points', data.points)
-          setOutputValue(node, outputs, 'dimension', dimension)
+          setOutputValue(node, outputs, 'points', data.points, node.outputs.points !== undefined)
+          setOutputValue(node, outputs, 'dimension', dimension, node.outputs.dimension !== undefined)
+          setOutputValue(node, outputs, 'amount', amount, node.outputs.amount !== undefined)
           resolve()
         } else {
           node.data.progress = progress

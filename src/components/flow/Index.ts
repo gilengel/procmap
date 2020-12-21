@@ -25,7 +25,7 @@ const registeredComponents: Array<MetaFlowComponent> = [
     icon: 'las la-map-marked',
     component: MapComponent,
     defaultData: {
-      dimension: { width: 256, height: 256 }
+      dimension: { width: 512, height: 512 }
     }
   },
   {

@@ -1,9 +1,8 @@
 import Vue, { VueConstructor } from 'vue'
 import Rete, { Socket, Node as ReteNode } from 'rete'
-import { NodeEditor, Input, Output, Control as ReteControl } from 'rete/types'
+import { NodeEditor, Control as ReteControl } from 'rete/types'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import * as StringSimilarity from 'string-similarity'
-import { Dimension } from './models'
 import Node from './Node.vue'
 declare module 'rete/types/events' {
   interface EventsTypes {
@@ -52,20 +51,13 @@ export function hasNodeDataPropertyChanged (node: NodeData, key: string, value: 
   return oldValue !== value
 }
 
-export function setOutputValue (node: NodeData, outputs: WorkerOutputs, key: string, value: unknown) {
-  const oldValue: unknown = node.data['old_' + key]
-
-  if (!oldValue) {
-    node.data['old_' + key] = value
-    node.data[key] = node.data['old_' + key]
-
-    outputs[key] = node.data['old_' + key]
-    return
-  }
+export function setOutputValue (node: NodeData, outputs: WorkerOutputs, key: string, value: unknown, outputValue: boolean) {
   node.data['old_' + key] = node.data[key]
   node.data[key] = value
 
-  outputs[key] = node.data[key]
+  if (outputValue) {
+    outputs[key] = value
+  }
 }
 
 /**
@@ -89,6 +81,32 @@ export function getInputValue<T> (key: string, inputs: WorkerInputs, node: NodeD
   }
 
   return node.data[key] as T
+}
+
+function xor (value1: boolean, value2: boolean) : boolean {
+  return value1 ? !value2 : value2
+}
+
+export function hasInputValueChanged (key: string, inputs: WorkerInputs, node: NodeData, index = 0) : boolean {
+  const hasInputValue = inputs[key] !== undefined && inputs[key][index] !== undefined
+  const hasDataValue = node.data[key] !== undefined
+  const hasOldDataValue = node.data['old_' + key] !== undefined
+
+  // check if current data and old data have changed
+  if (hasDataValue && hasOldDataValue) {
+    return node.data[key] !== node.data['old_' + key]
+  }
+
+  if (hasInputValue && hasDataValue) {
+    return inputs[key][index] !== node.data[key]
+  }
+
+  // case either input or current data has changed
+  if (xor(hasInputValue, hasDataValue) || xor(hasDataValue, hasOldDataValue)) {
+    return true
+  }
+
+  return false
 }
 
 interface FlowControlProps<T> {
@@ -134,7 +152,7 @@ enum Direction {
 }
 
 interface ControlSchema {
-  component: Vue;
+  component: VueConstructor<Vue>;
   isValid?(input: unknown) : boolean;
   // Node property key, this is set automatically to the key of the input/output the control is connected to.
   // However sometimes you want to specify it by yourself for example if you want to add a control to an array of

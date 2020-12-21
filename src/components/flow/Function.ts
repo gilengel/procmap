@@ -1,5 +1,5 @@
-import { FlowComponent, FlowControl, FunctionControl } from '../FlowGraph'
-import FunctionControlVue from '../FunctionControl.vue'
+import { FlowComponent } from '../FlowGraph'
+import FunctionControlVue from '../controls/FunctionControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 
 export default new FlowComponent({

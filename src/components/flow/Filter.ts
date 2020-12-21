@@ -1,6 +1,6 @@
-import { FlowComponent, FlowNumberControl } from '../FlowGraph'
+import { FlowComponent } from '../FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
-import VueNumberControl from '../NumberControl.vue'
+import VueNumberControl from '../controls/NumberControl.vue'
 
 export default new FlowComponent({
   label: 'filter',
@@ -11,7 +11,6 @@ export default new FlowComponent({
       label: 'Number',
 
       control: {
-        control: FlowNumberControl,
         component: VueNumberControl,
         isValid: (input: unknown) : boolean => {
           const number = input as number
@@ -27,7 +26,6 @@ export default new FlowComponent({
       label: 'Number 2',
 
       control: {
-        control: FlowNumberControl,
         component: VueNumberControl,
         isValid: (input: unknown) : boolean => {
           const number = input as number

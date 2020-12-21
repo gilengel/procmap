@@ -12,7 +12,7 @@ import Rete, { Node as ReteNode, NodeEditor } from 'rete'
 import { Input, Output } from 'rete/types'
 
 import ConnectionPlugin from 'rete-connection-plugin'
-import VueRenderPlugin from 'rete-vue-render-plugin'
+import VueRenderPlugin from './render'
 
 import mapComponent from './flow/Map'
 import voronoiComponent from './flow/Voronoi'
@@ -117,6 +117,8 @@ export default class FlowGraphComponent extends Vue {
       mountainNode.inputs.get('indices') as Input
      )
      */
+
+    const listeners = new WeakMap();
 
      this.editor.on('previewnode', node => {
        if (this.previewNode instanceof ReteNode) {

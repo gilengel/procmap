@@ -1,5 +1,5 @@
 import { FlowComponent, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
-import NumberControl from '../NumberControl.vue'
+import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi, Delaunay } from 'd3-delaunay'
 
@@ -50,7 +50,7 @@ export default new FlowComponent({
       const amount: number = getInputValue<number>('amount', inputs, node)
 
       if (voronoi === undefined) {
-        reject(rejectMessage('voronoi', 'dimension'))
+        reject(rejectMessage('select_random', 'voronoi'))
         return
       }
 
@@ -73,8 +73,8 @@ export default new FlowComponent({
       }
       selectedKeys = selectedKeys.sort()
 
-      setOutputValue(node, outputs, 'voronoi', voronoi.delaunay.voronoi([0, 0, 512, 512]))
-      setOutputValue(node, outputs, 'indices', selectedKeys)
+      setOutputValue(node, outputs, 'voronoi', voronoi, node.outputs.voronoi !== undefined)
+      setOutputValue(node, outputs, 'indices', selectedKeys, node.outputs.indices !== undefined)
 
       resolve()
     })

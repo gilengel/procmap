@@ -5,58 +5,57 @@
         dark
         dense
         filled
-        v-model="width"
-        @input="e => change(e, 'width')"
+        v-model="y"
+        @input="e => change(e, 'x')"
       >
-        <template v-slot:prepend>
-          <q-icon name="las la-arrows-alt-h" />
-        </template>
       </q-input>
 
       <q-input style="max-width: 120px"
         dark
         dense
         filled
-        v-model="height"
-        @input="e => change(e, 'height')"
+        v-model="y"
+        @input="e => change(e, 'y')"
       >
-        <template v-slot:prepend>
-          <q-icon name="las la-arrows-alt-v" />
-        </template>
       </q-input>
-    </div>
-
-    <div :class="linked ? 'link highlight' : 'link'">
-       <ToggleButton v-model="linked" icon="las la-link" disableIcon="las la-unlink"/>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 
-import VueFlowControl from './FlowControl'
 import { NodeEditor } from 'rete'
-import ToggleButton from './ToggleButton.vue'
+import ToggleButton from '../ToggleButton.vue'
 
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { evaluate } from 'mathjs'
 
-import { Dimension } from './models'
+import { Dimension } from '../models'
 
 @Component({
   components: { ToggleButton }
 })
-export default class DimensionControl extends VueFlowControl {
-  width = 512;
-  height = 512;
+export default class DimensionControl extends Vue {
+  @Prop(NodeEditor) emitter: NodeEditor | undefined;
+  @Prop(String) ikey: string | undefined;
+  @Prop(Function) getData: unknown
+  @Prop(Function) putData: unknown
+  @Prop({ type: Function, default: () => { return true } }) isValid!: undefined
+
+  x = 512;
+  y = 512;
 
   linked = false;
 
   mounted () {
-    const property = this.getValue<Dimension>();
+    const property = (this.getData as (v: string) => unknown)(this.ikey as string) as [number, number]
+
+    if(property === undefined) {
+      throw new Error(`could not set value for number control since the property with key ${this.ikey} is not specified as data on the node`)
+    }
     
-    this.width = property.width
-    this.height = property.height
+    this.x = property[0]
+    this.y = property[0]
   }
 
   change (value: string, property: string) {
@@ -67,25 +66,21 @@ export default class DimensionControl extends VueFlowControl {
       // empty catch is necessary to omit the thrown error by mathjs if the expression
       // is invalid, invalid arguments are handled by input validation
     } finally {
-      if (this.linked) {
-        this.width = numValue as number
-        this.height = numValue as number
-      }
-
-      if (property !== 'width' && property !== 'height') {
+      
+      if (property !== 'x' && property !== 'y') {
         console.error('dimension control value changed without property specification. Do not know what to do :(')
       }
 
-      if (property === 'width') {
-        this.width = numValue as number
+      if (property === 'x') {
+        this.x = numValue as number
       }
 
-      if (property === 'height') {
-        this.height = numValue as number
+      if (property === 'y') {
+        this.y = numValue as number
       }
 
-      if (typeof this.width === 'number' && typeof this.height === 'number' && this.putData instanceof Function && this.emitter) {
-        this.putData(this.ikey, { width: this.width, height: this.height })
+      if (typeof this.x === 'number' && typeof this.y === 'number' && this.putData instanceof Function && this.emitter) {
+        this.putData(this.ikey, [this.x, this.y])
 
         this.emitter.trigger('process')
       }

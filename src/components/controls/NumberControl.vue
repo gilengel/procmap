@@ -16,7 +16,7 @@ import { NodeEditor } from 'rete'
 
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
-import VueFlowControl from './FlowControl'
+import VueFlowControl from '../FlowControl'
 
 @Component
 export default class NumberControl extends VueFlowControl {
@@ -30,18 +30,15 @@ export default class NumberControl extends VueFlowControl {
 
   change (e: string) {
     if (!(this.putData instanceof Function)) {
-      throw new Error("NumberControls putData was not specified. Make sure you pass it along as an argument while creating a new instance of it")
-      return
+      throw new Error('NumberControls putData was not specified. Make sure you pass it along as an argument while creating a new instance of it')
     }
 
     if (!this.emitter) {
-      throw new Error("NumberControls emitter was not specified. Make sure you pass it along as an argument while creating a new instance of it")
-      return
+      throw new Error('NumberControls emitter was not specified. Make sure you pass it along as an argument while creating a new instance of it')
     }
 
-    if(!this.propertyKey) {
-      throw new Error("NumberControls propertyKey was not specified. Make sure you pass it along as an argument while creating a new instance of it")
-      return
+    if (!this.propertyKey) {
+      throw new Error('NumberControls propertyKey was not specified. Make sure you pass it along as an argument while creating a new instance of it')
     }
 
     this.putData(this.propertyKey, parseInt(e))
@@ -50,10 +47,22 @@ export default class NumberControl extends VueFlowControl {
 
   mounted () {
     const property = this.getValue<number>()
-    
+
     this.value = property
   }
 }
 </script>
 
-<style></style>
+<style>
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+</style>
