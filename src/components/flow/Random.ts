@@ -1,4 +1,4 @@
-import { FlowComponent, FlowNumberControl, FlowOutput, setOutputValue, getInputValue, rejectMessage } from '../FlowGraph'
+import { FlowComponent, setOutputValue, getInputValue, rejectMessage } from '../FlowGraph'
 import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Dimension } from '../models'
@@ -9,17 +9,16 @@ export default new FlowComponent({
 
   inputs: [
     {
-      identifier: 'dimension',
+      type: 'dimension',
       label: 'Dimension'
     },
 
     {
-      identifier: 'number',
+      type: 'number',
       label: 'Amount',
 
       control: {
         identifier: 'amount',
-        control: FlowNumberControl,
         component: NumberControl,
         isValid: (input: unknown) : boolean => {
           const number = input as number
@@ -32,12 +31,12 @@ export default new FlowComponent({
 
   outputs: [
     {
-      identifier: 'dimension',
+      type: 'dimension',
       label: 'Dimension'
     },
 
     {
-      identifier: 'points',
+      type: 'points',
       label: 'Points'
     }
   ],

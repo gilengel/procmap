@@ -1,11 +1,12 @@
-import { FlowComponent } from '../FlowGraph'
 
 import MapComponent from './Map'
 import Random from './Random'
 import Voronoi from './Voronoi'
 import SelectRandom from './SelectRantom'
+import FunctionComponent from './Function'
 
 import { Component } from 'rete'
+import Filter from './Filter'
 
 export interface MetaFlowComponent {
   readonly id: string;
@@ -50,8 +51,27 @@ const registeredComponents: Array<MetaFlowComponent> = [
     label: 'Select Random',
     icon: 'las la-map-marked',
     component: SelectRandom,
-    defaultValue: {
+    defaultData: {
+      amount: 2
+    }
+  },
+  {
+    id: 'function',
+    label: 'Function',
+    icon: 'las la-map-marked',
+    component: FunctionComponent,
+    defaultData: {
 
+    }
+  },
+  {
+    id: 'filter',
+    label: 'Filter',
+    icon: 'las la-filter',
+    component: Filter,
+    defaultData: {
+      number: 0,
+      number_2: 0
     }
   }
 ]

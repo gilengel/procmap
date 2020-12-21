@@ -1,4 +1,4 @@
-import { FlowComponent, FlowNumberControl } from '../FlowGraph'
+import { FlowComponent } from '../FlowGraph'
 import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi } from 'd3-delaunay'
@@ -9,11 +9,11 @@ export default new FlowComponent({
 
   inputs: [
     {
-      identifier: 'voronoi',
+      type: 'voronoi',
       label: 'Voronoi'
     },
     {
-      identifier: 'indices',
+      type: 'indices',
       label: 'Indices'
     },
 
@@ -23,7 +23,6 @@ export default new FlowComponent({
 
       control: {
         identifier: 'amount',
-        control: FlowNumberControl,
         component: NumberControl,
         isValid: (input: unknown) : boolean => {
           const number = input as number

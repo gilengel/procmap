@@ -1,5 +1,5 @@
 
-import { FlowComponent, FlowNumberControl, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
+import { FlowComponent, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
 import NumberControl from '../NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Delaunay, Voronoi } from 'd3-delaunay'
@@ -7,28 +7,26 @@ import { Delaunay, Voronoi } from 'd3-delaunay'
 import { Dimension } from '../models'
 
 import VoronoiWorker from 'worker-loader!./Voronoi.worker'
-import { rejects } from 'assert'
 
 export default new FlowComponent({
   label: 'voronoi',
 
   inputs: [
     {
-      identifier: 'dimension',
+      type: 'dimension',
       label: 'Dimension'
     },
 
     {
-      identifier: 'points',
+      type: 'points',
       label: 'Points'
     },
 
     {
-      identifier: 'number',
+      type: 'number',
       label: 'Iterartions',
       control: {
         identifier: 'iterations',
-        control: FlowNumberControl,
         component: NumberControl
       }
     }
@@ -36,29 +34,11 @@ export default new FlowComponent({
 
   outputs: [
     {
-      identifier: 'voronoi',
+      type: 'voronoi',
       label: 'voronoi',
       value: ''
     }
   ],
-
-  hasValidInputsFn (node: NodeData, inputs: WorkerInputs, keys: [string]) : boolean {
-    const undefinedKeys = []
-    for (const key in keys) {
-      if (getInputValue<any>(key, inputs, node) === undefined) {
-        undefinedKeys.push(key)
-      }
-    }
-    // reset internal data
-    for (const key in undefinedKeys) {
-      delete node.data[key]
-    }
-
-    node.data.preview = false
-    node.data.validData = false
-
-    return undefinedKeys.length === 0
-  },
 
   workerFn: (
     node: NodeData,
@@ -99,9 +79,9 @@ export default new FlowComponent({
         if (progress === 1.0) {
           node.data.working = false
 
-          node.data.voronoi = { value: data.voronoi as Voronoi<number>, processed: true }
-          node.data.voronoi.value.__proto__ = Voronoi.prototype
-          node.data.voronoi.value.delaunay.__proto__ = Delaunay.prototype
+          node.data.voronoi = data.voronoi as Voronoi<number>
+          node.data.voronoi.__proto__ = Voronoi.prototype
+          node.data.voronoi.delaunay.__proto__ = Delaunay.prototype
 
           node.data.progress = 1.0
 

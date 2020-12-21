@@ -16,8 +16,10 @@ import { NodeEditor } from 'rete'
 
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
+import VueFlowControl from './FlowControl'
+
 @Component
-export default class NumberControl extends Vue {
+export default class NumberControl extends VueFlowControl {
   value = 20;
 
   @Prop(NodeEditor) emitter: NodeEditor | undefined;
@@ -40,11 +42,8 @@ export default class NumberControl extends Vue {
   }
 
   mounted () {
-    const property = (this.getData as (v: string) => unknown)(this.ikey as string) as number
-
-    if(property === undefined) {
-      throw new Error(`could not set value for number control since the property with key ${this.ikey} is not specified as data on the node`)
-    }
+    console.log("DF)")
+    const property = this.getValue<number>()
     
     this.value = property
   }

@@ -16,18 +16,18 @@ const registeredSockets = new Map([
   ['voronoi', new Socket('voronoi')],
   ['dimension', new Socket('dimension')],
   ['indices', new Socket('indices')],
-  ['number', new Socket('number')]
+  ['number', new Socket('number')],
+  ['variable', new Socket('variable')]
 ])
 
 function createControl (
-  Control: typeof FlowNumberControl,
-  component: VueConstructor<Vue>,
+  component: Vue,
   emitter: NodeEditor,
   key: string,
   value: unknown,
   isValid: (input: unknown) => boolean
 ): ReteControl {
-  return new Control(component, emitter, key, value, isValid)
+  return new FlowControl(component, emitter, key, value, isValid)
 }
 
 export function setNodeValue (node: NodeData, key: string, value: unknown) {
@@ -90,50 +90,22 @@ export function getInputValue<T> (key: string, inputs: WorkerInputs, node: NodeD
 
   return node.data[key] as T
 }
-export class FlowNumberControl<
-  T extends VueConstructor<Vue>
-> extends Rete.Control {
-  component: VueConstructor<Vue>
 
-  props: unknown;
-
-  constructor (component: T, emitter: NodeEditor, key: string, value: unknown, isValid: (input: unknown) => boolean) {
-    super(key)
-    this.component = component
-    this.props = { emitter, ikey: key, value: value, isValid: isValid }
-  }
+interface FlowControlProps<T> {
+  readonly emitter: NodeEditor
+  readonly propertyKey: string
+  value: T
+  readonly isValid: (input: T) => boolean
 }
+export class FlowControl<T extends Vue, S> extends Rete.Control {
+  component: Vue
 
-export class DimensionControl<
-  T extends VueConstructor<Vue>
-> extends Rete.Control {
-  component: VueConstructor<Vue>;
+  props: FlowControlProps<S>
 
-  props: unknown;
-
-  constructor (
-    component: T,
-    emitter: NodeEditor,
-    key: string,
-    value: Dimension
-  ) {
+  constructor (component: T, emitter: NodeEditor, key: string, value: S, isValid: (input: S) => boolean) {
     super(key)
     this.component = component
-    this.props = { emitter, ikey: key, value }
-  }
-}
-
-export class VoronoiRelaxationControl<
-  T extends VueConstructor<Vue>
-> extends Rete.Control {
-  component: VueConstructor<Vue>;
-
-  props: unknown;
-
-  constructor (component: T, emitter: NodeEditor, key: string, value: unknown) {
-    super(key)
-    this.component = component
-    this.props = { emitter, ikey: key, value: value }
+    this.props = { emitter, propertyKey: key, value: value, isValid: isValid }
   }
 }
 
@@ -142,6 +114,8 @@ interface ComponentSchema {
 
   inputs?: ParameterSchema[];
   outputs?: ParameterSchema[];
+
+  controls?: ControlSchema[];
 
   data?: unknown;
 
@@ -160,8 +134,7 @@ enum Direction {
 }
 
 interface ControlSchema {
-  control: typeof FlowNumberControl;
-  component: VueConstructor<Vue>;
+  component: Vue;
   isValid?(input: unknown) : boolean;
   // Node property key, this is set automatically to the key of the input/output the control is connected to.
   // However sometimes you want to specify it by yourself for example if you want to add a control to an array of
@@ -170,7 +143,8 @@ interface ControlSchema {
 }
 
 interface ParameterSchema {
-  identifier: string;
+  type: string;
+  id?: string;
   label: string;
   value?: unknown;
 
@@ -196,15 +170,15 @@ export class FlowComponent extends Rete.Component {
     parameter: ParameterSchema,
     direction: Direction
   ) {
-    const socket = registeredSockets.get(parameter.identifier)
+    const socket = registeredSockets.get(parameter.type)
     if (socket === undefined) {
       const bestMatch = StringSimilarity.findBestMatch(
-        parameter.identifier,
+        parameter.type,
         Array.from(registeredSockets.keys())
       )
 
       throw new Error(
-        `Socket with the name ${parameter.identifier} does not exists.` +
+        `Socket with the name ${parameter.type} does not exists.` +
           (bestMatch.bestMatch.rating > 0.5
             ? ` Did you mean the socket "${bestMatch.bestMatch.target}"?`
             : 'Make sure that a socket with this name is registered in the FlowGraphComponent.')
@@ -212,16 +186,15 @@ export class FlowComponent extends Rete.Component {
     }
 
     if (direction === Direction.Out) {
-      const pin = new Rete.Output(parameter.identifier, parameter.label, socket)
+      const pin = new Rete.Output(parameter.id !== undefined ? parameter.id : parameter.type, parameter.label, socket)
       node.addOutput(pin)
 
       if (parameter.control !== undefined) {
         node.addControl(
           createControl(
-            parameter.control.control,
             parameter.control.component,
             editor,
-            parameter.control.identifier !== undefined ? parameter.control.identifier : parameter.identifier,
+            parameter.control.identifier !== undefined ? parameter.control.identifier : parameter.type,
             parameter.value,
             // eslint-disable-next-line @typescript-eslint/unbound-method
             parameter.control.isValid !== undefined ? parameter.control.isValid : () => true
@@ -232,14 +205,13 @@ export class FlowComponent extends Rete.Component {
       return
     }
 
-    const pin = new Rete.Input(parameter.identifier, parameter.label, socket)
+    const pin = new Rete.Input(parameter.id !== undefined ? parameter.id : parameter.type, parameter.label, socket)
     if (parameter.control !== undefined) {
       pin.addControl(
         createControl(
-          parameter.control.control,
           parameter.control.component,
           editor,
-          parameter.control.identifier !== undefined ? parameter.control.identifier : parameter.identifier,
+          parameter.control.identifier !== undefined ? parameter.control.identifier : parameter.type,
           parameter.value,
           // eslint-disable-next-line @typescript-eslint/unbound-method
           parameter.control.isValid !== undefined ? parameter.control.isValid : () => true
@@ -270,6 +242,13 @@ export class FlowComponent extends Rete.Component {
           parameter,
           Direction.Out
         )
+      })
+    }
+
+    if (this.schema.controls) {
+      this.schema.controls.forEach(control => {
+        node.addControl(
+          new control.control(control.component, 'key'))
       })
     }
 

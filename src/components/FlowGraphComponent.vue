@@ -70,15 +70,15 @@ export default class FlowGraphComponent extends Vue {
      const randNode = await components[1].component.createNode(components[1].defaultData)
      randNode.position = [80 + 375, 200]
      this.editor.addNode(randNode)
-/*
-     const voroniNode = await components[2].component.createNode({ iterations: { value: 2, processed: false }, preview: false, progress: 1 })
+
+     const voroniNode = await components[2].component.createNode({ iterations: 2, preview: false, progress: 1 })
      voroniNode.position = [80 + 800, 200]
      this.editor.addNode(voroniNode)
 
-     const selectRandomNode = await components[3].component.createNode({ amount: { value: 2, processed: false }, preview: false, progress: 1 })
+     const selectRandomNode = await components[3].component.createNode({ amount: 2, preview: false, progress: 1 })
      selectRandomNode.position = [80 + 1210, 200]
      this.editor.addNode(selectRandomNode)
-*/
+
      /*
      const mountainNode = await components[4].createNode({ amount: 20, preview: false, progress: 1 })
      mountainNode.position = [80, 450]
@@ -90,7 +90,7 @@ export default class FlowGraphComponent extends Vue {
       randNode.inputs.get('dimension') as Input
      )
 
-/*
+
      this.editor.connect(
       randNode.outputs.get('dimension') as Output,
       voroniNode.inputs.get('dimension') as Input
@@ -105,7 +105,6 @@ export default class FlowGraphComponent extends Vue {
       voroniNode.outputs.get('voronoi') as Output,
       selectRandomNode.inputs.get('voronoi') as Input
      )
-     */
 
      /*
      this.editor.connect(
@@ -205,11 +204,11 @@ export default class FlowGraphComponent extends Vue {
          break
        }
        case 'voronoi': {
-          this.$emit('update:geometry', node.data.voronoi ? node.data.voronoi.value : null)     
+          this.$emit('update:geometry', node.data.voronoi)     
          break
        }
        case 'select random': {
-         this.$emit('update:geometry', { voronoi: node.data.voronoi.value, selected: node.data.indices.value })
+         this.$emit('update:geometry', { voronoi: node.data.voronoi, selected: node.data.indices })
          break
        }
        case 'grow': {
