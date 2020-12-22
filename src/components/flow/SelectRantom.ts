@@ -1,9 +1,9 @@
-import { FlowComponent, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
+import { FlowComponentWithPreview, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi, Delaunay } from 'd3-delaunay'
 
-export default new FlowComponent({
+export default new FlowComponentWithPreview({
   label: 'select random',
 
   inputs: [

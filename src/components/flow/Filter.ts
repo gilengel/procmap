@@ -1,8 +1,8 @@
-import { FlowComponent } from '../FlowGraph'
+import { FlowComponentWithPreview } from '../FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import VueNumberControl from '../controls/NumberControl.vue'
 
-export default new FlowComponent({
+export default new FlowComponentWithPreview({
   label: 'filter',
 
   inputs: [

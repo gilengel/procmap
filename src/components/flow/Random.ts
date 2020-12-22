@@ -1,10 +1,10 @@
-import { FlowComponent, setOutputValue, getInputValue, rejectMessage, hasInputValueChanged } from '../FlowGraph'
+import { FlowComponentWithPreview, setOutputValue, getInputValue, rejectMessage, hasInputValueChanged } from '../FlowGraph'
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Dimension } from '../models'
 
 import RandomWorker from 'worker-loader!./Random.worker'
-export default new FlowComponent({
+export default new FlowComponentWithPreview({
   label: 'random',
 
   inputs: [

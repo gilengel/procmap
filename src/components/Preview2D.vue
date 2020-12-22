@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div class="preview" v-resize="onResize">
     <q-toolbar class="bg-black text-white">
       <q-toolbar-title>
         Preview
@@ -23,42 +23,93 @@
 import { Voronoi } from 'd3-delaunay'
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 
-import { Color } from './models'
+import { Color, Dimension } from './models'
 
-@Component
+import * as d3 from 'd3'
+import { zoom } from 'd3-zoom'
+import resize from 'vue-resize-directive'
+
+@Component({
+  directives: {
+    resize
+  }
+})
 export default class Preview2D extends Vue {
   @Prop(Object) geometry: Record<string, unknown> | undefined;
   @Prop() colors: Map<number, Color> | undefined;
+  @Prop() size!: Dimension;
+
+  width = 512;
+  height = 512;
+
+  updateElementSize () {
+    const canvasElement = this.$refs.renderer as HTMLCanvasElement
+    this.width = canvasElement.parentElement?.scrollWidth as number
+    this.height = canvasElement.parentElement?.scrollHeight as number
+  }
 
   mounted () {
     const canvasElement = this.$refs.renderer as HTMLCanvasElement
-    this.$data.context = canvasElement.getContext('2d') as CanvasRenderingContext2D
+    this.context = canvasElement.getContext('2d') as CanvasRenderingContext2D
+
+    if (!canvasElement.parentElement) {
+      throw new Error('Foo')
+    }
+
+    this.width = canvasElement.parentElement.scrollWidth
+    this.height = canvasElement.parentElement?.scrollHeight
+
+    d3.select(canvasElement).call(zoom()
+      .extent([[0, 0], [this.width, this.height]])
+      .translateExtent([[0, 0], [this.width, this.height]])
+
+      .on('zoom', ({ transform }) => this.zoomed(transform)))
 
     this.repaint()
   }
 
+  zoomed (transform : unknown) {
+    const ctx = this.context as CanvasRenderingContext2D
+
+    ctx.save()
+    ctx.clearRect(0, 0, this.size.width, this.size?.height)
+    ctx.translate(transform.x, transform.y)
+    ctx.scale(transform.k, transform.k)
+
+    this.repaint()
+
+    ctx.fill()
+    ctx.restore()
+  }
+
+  onResize (e) {
+    this.width = e.scrollWidth - (e.scrollWidth % 50)
+    // this.height = e.scrollHeight - (e.scrollHeight % 50)
+
+    this.repaint()
+
+    // this.width = canvasElement.parentElement.scrollWidth
+    // this.height = canvasElement.parentElement?.scrollHeight
+  }
+
   repaint () {
-    const geometry: unknown = this.$props.geometry
-
-    if (!geometry) {
-      return
-    }
-
-    const ctx = this.$data.context as CanvasRenderingContext2D
+    const ctx = this.context as CanvasRenderingContext2D
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
     ctx.clearRect(0, 0, 8000, 8000)
+
+    const geometry: unknown = this.geometry
+
+    if (!geometry) {
+      return
+    }
 
     if (this.$props.geometry instanceof Voronoi) {
       const voronoi = this.$props.geometry
       ctx.beginPath()
       voronoi.render(ctx)
       ctx.stroke()
-
-      // ctx.beginPath()
-      // voronoi.delaunay.renderPoints(ctx)
-      // ctx.fill()
 
       return
     }
@@ -81,9 +132,6 @@ export default class Preview2D extends Vue {
     if ((geometry as Record<string, unknown>)?.voronoi !== undefined && (geometry as Record<string, unknown>)?.colors !== undefined) {
       const voronoi = (geometry as Record<string, unknown>).voronoi as Voronoi<number>
       const colors = (geometry as Record<string, unknown>).colors as Map<number, Color>
-
-      ctx.fillStyle = 'black'
-      ctx.fillRect(0, 0, 512, 512)
 
       const t0 = performance.now()
       for (const cell of voronoi.cellPolygons()) {
@@ -113,20 +161,24 @@ export default class Preview2D extends Vue {
     this.repaint()
   }
 
+  @Watch('size')
+  onSizeChanged (/* newValue, oldValue */) {
+    // console.log(this.$props.size)
+    // this.repaint()
+  }
+
   context: CanvasRenderingContext2D | undefined;
-  width = 512;
-  height = 512;
 }
 </script>
 
 <style>
 @import "../css/quasar.variables.scss";
-.vp_renderer {
-  height: 100%;
-  /*
+
+.preview {
   display: flex;
   flex-direction: column;
-*/
+
+  overflow: hidden;
 }
 
 .viewport {
@@ -150,10 +202,7 @@ h2 {
 }
 
 .canvas {
-  display: flex;
-  flex-grow: 4;
-  justify-content: center;
-  align-content: center;
+  flex-grow: 2;
 }
 
 .flex {

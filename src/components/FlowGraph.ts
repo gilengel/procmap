@@ -20,7 +20,7 @@ const registeredSockets = new Map([
 ])
 
 function createControl (
-  component: Vue,
+  component: VueConstructor<Vue>,
   emitter: NodeEditor,
   key: string,
   value: unknown,
@@ -168,6 +168,7 @@ interface ParameterSchema {
 
   control?: ControlSchema;
 }
+
 export class FlowComponent extends Rete.Component {
   readonly schema: ComponentSchema;
 
@@ -277,5 +278,14 @@ export class FlowComponent extends Rete.Component {
     if (this.schema.workerFn !== undefined) {
       await this.schema.workerFn(node, inputs, outputs)
     }
+  }
+}
+
+export class FlowComponentWithPreview extends FlowComponent {
+  builder (node: ReteNode): Promise<void> {
+    node.data.hasPreview = true
+    node.data.preview = false
+
+    return super.builder(node)
   }
 }

@@ -25,7 +25,7 @@ const registeredComponents: Array<MetaFlowComponent> = [
     icon: 'las la-map-marked',
     component: MapComponent,
     defaultData: {
-      dimension: { width: 512, height: 512 }
+      dimension: { width: 1024, height: 1024 }
     }
   },
   {
@@ -34,7 +34,7 @@ const registeredComponents: Array<MetaFlowComponent> = [
     icon: 'las la-map-marked',
     component: Random,
     defaultData: {
-      amount: 100, preview: false, progress: 1
+      amount: 100
     }
   },
   {
@@ -43,7 +43,7 @@ const registeredComponents: Array<MetaFlowComponent> = [
     icon: 'las la-map-marked',
     component: Voronoi,
     defaultData: {
-      iterations: 2, preview: false, progress: 1
+      iterations: 2
     }
   },
   {

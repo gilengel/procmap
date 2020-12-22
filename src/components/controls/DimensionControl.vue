@@ -35,10 +35,9 @@
 <script lang="ts">
 
 import VueFlowControl from '../FlowControl'
-import { NodeEditor } from 'rete'
 import ToggleButton from '../ToggleButton.vue'
 
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import { evaluate } from 'mathjs'
 
 import { Dimension } from '../models'
@@ -47,14 +46,14 @@ import { Dimension } from '../models'
   components: { ToggleButton }
 })
 export default class DimensionControl extends VueFlowControl {
-  width = 512;
-  height = 512;
+  width = 0;
+  height = 0
 
   linked = false;
 
   mounted () {
-    const property = this.getValue<Dimension>();
-    
+    const property = this.getValue<Dimension>()
+
     this.width = property.width
     this.height = property.height
   }
@@ -64,24 +63,20 @@ export default class DimensionControl extends VueFlowControl {
     try {
       numValue = parseInt(evaluate(value.replace(/[^-()\d/*+.]/g, '')))
 
-      if(isNaN(numValue)) {
+      if (isNaN(numValue)) {
         return
       }
       if (this.linked) {
-        this.width = numValue as number
-        this.height = numValue as number
+        this.width = numValue
+        this.height = numValue
       }
 
       if (property !== 'width' && property !== 'height') {
         console.error('dimension control value changed without property specification. Do not know what to do :(')
       }
 
-      if (property === 'width') {
-        this.width = numValue as number
-      }
-
-      if (property === 'height') {
-        this.height = numValue as number
+      if (property === 'width' || property === 'height') {
+        this[property] = numValue
       }
 
       if (typeof this.width === 'number' && typeof this.height === 'number' && this.putData instanceof Function && this.emitter) {
@@ -90,7 +85,6 @@ export default class DimensionControl extends VueFlowControl {
         this.emitter.trigger('process')
       }
     } catch {
-      
       // empty catch is necessary to omit the thrown error by mathjs if the expression
       // is invalid, invalid arguments are handled by input validation
     }
@@ -102,9 +96,6 @@ export default class DimensionControl extends VueFlowControl {
 .linked-control {
   display: flex;
   flex-direction: row;
-
-  > .inputs {
-  }
 
   > .link {
     position: relative;

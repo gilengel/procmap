@@ -19,16 +19,19 @@ ctx.addEventListener('message', (event) => {
     dimension.height / 3
   )
 
-  /*
-  const points = Array.from({ length: amount }, () => [
-    randomX(),
-    randomY()
-  ])
-  */
-
   const points : Array<[number, number]> = []
   for (let i = 0; i < amount; i++) {
-    points.push([randomX(), randomY()])
+    const x = randomX()
+    const y = randomY()
+
+    // filter out points outside of the dimensions and generate a new point
+    // TODO make this more intelligent
+    if (x < 0 || x > dimension.width || y < 0 || y > dimension.height) {
+      i--
+      continue
+    }
+
+    points.push([x, y])
 
     ctx.postMessage({ progress: i / amount })
   }

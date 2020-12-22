@@ -24,8 +24,7 @@ import selectRandomComponent from './flow/SelectRantom'
 import DockPlugin from './dock'
 import { getRegisteredFlowComponents, MetaFlowComponent } from './flow'
 
-import { RandomMap } from './models'
-
+import { Dimension, RandomMap } from './models'
 
 @Component
 export default class FlowGraphComponent extends Vue {
@@ -34,6 +33,11 @@ export default class FlowGraphComponent extends Vue {
   @Prop({ default: true }) showMinimap : boolean | undefined;
 
   editor: NodeEditor;
+
+  @Watch('map')
+  onMapChanged () {
+    console.log('Something changed')
+  }
 
   @Watch('showMinimap')
   onShowMinimap (val: boolean) {
@@ -54,10 +58,10 @@ export default class FlowGraphComponent extends Vue {
      this.editor.bind('previewnode')
      this.editor.use(ConnectionPlugin)
      this.editor.use(VueRenderPlugin)
-    this.editor.use(DockPlugin);
+     this.editor.use(DockPlugin)
 
      const engine = new Rete.Engine('demo@0.1.0')
-     let components = getRegisteredFlowComponents()
+     const components = getRegisteredFlowComponents()
      components.map(c => {
        this.editor.register(c.component)
        engine.register(c.component)
@@ -71,11 +75,11 @@ export default class FlowGraphComponent extends Vue {
      randNode.position = [80 + 375, 200]
      this.editor.addNode(randNode)
 
-     const voroniNode = await components[2].component.createNode({ iterations: 2, preview: false, progress: 1 })
+     const voroniNode = await components[2].component.createNode({ iterations: 2 })
      voroniNode.position = [80 + 800, 200]
      this.editor.addNode(voroniNode)
 
-     const selectRandomNode = await components[3].component.createNode({ amount: 2, preview: false, progress: 1 })
+     const selectRandomNode = await components[3].component.createNode({ amount: 2 })
      selectRandomNode.position = [80 + 1210, 200]
      this.editor.addNode(selectRandomNode)
 
@@ -89,7 +93,6 @@ export default class FlowGraphComponent extends Vue {
       mapNode.outputs.get('dimension') as Output,
       randNode.inputs.get('dimension') as Input
      )
-
 
      this.editor.connect(
       randNode.outputs.get('dimension') as Output,
@@ -118,7 +121,7 @@ export default class FlowGraphComponent extends Vue {
      )
      */
 
-    const listeners = new WeakMap();
+     const listeners = new WeakMap()
 
      this.editor.on('previewnode', node => {
        if (this.previewNode instanceof ReteNode) {
@@ -129,12 +132,11 @@ export default class FlowGraphComponent extends Vue {
        this.updatePreviewGeometry()
      })
 
-
      this.editor.on(
        [
          'process',
          'nodecreated',
-         'connectioncreated',
+         'connectioncreated'
        ],
        async () => {
          await engine.abort()
@@ -144,9 +146,9 @@ export default class FlowGraphComponent extends Vue {
        }
      )
 
-          this.editor.on(
+     this.editor.on(
        [
-         'connectioncreate',
+         'connectioncreate'
        ],
        async (data) => {
 
@@ -155,30 +157,30 @@ export default class FlowGraphComponent extends Vue {
 
      this.editor.on([
        'connectionremoved'
-     ], async(c) => {
+     ], async (c) => {
        // remove cached values in the node
-       delete c.input.node.data['old_'+c.input.key]
+       delete c.input.node.data['old_' + c.input.key]
        delete c.input.node.data[c.input.key]
 
-      await engine.abort()
-      await engine.process(this.editor.toJSON())
+       await engine.abort()
+       await engine.process(this.editor.toJSON())
 
-      this.updatePreviewGeometry()
+       this.updatePreviewGeometry()
      })
 
      this.editor.on(
        [
-         'noderemoved',
+         'noderemoved'
        ],
        async () => {
          await engine.abort()
-        await engine.process(this.editor.toJSON())
-        
+         await engine.process(this.editor.toJSON())
+
          this.updatePreviewGeometry()
        }
      )
 
-     this.editor.on(['keyup'], async(e) => {
+     this.editor.on(['keyup'], async (e) => {
        await engine.abort()
 
        this.keyUpEvent(e)
@@ -188,44 +190,51 @@ export default class FlowGraphComponent extends Vue {
      this.editor.trigger('process')
    }
 
-   async keyUpEvent(e: KeyboardEvent) {
-     if(e.code == 'Delete') {
-        this.editor.selected.each(n => this.editor.removeNode(n))
+   async keyUpEvent (e: KeyboardEvent) {
+     if (e.code === 'Delete') {
+       this.editor.selected.each(n => this.editor.removeNode(n))
      }
    }
 
    updatePreviewGeometry () {
-     if (!(this.previewNode instanceof ReteNode)) {
-       return
-     }
+     console.assert(this.editor.nodes[0] && this.editor.nodes[0].name === 'map', 'Your flow has no map node, nothing to display here.')
 
-     const node = this.previewNode as ReteNode
-     switch (node.name) {
-       case 'random': {
-         this.$emit('update:geometry', { points: node.data.points })
-         break
-       }
-       case 'voronoi': {
-          this.$emit('update:geometry', node.data.voronoi)     
-         break
-       }
-       case 'select random': {
-         this.$emit('update:geometry', { voronoi: node.data.voronoi, selected: node.data.indices })
-         break
-       }
-       case 'grow': {
-         this.$emit('update:geometry', { voronoi: node.data.voronoi, selected: node.data.indices })
-         break
-       }
-       case 'mountains': {
-         this.$emit('update:geometry', { voronoi: node.data.voronoi, colors: node.data.colors })
-         break
-       }
+     const newDimension = this.editor.nodes[0].data.dimension as Dimension
+     this.map.dimension.width = newDimension.width
+this.map?.dimension.height = newDimension.height
+this.$emit('update:map.dimension')
 
-       default: {
-         break
-       }
-     }
+if (!(this.previewNode instanceof ReteNode)) {
+  return
+}
+
+const node = this.previewNode as ReteNode
+switch (node.name) {
+  case 'random': {
+    this.$emit('update:geometry', { points: node.data.points })
+    break
+  }
+  case 'voronoi': {
+    this.$emit('update:geometry', node.data.voronoi)
+    break
+  }
+  case 'select random': {
+    this.$emit('update:geometry', { voronoi: node.data.voronoi, selected: node.data.indices })
+    break
+  }
+  case 'grow': {
+    this.$emit('update:geometry', { voronoi: node.data.voronoi, selected: node.data.indices })
+    break
+  }
+  case 'mountains': {
+    this.$emit('update:geometry', { voronoi: node.data.voronoi, colors: node.data.colors })
+    break
+  }
+
+  default: {
+    break
+  }
+}
    }
 }
 </script>

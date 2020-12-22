@@ -1,8 +1,8 @@
-import { FlowComponent } from '../FlowGraph'
+import { FlowComponentWithPreview } from '../FlowGraph'
 import FunctionControlVue from '../controls/FunctionControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 
-export default new FlowComponent({
+export default new FlowComponentWithPreview({
   label: 'function',
 
   inputs: [

@@ -1,9 +1,9 @@
-import { FlowComponent } from '../FlowGraph'
+import { FlowComponentWithPreview } from '../FlowGraph'
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi } from 'd3-delaunay'
 
-export default new FlowComponent({
+export default new FlowComponentWithPreview({
   label: 'grow',
 
   inputs: [

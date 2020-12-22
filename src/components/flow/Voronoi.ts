@@ -1,5 +1,5 @@
 
-import { FlowComponent, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
+import { FlowComponentWithPreview, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Delaunay, Voronoi } from 'd3-delaunay'
@@ -8,7 +8,7 @@ import { Dimension } from '../models'
 
 import VoronoiWorker from 'worker-loader!./Voronoi.worker'
 
-export default new FlowComponent({
+export default new FlowComponentWithPreview({
   label: 'voronoi',
 
   inputs: [

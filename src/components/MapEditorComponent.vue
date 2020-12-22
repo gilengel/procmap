@@ -1,6 +1,6 @@
 <template>
   <div class="map-editor">
-    <div class="content column dock">
+    <div class="content row">
       <div class="left">
         <q-toolbar class="bg-black text-white">
           <q-toolbar-title>
@@ -167,7 +167,7 @@
             </q-toolbar>
 
             <FlowGraphComponent
-              :map="map"
+              :map.sync="map"
               :geometry.sync="geometry"
               :showMinimap="showMinimap"
             />
@@ -175,15 +175,16 @@
 
           <template v-slot:after>
             <q-page>
-              <Preview2D :geometry="geometry" />
-
+              <Preview2D :geometry="geometry" :size.sync="map.dimension" />
+              <!--
               <div class="layers">
                 <div>Layer 1</div>
                 <div>Layer 2</div>
                 <div>Layer 3</div>
                 <div>Layer 4</div>
-                <div>Layer 5</div>
+                <div>Layer 5</div>z
               </div>
+              -->
             </q-page>
           </template>
         </q-splitter>
@@ -197,11 +198,10 @@ import ToggleButton from 'components/ToggleButton.vue'
 import FlowGraphComponent from 'components/FlowGraphComponent.vue'
 import Preview2D from 'components/Preview2D.vue'
 
-import { RandomMap } from 'components/models'
+import { Dimension, RandomMap } from 'components/models'
 import { Vue, Component } from 'vue-property-decorator'
 
 import { getRegisteredFlowComponents } from './flow'
-
 
 @Component({
   components: { ToggleButton, FlowGraphComponent, Preview2D }
@@ -211,7 +211,7 @@ export default class MapEditorComponent extends Vue {
 
   left = true;
 
-  map: RandomMap = new RandomMap({ width: 512, height: 512 }, []);
+  map: RandomMap = new RandomMap({ width: 1024, height: 1024 }, []);
 
   availableComponents = new Map<string, unknown>();
 
@@ -219,15 +219,14 @@ export default class MapEditorComponent extends Vue {
 
   horizontalSplitter = 70;
 
-  mounted() {
+  mounted () {
     this.availableComponents = getRegisteredFlowComponents()
   }
 
-  
-  dragstart(id, ev) {
-   if(!ev.dataTransfer) return;
+  dragstart (id, ev) {
+    if (!ev.dataTransfer) return
 
-   ev.dataTransfer.setData("componentId", id);
+    ev.dataTransfer.setData('componentId', id)
   }
 }
 </script>
@@ -239,11 +238,11 @@ export default class MapEditorComponent extends Vue {
 }
 
 .middle {
-  flex-grow: 2;
+  flex-grow: 1;
+  max-width: 90%;
 }
 
 .right {
-  background: rgba(0, 0, 255, 0.1);
 
   min-width: 200px;
   width: 20%;
@@ -258,15 +257,6 @@ export default class MapEditorComponent extends Vue {
 
   display: flex;
   flex-direction: column;
-
-  > .content {
-    flex-grow: 2;
-
-    display: flex;
-    flex-direction: row;
-  }
-  .q-toolbar {
-  }
 }
 
 .layers:hover {

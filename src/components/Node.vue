@@ -2,7 +2,7 @@
   <div :class="[selected(), 'node shadow-4']">
     <div class="title">
       {{ node.name }}
-      <q-btn
+      <q-btn v-if="node.data.hasPreview"
         flat
         round
         :color="node.data.preview ? 'primary' : ''"

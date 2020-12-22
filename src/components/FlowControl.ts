@@ -14,7 +14,7 @@ export default class extends Vue {
       const property = (this.getData as (v: string) => unknown)(this.propertyKey as string) as T
 
       if (property === undefined) {
-        throw new Error(`could not set value for number control since the property with key ${this.ikey} is not specified as data on the node`)
+        throw new Error(`could not get value for number control since the property with key ${this.propertyKey as string} is not specified as data on the node`)
       }
 
       return property
