@@ -276,7 +276,13 @@ export class FlowComponent extends Rete.Component {
 
   async worker (node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs): Promise<void> {
     if (this.schema.workerFn !== undefined) {
-      await this.schema.workerFn(node, inputs, outputs)
+      try {
+        node.data.invalid = false
+
+        await this.schema.workerFn(node, inputs, outputs)
+      } catch (e) {
+        node.data.invalid = true
+      }
     }
   }
 }

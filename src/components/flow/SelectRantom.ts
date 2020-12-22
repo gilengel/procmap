@@ -2,6 +2,7 @@ import { FlowComponentWithPreview, getInputValue, setOutputValue, rejectMessage 
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi, Delaunay } from 'd3-delaunay'
+import { cosDependencies } from 'mathjs'
 
 export default new FlowComponentWithPreview({
   label: 'select random',

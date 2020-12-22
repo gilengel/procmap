@@ -2,7 +2,8 @@
   <div :class="[selected(), 'node shadow-4']">
     <div class="title">
       {{ node.name }}
-      <q-btn v-if="node.data.hasPreview"
+      <q-icon v-if="node.data.invalid" name="las la-skull-crossbones" size="sm" color="warning" />
+      <q-btn v-if="node.data.hasPreview && !node.data.invalid"
         flat
         round
         :color="node.data.preview ? 'primary' : ''"
@@ -56,7 +57,6 @@
               :socket="output.socket"
               :used="output.connections.length > 0"
             ></Socket>
-
         </div>
       </div>
     </div>
@@ -127,7 +127,7 @@ $socket-margin: 10px;
   cursor: pointer;
   height: auto;
   min-height: 200px;
-  //box-sizing: border-box;
+  box-sizing: content-box;
 
   display: flex;
   flex-direction: column;
@@ -198,6 +198,27 @@ $socket-margin: 10px;
 .outputs {
   align-items: flex-end;
   text-align: right;
+}
+
+.node-warning {
+  position: absolute;
+  top: -2em;
+  left: 0;
+  right: 0;
+  background: orange;
+
+  height: auto;
+
+  padding-left: 1em;
+  padding-right: 1em;
+  > span {
+    font-size: 1em;
+    line-height: 2em;
+    margin-block-end: 0;
+    margin-block-start: 0;
+
+    font-weight: bold;
+  }
 }
 /*
 .input-title,

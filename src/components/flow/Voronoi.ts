@@ -69,24 +69,20 @@ export default new FlowComponentWithPreview({
       if (rejectCalc) return
 
       const worker = new VoronoiWorker()
-
-      node.data.working = true
-
       worker.postMessage({ points: points, relaxIterations: isNaN(iterations) ? 1 : iterations, dimension: dimension })
+      worker.onerror = (e) => {
+        console.error(`voronoi web worker failed with error ${e.message}`)
+        reject(e)
+      }
       worker.onmessage = (event) => {
         const data = event.data as Record<string, unknown>
         const progress = data.progress as number
         if (progress === 1.0) {
-          node.data.working = false
-
-          node.data.voronoi = data.voronoi as Voronoi<number>
-          node.data.voronoi.__proto__ = Voronoi.prototype
-          node.data.voronoi.delaunay.__proto__ = Delaunay.prototype
-
           node.data.progress = 1.0
 
-          node.data.points = points
-          node.data.iterations = iterations
+          data.voronoi = data.voronoi as Voronoi<number>
+          data.voronoi.__proto__ = Voronoi.prototype
+          data.voronoi.delaunay.__proto__ = Delaunay.prototype
 
           setOutputValue(node, outputs, 'voronoi', data.voronoi, node.outputs.voronoi !== undefined)
           setOutputValue(node, outputs, 'points', data.points, node.outputs.points !== undefined)
