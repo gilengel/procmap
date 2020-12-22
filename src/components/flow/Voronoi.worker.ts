@@ -44,6 +44,8 @@ function relax (voronoi: Voronoi<number>, iterations: number): Voronoi<number> {
 
     voronoi.delaunay.update()
     voronoi.update()
+
+    ctx.postMessage({ progress: s / iterations })
   }
 
   return voronoi

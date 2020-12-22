@@ -46,6 +46,8 @@ export default new FlowComponentWithPreview({
     outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve, reject) => {
+      node.data.invalid = false
+
       const dimension: Dimension = getInputValue<Dimension>('dimension', inputs, node)
       const points: Array<[number, number]> = getInputValue<Array<[number, number]>>('points', inputs, node)
       const iterations: number = getInputValue<number>('iterations', inputs, node)
@@ -66,7 +68,12 @@ export default new FlowComponentWithPreview({
         rejectCalc = true
       }
 
-      if (rejectCalc) return
+      if (rejectCalc) {
+        node.data.invalid = true
+        console.log('REJECT VORONOI')
+      }
+
+      console.log(points.length)
 
       const worker = new VoronoiWorker()
       worker.postMessage({ points: points, relaxIterations: isNaN(iterations) ? 1 : iterations, dimension: dimension })
@@ -80,11 +87,11 @@ export default new FlowComponentWithPreview({
         if (progress === 1.0) {
           node.data.progress = 1.0
 
-          data.voronoi = data.voronoi as Voronoi<number>
-          data.voronoi.__proto__ = Voronoi.prototype
-          data.voronoi.delaunay.__proto__ = Delaunay.prototype
+          const voronoi = data.voronoi as Voronoi<number>
+          voronoi.__proto__ = Voronoi.prototype
+          voronoi.delaunay.__proto__ = Delaunay.prototype
 
-          setOutputValue(node, outputs, 'voronoi', data.voronoi, node.outputs.voronoi !== undefined)
+          setOutputValue(node, outputs, 'voronoi', voronoi, node.outputs.voronoi !== undefined)
           setOutputValue(node, outputs, 'points', data.points, node.outputs.points !== undefined)
           setOutputValue(node, outputs, 'iterations', iterations, node.outputs.iterations !== undefined)
 

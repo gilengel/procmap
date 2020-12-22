@@ -64,6 +64,7 @@ export default new FlowComponentWithPreview({
 
         setOutputValue(node, outputs, 'points', node.data.points, node.outputs.points !== undefined)
         setOutputValue(node, outputs, 'dimension', dimension, node.outputs.dimension !== undefined)
+        setOutputValue(node, outputs, 'amount', amount, node.outputs.amount !== undefined)
 
         resolve()
 
@@ -88,6 +89,10 @@ export default new FlowComponentWithPreview({
 
           resolve()
         } else {
+          if (node.data.progress > progress) {
+            console.log(`${node.data.progress as number}, ${progress}`)
+          }
+
           node.data.progress = progress
         }
       }

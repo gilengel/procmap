@@ -41,8 +41,11 @@ export default class NumberControl extends VueFlowControl {
       throw new Error('NumberControls propertyKey was not specified. Make sure you pass it along as an argument while creating a new instance of it')
     }
 
-    this.putData(this.propertyKey, parseInt(e))
-    this.emitter.trigger('process')
+    let newPropertyValue = parseInt(e)
+    if(this.isValid(newPropertyValue)) {
+      this.putData(this.propertyKey, newPropertyValue)    
+      this.emitter.trigger('process')
+    }
   }
 
   mounted () {

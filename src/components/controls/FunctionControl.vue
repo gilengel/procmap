@@ -9,16 +9,16 @@
     value="x^2"
     type="text"
     @input="change"
-  />  
+  />
   </div>
 </template>
 
 <script lang="ts">
-import { NodeEditor } from "rete";
+import { NodeEditor } from 'rete'
 
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop } from 'vue-property-decorator'
 
-import functionPlot from "function-plot";
+import functionPlot from 'function-plot'
 
 @Component
 export default class FunctionControl extends Vue {
@@ -31,34 +31,33 @@ export default class FunctionControl extends Vue {
   @Prop({
     type: Function,
     default: () => {
-      return true;
+      return true
     }
   })
   isValid!: undefined;
 
-  change(e: string) {
+  change (e: string) {
     if (!(this.putData instanceof Function)) {
-      return;
+      return
     }
 
     if (!this.emitter) {
-      return;
+      return
     }
 
-    this.putData(this.ikey, parseInt(e));
-    this.emitter.trigger("process");
+    this.putData(this.ikey, parseInt(e))
+    this.emitter.trigger('process')
   }
 
-  mounted() {
-    let graphElement = this.$refs.graph as HTMLElement;
-    let contentsBounds = graphElement.getBoundingClientRect();
+  mounted () {
+    const graphElement = this.$refs.graph as HTMLElement
+    const contentsBounds = graphElement.getBoundingClientRect()
 
-    let width = 300;
-    let height = 300;
-    let ratio = contentsBounds.width / width;
-    //width *= ratio;
-    //height *= ratio;
-
+    const width = 300
+    const height = 300
+    const ratio = contentsBounds.width / width
+    // width *= ratio;
+    // height *= ratio;
 
     functionPlot({
       target: graphElement,
@@ -70,14 +69,14 @@ export default class FunctionControl extends Vue {
       disableZoom: true,
       data: [
         {
-          fn: "-x^2",
+          fn: '-x^2',
           derivative: {
-            fn: "2 * x",
+            fn: '2 * x',
             updateOnMouseMove: false
           }
         }
       ]
-    });
+    })
 
     /*
     const property = (this.getData as (v: string) => unknown)(this.ikey as string) as number
@@ -85,7 +84,7 @@ export default class FunctionControl extends Vue {
     if(property === undefined) {
       throw new Error(`could not set value for number control since the property with key ${this.ikey} is not specified as data on the node`)
     }
-    
+
     this.value = property
     */
   }

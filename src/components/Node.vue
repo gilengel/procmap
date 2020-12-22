@@ -61,7 +61,7 @@
       </div>
     </div>
 
-    <q-linear-progress dark class="q-mt-sm" size="8px" :value="node.data.progress" v-if="node.data.working"/>
+    <q-linear-progress dark class="q-mt-sm" size="8px" :value="node.data.progress" v-if="node.data.progress != 1.0"/>
 
   </div>
 </template>

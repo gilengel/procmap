@@ -139,7 +139,7 @@ interface ComponentSchema {
 
   hasValidInputsFn?: (node: NodeData, inputs: WorkerInputs, keys: [string]) => boolean;
 
-  workerFn?: (
+  workerFn: (
     node: NodeData,
     inputs: WorkerInputs,
     outputs: WorkerOutputs
@@ -274,16 +274,8 @@ export class FlowComponent extends Rete.Component {
     return new Promise(resolve => resolve())
   }
 
-  async worker (node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs): Promise<void> {
-    if (this.schema.workerFn !== undefined) {
-      try {
-        node.data.invalid = false
-
-        await this.schema.workerFn(node, inputs, outputs)
-      } catch (e) {
-        node.data.invalid = true
-      }
-    }
+  async worker (node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
+    await this.schema.workerFn(node, inputs, outputs)
   }
 }
 
