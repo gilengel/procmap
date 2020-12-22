@@ -8,7 +8,7 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import '@babel/polyfill'
-import Rete, { Node as ReteNode, NodeEditor } from 'rete'
+import Rete, { Engine, NodeEditor } from 'rete'
 import { Input, Output } from 'rete/types'
 
 import ConnectionPlugin from 'rete-connection-plugin'
@@ -17,18 +17,9 @@ import VueRenderPlugin from './render'
 import DockPlugin from './dock'
 import { getRegisteredFlowComponents } from './flow'
 
-import { Dimension, RandomMap } from './models'
+import { RandomMap } from './models'
 
 import store from '../store'
-
-
-import {
-  State,
-  Getter,
-  Action,
-  Mutation,
-  namespace
-} from 'vuex-class'
 
 @Component
 export default class FlowGraphComponent extends Vue {
@@ -47,27 +38,32 @@ export default class FlowGraphComponent extends Vue {
     }
   }
 
-  async mounted () {
+  createEditor () {
     const container = this.$refs.rete
-
     this.editor = new Rete.NodeEditor('demo@0.1.0', container as HTMLElement)
 
-    this.editor.bind('previewnode')
     this.editor.use(ConnectionPlugin)
     this.editor.use(VueRenderPlugin, { options: { store } })
     this.editor.use(DockPlugin)
+  }
 
-    const engine = new Rete.Engine('demo@0.1.0')
+  createCustomEditorEvents () {
+    this.editor.bind('previewnode')
+  }
+
+  registerComponents (engine: Engine) {
     const components = getRegisteredFlowComponents()
     components.map(c => {
       this.editor.register(c.component)
       engine.register(c.component)
     })
+  }
 
-    // Progress is used for longer task to display a progress bar
+  makeComponentDataReactive () {
+    const components = getRegisteredFlowComponents()
+
     components.forEach(c => {
-      const data = c.defaultData as Record<string, unknown>
-
+      const data = c.defaultData
       Vue.set(data, 'progress', 1.0)
       Vue.set(data, 'invalid', false)
 
@@ -78,6 +74,10 @@ export default class FlowGraphComponent extends Vue {
         }
       }
     })
+  }
+
+  async createDefaultNodes () {
+    const components = getRegisteredFlowComponents()
 
     const mapNode = await components[0].component.createNode(
       components[0].defaultData
@@ -104,10 +104,10 @@ export default class FlowGraphComponent extends Vue {
     this.editor.addNode(selectRandomNode)
 
     /*
-     const mountainNode = await components[4].createNode({ amount: 20, preview: false, progress: 1 })
-     mountainNode.position = [80, 450]
-     this.editor.addNode(mountainNode)
-     */
+    const mountainNode = await components[4].createNode({ amount: 20, preview: false, progress: 1 })
+    mountainNode.position = [80, 450]
+    this.editor.addNode(mountainNode)
+    */
 
     this.editor.connect(
       mapNode.outputs.get('dimension') as Output,
@@ -130,19 +130,21 @@ export default class FlowGraphComponent extends Vue {
     )
 
     /*
-     this.editor.connect(
+    this.editor.connect(
       selectRandomNode.outputs.get('voronoi') as Output,
       mountainNode.inputs.get('voronoi') as Input
-     )
+    )
 
-     this.editor.connect(
+    this.editor.connect(
       selectRandomNode.outputs.get('indices') as Output,
       mountainNode.inputs.get('indices') as Input
-     )
-     */
+    )
+    */
+  }
 
+  registerEditorEvents (engine: Engine) {
+    /*
     const listeners = new WeakMap()
-
     this.editor.on('previewnode', node => {
       if (this.previewNode instanceof ReteNode) {
         this.previewNode.data.preview = false
@@ -151,71 +153,66 @@ export default class FlowGraphComponent extends Vue {
       this.previewNode = node
       this.updatePreviewGeometry()
     })
+    */
 
     this.editor.on(
       ['process', 'nodecreated', 'connectioncreated'],
       async () => {
         await engine.abort()
         await engine.process(this.editor.toJSON())
-
-        this.updatePreviewGeometry()
       }
     )
 
     /*
-    this.editor.on(["connectioncreate"], async data => {});
-
-    this.editor.on(["warn"], async message => {
-      console.log(`warning = ${message}`);
-    });
-
-    this.editor.on(["error"], async (args: string | Error) => {
-      console.log(args);
-    });
-*/
-    /*
-    this.editor.on(["connectionremoved"], async c => {
+    this.editor.on(['connectionremoved'], async c => {
       // remove cached values in the node
-      delete c.input.node.data["old_" + c.input.key];
-      delete c.input.node.data[c.input.key];
+      delete c.input.node.data['old_' + c.input.key]
+      delete c.input.node.data[c.input.key]
 
-      await engine.abort();
-      await engine.process(this.editor.toJSON());
+      await engine.abort()
+      await engine.process(this.editor.toJSON())
 
-      this.updatePreviewGeometry();
-    });
+      this.updatePreviewGeometry()
+    })
+*/
 
-    this.editor.on(["noderemoved"], async () => {
-      await engine.abort();
-      await engine.process(this.editor.toJSON());
+    this.editor.on(['noderemoved'], async () => {
+      await engine.abort()
+      await engine.process(this.editor.toJSON())
+    })
 
-      this.updatePreviewGeometry();
-    });
-    */
-
-    this.editor.on(['keyup'], async e => {
-      // await engine.abort();
-
+    this.editor.on(['keyup'], async (e: KeyboardEvent) => {
       this.keyUpEvent(e)
 
       await engine.process(this.editor.toJSON())
     })
+  }
+
+  async mounted () {
+    this.createEditor()
+    this.createCustomEditorEvents()
+
+    const engine = new Rete.Engine('demo@0.1.0')
+    this.registerComponents(engine)
+
+    // Progress is used for longer task to display a progress bar
+    this.makeComponentDataReactive()
+
+    this.registerEditorEvents(engine)
+
+    await this.createDefaultNodes()
 
     this.editor.view.resize()
     this.editor.trigger('process')
   }
 
-  async keyUpEvent (e: KeyboardEvent) {
+  keyUpEvent (e: KeyboardEvent) {
     if (
       e.code === 'Delete' &&
       (e.target as HTMLElement).tagName.toUpperCase() !== 'INPUT'
     ) {
       this.editor.selected.each(n => this.editor.removeNode(n))
     }
-  }
-
-  updatePreviewGeometry () {
-    
   }
 }
 </script>
