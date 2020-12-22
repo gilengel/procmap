@@ -25,9 +25,16 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 
 import { Color, Dimension } from './models'
 
+import { Node as ReteNode } from 'rete'
+
 import * as d3 from 'd3'
 import { zoom } from 'd3-zoom'
 import resize from 'vue-resize-directive'
+
+import {
+  Getter
+} from 'vuex-class'
+
 
 @Component({
   directives: {
@@ -38,6 +45,8 @@ export default class Preview2D extends Vue {
   @Prop(Object) geometry: Record<string, unknown> | undefined;
   @Prop() colors: Map<number, Color> | undefined;
   @Prop() size!: Dimension;
+
+  @Getter('previewNode') previewNode!: ReteNode;
 
   width = 512;
   height = 512;
@@ -92,6 +101,53 @@ export default class Preview2D extends Vue {
     // this.height = canvasElement.parentElement?.scrollHeight
   }
 
+  getGeometryOfSelectedNode() {
+    if (!(this.previewNode instanceof ReteNode)) {
+      return
+    }
+
+    console.log(this.previewNode.data)
+
+    const node = this.previewNode as ReteNode
+    switch (node.name) {
+      case 'random': {
+        this.geometry = { points: node.data.points }
+        break
+      }
+      case 'voronoi': {
+        this.geometry = node.data.voronoi
+        break
+      }
+      case 'select random': {
+        this.geometry = {
+          voronoi: node.data.voronoi,
+          selected: node.data.indices
+        }
+        break
+      }
+      case 'grow': {
+        this.geometry = {
+          voronoi: node.data.voronoi,
+          selected: node.data.indices
+        }
+
+        break
+      }
+      case 'mountains': {
+        this.geometry = {
+          voronoi: node.data.voronoi,
+          colors: node.data.colors
+        }
+
+        break
+      }
+
+      default: {
+        break
+      }
+    }
+  }
+
   repaint () {
     const ctx = this.context as CanvasRenderingContext2D
 
@@ -99,11 +155,14 @@ export default class Preview2D extends Vue {
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
     ctx.clearRect(0, 0, 8000, 8000)
 
+    this.getGeometryOfSelectedNode()
     const geometry: unknown = this.geometry
 
-    if (!geometry) {
+    if (this.previewNode === undefined) {
       return
     }
+
+    console.log(this.previewNode)
 
     if (this.$props.geometry instanceof Voronoi) {
       const voronoi = this.$props.geometry

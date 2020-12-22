@@ -73,6 +73,15 @@ import Socket from './Socket.vue'
 import { Component, Mixins } from 'vue-property-decorator'
 import { NodeEditor, Node as ReteNode } from 'rete'
 
+import {
+  State,
+  Getter,
+  Action,
+  Mutation,
+  namespace
+} from 'vuex-class'
+
+
 @Component({
   components: {
     Socket: Socket
@@ -82,11 +91,15 @@ export default class Node extends Mixins(VueRender.mixin) {
   editor: NodeEditor | undefined
   node: ReteNode | undefined
 
+
+  @Action('updatePreview') updatePreview
+
   togglePreview () {
     if (this.editor === undefined || this.node === undefined) {
       return
     }
 
+   this.updatePreview({ node: this.node })
     this.editor.trigger('previewnode', this.node)
 
     this.node.data.preview = !this.node.data.preview

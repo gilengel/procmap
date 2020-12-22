@@ -70,10 +70,8 @@ export default new FlowComponentWithPreview({
 
       if (rejectCalc) {
         node.data.invalid = true
-        console.log('REJECT VORONOI')
       }
 
-      console.log(points.length)
 
       const worker = new VoronoiWorker()
       worker.postMessage({ points: points, relaxIterations: isNaN(iterations) ? 1 : iterations, dimension: dimension })

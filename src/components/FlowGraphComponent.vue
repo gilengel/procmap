@@ -19,6 +19,17 @@ import { getRegisteredFlowComponents } from './flow'
 
 import { Dimension, RandomMap } from './models'
 
+import store from '../store'
+
+
+import {
+  State,
+  Getter,
+  Action,
+  Mutation,
+  namespace
+} from 'vuex-class'
+
 @Component
 export default class FlowGraphComponent extends Vue {
   @Prop(RandomMap) map: RandomMap | undefined;
@@ -36,8 +47,6 @@ export default class FlowGraphComponent extends Vue {
     }
   }
 
-  previewNode: Record<string, unknown> = {};
-
   async mounted () {
     const container = this.$refs.rete
 
@@ -45,7 +54,7 @@ export default class FlowGraphComponent extends Vue {
 
     this.editor.bind('previewnode')
     this.editor.use(ConnectionPlugin)
-    this.editor.use(VueRenderPlugin)
+    this.editor.use(VueRenderPlugin, { options: { store } })
     this.editor.use(DockPlugin)
 
     const engine = new Rete.Engine('demo@0.1.0')
@@ -206,56 +215,7 @@ export default class FlowGraphComponent extends Vue {
   }
 
   updatePreviewGeometry () {
-    console.assert(
-      this.editor.nodes[0] && this.editor.nodes[0].name === 'map',
-      'Your flow has no map node, nothing to display here.'
-    )
-
-    const newDimension = this.editor.nodes[0].data.dimension as Dimension
-    this.map.dimension.width = newDimension.width
-    this.map?.dimension.height = newDimension.height
-    this.$emit('update:map.dimension')
-
-    if (!(this.previewNode instanceof ReteNode)) {
-      return
-    }
-
-    const node = this.previewNode as ReteNode
-    switch (node.name) {
-      case 'random': {
-        this.$emit('update:geometry', { points: node.data.points })
-        break
-      }
-      case 'voronoi': {
-        this.$emit('update:geometry', node.data.voronoi)
-        break
-      }
-      case 'select random': {
-        this.$emit('update:geometry', {
-          voronoi: node.data.voronoi,
-          selected: node.data.indices
-        })
-        break
-      }
-      case 'grow': {
-        this.$emit('update:geometry', {
-          voronoi: node.data.voronoi,
-          selected: node.data.indices
-        })
-        break
-      }
-      case 'mountains': {
-        this.$emit('update:geometry', {
-          voronoi: node.data.voronoi,
-          colors: node.data.colors
-        })
-        break
-      }
-
-      default: {
-        break
-      }
-    }
+    
   }
 }
 </script>
