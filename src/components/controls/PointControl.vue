@@ -30,7 +30,7 @@ import ToggleButton from '../ToggleButton.vue'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { evaluate } from 'mathjs'
 
-import { Dimension } from '../models'
+// import { Dimension } from '../models'
 
 @Component({
   components: { ToggleButton }
@@ -50,10 +50,10 @@ export default class DimensionControl extends Vue {
   mounted () {
     const property = (this.getData as (v: string) => unknown)(this.ikey as string) as [number, number]
 
-    if(property === undefined) {
-      throw new Error(`could not set value for number control since the property with key ${this.ikey} is not specified as data on the node`)
+    if (property === undefined) {
+      throw new Error(`could not set value for number control since the property with key ${this.ikey as string} is not specified as data on the node`)
     }
-    
+
     this.x = property[0]
     this.y = property[0]
   }
@@ -66,7 +66,6 @@ export default class DimensionControl extends Vue {
       // empty catch is necessary to omit the thrown error by mathjs if the expression
       // is invalid, invalid arguments are handled by input validation
     } finally {
-      
       if (property !== 'x' && property !== 'y') {
         console.error('dimension control value changed without property specification. Do not know what to do :(')
       }

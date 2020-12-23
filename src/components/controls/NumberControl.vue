@@ -12,21 +12,13 @@
 </template>
 
 <script lang="ts">
-import { NodeEditor } from 'rete'
-
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 
 import VueFlowControl from '../FlowControl'
 
 @Component
 export default class NumberControl extends VueFlowControl {
   value = 20;
-
-  @Prop(NodeEditor) emitter: NodeEditor | undefined;
-  @Prop(String) ikey: string | undefined;
-  @Prop(Function) getData: unknown
-  @Prop(Function) putData: unknown
-  @Prop({ type: Function, default: () => { return true } }) isValid!: undefined
 
   change (e: string) {
     if (!(this.putData instanceof Function)) {
@@ -41,9 +33,9 @@ export default class NumberControl extends VueFlowControl {
       throw new Error('NumberControls propertyKey was not specified. Make sure you pass it along as an argument while creating a new instance of it')
     }
 
-    let newPropertyValue = parseInt(e)
-    if(this.isValid(newPropertyValue)) {
-      this.putData(this.propertyKey, newPropertyValue)    
+    const newPropertyValue = parseInt(e)
+    if (this.isValid !== undefined && (this.isValid as unknown as ((e: unknown) => boolean))(newPropertyValue)) {
+      this.putData(this.propertyKey, newPropertyValue)
       this.emitter.trigger('process')
     }
   }

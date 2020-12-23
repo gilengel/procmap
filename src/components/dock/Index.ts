@@ -17,7 +17,7 @@ function install (editor: NodeEditor) {
     if (!component) throw new Error(`Component ${id} not found`)
 
     // force update the mouse position
-    editor.view.area.pointermove(e as any)
+    editor.view.area.pointermove(e as unknown as PointerEvent)
 
     createNode(component.component, editor.view.area.mouse, component.defaultData).then((node : Node) => {
       editor.addNode(node)

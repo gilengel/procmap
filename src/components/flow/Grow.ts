@@ -19,7 +19,7 @@ export default new FlowComponentWithPreview({
 
   outputs: [
     {
-      identifier: 'indices',
+      type: 'indices',
       label: 'indices',
 
       control: {

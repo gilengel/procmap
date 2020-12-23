@@ -18,7 +18,7 @@ export default new FlowComponent({
     },
 
     {
-      identifier: 'number',
+      type: 'number',
       label: 'Amount',
 
       control: {
@@ -35,7 +35,7 @@ export default new FlowComponent({
 
   outputs: [
     {
-      identifier: 'indices',
+      type: 'indices',
       label: 'indices'
     }
   ],

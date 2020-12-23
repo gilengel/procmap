@@ -1,5 +1,5 @@
 import { FlowComponentWithPreview } from '../FlowGraph'
-import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
+// import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import VueNumberControl from '../controls/NumberControl.vue'
 
 export default new FlowComponentWithPreview({
@@ -44,9 +44,9 @@ export default new FlowComponentWithPreview({
   ],
 
   workerFn: (
-    node: NodeData,
-    inputs: WorkerInputs,
-    outputs: WorkerOutputs
+    // node: NodeData,
+    // inputs: WorkerInputs,
+    // outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve) => {
       /*

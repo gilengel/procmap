@@ -72,7 +72,6 @@ export default new FlowComponentWithPreview({
         node.data.invalid = true
       }
 
-
       const worker = new VoronoiWorker()
       worker.postMessage({ points: points, relaxIterations: isNaN(iterations) ? 1 : iterations, dimension: dimension })
       worker.onerror = (e) => {

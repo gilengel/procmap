@@ -18,7 +18,7 @@ import { NodeEditor } from 'rete'
 
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
-import functionPlot from 'function-plot'
+// mport functionPlot from 'function-plot'
 
 @Component
 export default class FunctionControl extends Vue {
@@ -50,6 +50,7 @@ export default class FunctionControl extends Vue {
   }
 
   mounted () {
+    /*
     const graphElement = this.$refs.graph as HTMLElement
     const contentsBounds = graphElement.getBoundingClientRect()
 
@@ -77,6 +78,7 @@ export default class FunctionControl extends Vue {
         }
       ]
     })
+    */
 
     /*
     const property = (this.getData as (v: string) => unknown)(this.ikey as string) as number

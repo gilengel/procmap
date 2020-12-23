@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import './Filters'
 import Node from '../Node.vue'
@@ -5,9 +6,16 @@ import Socket from '../Socket.vue'
 import Vue from 'vue'
 import mixin from './Mixin'
 
+interface VueElement {
+  component: unknown
+  props: Record<string, unknown>
+  vueContext: Node
+  render: string
+}
+
 import { NodeEditor, Node as ReteNode, Control } from 'rete'
 
-function createVue (el: HTMLElement, vueComponent, vueProps, options = {}) : Vue {
+function createVue (el: HTMLElement, vueComponent: string | Record<string, unknown>, vueProps = {}, options = {}) : Vue {
   const app = new Vue({
     render: h => h(vueComponent, { props: vueProps }),
     ...options
@@ -21,7 +29,7 @@ function createVue (el: HTMLElement, vueComponent, vueProps, options = {}) : Vue
   return app
 }
 
-function createNode (editor: NodeEditor, CommonVueComponent, { el, node, component, bindSocket, bindControl }, options) : Vue {
+function createNode (editor: NodeEditor, CommonVueComponent: CommonVueComponent, { el, node, component, bindSocket, bindControl }: { el: HTMLElement; node: ReteNode; component: VueElement; bindSocket: Function; bindControl: Function }, options: Record<string, unknown> | undefined) : Vue {
   const vueComponent = component.component || CommonVueComponent || Node
   const vueProps = { ...component.props, node, editor, bindSocket, bindControl }
   const app = createVue(el, vueComponent, vueProps, options)
@@ -31,7 +39,7 @@ function createNode (editor: NodeEditor, CommonVueComponent, { el, node, compone
   return app
 }
 
-function createControl (editor: NodeEditor, { el, control }, options) : VueControl {
+function createControl (editor: NodeEditor, { el, control } : { el: HTMLElement, control: VueElement}, options: Record<string, unknown>) : VueControl {
   const vueComponent = control.component
   const vueProps = { ...control.props, getData: control.getData.bind(control), putData: control.putData.bind(control) }
   const app = createVue(el, vueComponent, vueProps, options)
@@ -84,7 +92,7 @@ function install (editor: NodeEditor, params : Params) {
       })
     }
 
-    if ((component as CommonVueComponent).render && (component as CommonVueComponent).render !== 'vue') return
+    if ((component as VueElement).render && (component as VueElement).render !== 'vue') return
     (node as VueNode)._vue = createNode(editor, params.component, { el, node, component, bindSocket, bindControl }, params.options)
     node.update = async () => await update(node as VueNode)
   })

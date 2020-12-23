@@ -198,10 +198,10 @@ import ToggleButton from 'components/ToggleButton.vue'
 import FlowGraphComponent from 'components/FlowGraphComponent.vue'
 import Preview2D from 'components/Preview2D.vue'
 
-import { Dimension, RandomMap } from 'components/models'
+import { RandomMap } from 'components/models'
 import { Vue, Component } from 'vue-property-decorator'
 
-import { getRegisteredFlowComponents } from './flow'
+import { getRegisteredFlowComponents, MetaFlowComponent } from './flow'
 
 @Component({
   components: { ToggleButton, FlowGraphComponent, Preview2D }
@@ -213,7 +213,7 @@ export default class MapEditorComponent extends Vue {
 
   map: RandomMap = new RandomMap({ width: 1024, height: 1024 }, []);
 
-  availableComponents = new Map<string, unknown>();
+  availableComponents: Array<MetaFlowComponent> = [];
 
   geometry: Record<string, unknown> = {};
 
@@ -223,7 +223,7 @@ export default class MapEditorComponent extends Vue {
     this.availableComponents = getRegisteredFlowComponents()
   }
 
-  dragstart (id, ev) {
+  dragstart (id: string, ev: DragEvent) {
     if (!ev.dataTransfer) return
 
     ev.dataTransfer.setData('componentId', id)

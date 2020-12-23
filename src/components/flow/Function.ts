@@ -29,6 +29,9 @@ export default new FlowComponentWithPreview({
     outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve) => {
+      console.log(node)
+      console.log(inputs)
+      console.log(outputs)
       /*
       const dimension = node.data.dimension as Dimension
       if (!dimension) {

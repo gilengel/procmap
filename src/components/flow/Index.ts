@@ -13,7 +13,7 @@ export interface MetaFlowComponent {
   readonly label: string;
   readonly icon: string;
   readonly component: Component,
-  readonly defaultData: {}
+  readonly defaultData: Record<string, unknown>
 }
 
 // Unfortunatly vue does not support Maps for v-for which is necessary to display the registered components.

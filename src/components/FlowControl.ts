@@ -8,7 +8,7 @@ export default class extends Vue {
     @Prop(String) propertyKey: string | undefined;
     @Prop(Function) getData: unknown
     @Prop(Function) putData: unknown
-    @Prop({ type: Function, default: () => { return true } }) isValid!: undefined
+    @Prop({ type: Function, default: () => { return true } }) isValid!: (e: unknown) => true
 
     public getValue<T> () : T {
       const property = (this.getData as (v: string) => unknown)(this.propertyKey as string) as T

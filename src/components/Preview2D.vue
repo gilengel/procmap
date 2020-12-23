@@ -28,13 +28,12 @@ import { Color, Dimension } from './models'
 import { Node as ReteNode } from 'rete'
 
 import * as d3 from 'd3'
-import { zoom } from 'd3-zoom'
+import { zoom, ZoomTransform } from 'd3-zoom'
 import resize from 'vue-resize-directive'
 
 import {
   Getter
 } from 'vuex-class'
-
 
 @Component({
   directives: {
@@ -57,27 +56,26 @@ export default class Preview2D extends Vue {
     this.height = canvasElement.parentElement?.scrollHeight as number
   }
 
-  mounted () {
+  enablePanAndZoom () {
     const canvasElement = this.$refs.renderer as HTMLCanvasElement
-    this.context = canvasElement.getContext('2d') as CanvasRenderingContext2D
-
-    if (!canvasElement.parentElement) {
-      throw new Error('Foo')
-    }
-
-    this.width = canvasElement.parentElement.scrollWidth
-    this.height = canvasElement.parentElement?.scrollHeight
-
-    d3.select(canvasElement).call(zoom()
+    d3.select(canvasElement).call(zoom<HTMLCanvasElement, unknown>()
       .extent([[0, 0], [this.width, this.height]])
       .translateExtent([[0, 0], [this.width, this.height]])
 
       .on('zoom', ({ transform }) => this.zoomed(transform)))
+  }
+
+  mounted () {
+    const canvasElement = this.$refs.renderer as HTMLCanvasElement
+    this.context = canvasElement.getContext('2d') as CanvasRenderingContext2D
+
+    this.width = canvasElement.parentElement?.scrollWidth as number
+    this.height = canvasElement.parentElement?.scrollHeight as number
 
     this.repaint()
   }
 
-  zoomed (transform : unknown) {
+  zoomed (transform : ZoomTransform) {
     const ctx = this.context as CanvasRenderingContext2D
 
     ctx.save()
@@ -91,7 +89,7 @@ export default class Preview2D extends Vue {
     ctx.restore()
   }
 
-  onResize (e) {
+  onResize (e : HTMLElement) {
     this.width = e.scrollWidth - (e.scrollWidth % 50)
     // this.height = e.scrollHeight - (e.scrollHeight % 50)
 
@@ -101,7 +99,8 @@ export default class Preview2D extends Vue {
     // this.height = canvasElement.parentElement?.scrollHeight
   }
 
-  getGeometryOfSelectedNode() {
+  getGeometryOfSelectedNode () {
+    /*
     if (!(this.previewNode instanceof ReteNode)) {
       return
     }
@@ -146,9 +145,11 @@ export default class Preview2D extends Vue {
         break
       }
     }
+    */
   }
 
   repaint () {
+    /*
     const ctx = this.context as CanvasRenderingContext2D
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
@@ -213,6 +214,7 @@ export default class Preview2D extends Vue {
         ctx.fill()
       })
     }
+    */
   }
 
   @Watch('geometry')
