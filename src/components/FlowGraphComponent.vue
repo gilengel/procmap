@@ -19,7 +19,7 @@ import { getRegisteredFlowComponents } from './flow'
 
 import { RandomMap } from './models'
 
-import store from '../store'
+import { store } from '../store'
 
 @Component
 export default class FlowGraphComponent extends Vue {

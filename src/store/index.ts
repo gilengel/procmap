@@ -2,9 +2,10 @@ import { store } from 'quasar/wrappers'
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import { Node as ReteNode } from 'rete'
+
 // import example from './module-example';
 // import { ExampleStateInterface } from './module-example/state';
-import { PreviewStateInterface } from './preview/state'
 
 import preview from './preview'
 
@@ -13,6 +14,9 @@ import preview from './preview'
  * directly export the Store instantiation
  */
 
+interface PreviewStateInterface {
+  previewNode: ReteNode
+}
 export interface StateInterface {
   // Define your own store structure, using submodules if needed
   // example: ExampleStateInterface;
@@ -32,21 +36,32 @@ export default function () {
     namespaced: true,
     name: 'global',
     state: {
-      previewNode: undefined
+      previewNode: undefined,
+      count: 0
     },
 
     getters: {
-      previewNode: state => { return state.previewNode }
+      count: state => { console.log(state); return state.count },
+      previewNode: state => state.previewNode // state.previewNode }
     },
 
     mutations: {
-      update (state: PreviewStateInterface, node: Node) {
+      increment (state) {
+        state.count++
+      },
+
+      update (state: PreviewStateInterface, node: ReteNode) {
+        if (state.previewNode !== undefined) {
+          state.previewNode.data.preview = false
+        }
+
         state.previewNode = node
+        state.previewNode.data.preview = true
       }
     },
 
     actions: {
-      updatePreview ({ commit }, node: unknown) {
+      updatePreview ({ commit }, node: ReteNode) {
         commit('update', node)
       }
     }

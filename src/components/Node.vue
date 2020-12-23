@@ -89,17 +89,14 @@ export default class Node extends Vue {
   editor: NodeEditor | undefined
   node!: ReteNode
 
-  @Action('updatePreview') updatePreview!: (el: Record<string, unknown>) => void
+  @Action('updatePreview') updatePreview!: (el: ReteNode) => void
 
   togglePreview () {
     if (this.editor === undefined || this.node === undefined) {
       return
     }
 
-    this.updatePreview({ node: this.node })
-    this.editor.trigger('previewnode', this.node)
-
-    this.node.data.preview = !this.node.data.preview
+    this.updatePreview(this.node)
 
     this.$forceUpdate()
   }

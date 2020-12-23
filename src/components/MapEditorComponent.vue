@@ -221,6 +221,8 @@ export default class MapEditorComponent extends Vue {
 
   mounted () {
     this.availableComponents = getRegisteredFlowComponents()
+
+    this.$store.commit('increment')
   }
 
   dragstart (id: string, ev: DragEvent) {

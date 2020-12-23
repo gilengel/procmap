@@ -9,11 +9,22 @@
       <canvas ref="renderer" v-show="geometry" :width="width" :height="height">
       </canvas>
 
-      <div v-show="!geometry" class="warning">
-        <h1 class="text-warning">Node is invalid.</h1>
+      <div v-show="!geometry && previewNode" class="warning">
+        <q-icon name="las la-skull-crossbones" color="warning" style="font-size: 8em;" />
+        <h1 class="text-warning">This is awkward</h1>
         <h2 class="text-warning">
           Check that all inputs are connected and values are set
         </h2>
+      </div>
+
+      <div v-show="!previewNode" class="warning">
+        <q-icon name="las la-seedling" color="primary" style="font-size: 4em;" />
+        <div class="text">
+          <h1 class="text-white">At the beginning was a seed</h1>
+          <h2 class="text-white">
+            Currently is nothing to see here. Click on a <q-icon color="primary"style="font-size: 1.5em;" name="las la-video-slash" /> icon on a node on the left side to view its output.
+          </h2>
+        </div>
       </div>
     </div>
   </div>
@@ -21,7 +32,8 @@
 
 <script lang="ts">
 import { Voronoi } from 'd3-delaunay'
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Vue, Component, Prop, PropSync, Watch } from 'vue-property-decorator'
+import { mapGetters } from 'vuex'
 
 import { Color, Dimension } from './models'
 
@@ -41,11 +53,14 @@ import {
   }
 })
 export default class Preview2D extends Vue {
-  @Prop(Object) geometry: Record<string, unknown> | undefined;
+  geometry: Record<string, unknown> | null = null;
+
   @Prop() colors: Map<number, Color> | undefined;
   @Prop() size!: Dimension;
 
-  @Getter('previewNode') previewNode!: ReteNode;
+  protected get previewNode (): ReteNode {
+    return this.$store.getters.previewNode as ReteNode
+  }
 
   width = 512;
   height = 512;
@@ -100,14 +115,16 @@ export default class Preview2D extends Vue {
   }
 
   getGeometryOfSelectedNode () {
-    /*
     if (!(this.previewNode instanceof ReteNode)) {
       return
     }
 
-    console.log(this.previewNode.data)
+    const node = this.previewNode
 
-    const node = this.previewNode as ReteNode
+    if (node === undefined) {
+      return
+    }
+
     switch (node.name) {
       case 'random': {
         this.geometry = { points: node.data.points }
@@ -140,33 +157,27 @@ export default class Preview2D extends Vue {
 
         break
       }
-
       default: {
         break
       }
     }
-    */
   }
 
   repaint () {
-    /*
     const ctx = this.context as CanvasRenderingContext2D
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
     ctx.clearRect(0, 0, 8000, 8000)
 
-    this.getGeometryOfSelectedNode()
     const geometry: unknown = this.geometry
 
     if (this.previewNode === undefined) {
       return
     }
 
-    console.log(this.previewNode)
-
-    if (this.$props.geometry instanceof Voronoi) {
-      const voronoi = this.$props.geometry
+    if (geometry instanceof Voronoi) {
+      const voronoi = geometry
       ctx.beginPath()
       voronoi.render(ctx)
       ctx.stroke()
@@ -214,25 +225,20 @@ export default class Preview2D extends Vue {
         ctx.fill()
       })
     }
-    */
   }
 
-  @Watch('geometry')
-  onGeometryChanged (/* newValue, oldValue */) {
+  @Watch('previewNode')
+  onPreviewNodeChanged (/* newValue, oldValue */) {
+    this.getGeometryOfSelectedNode()
+
     this.repaint()
-  }
-
-  @Watch('size')
-  onSizeChanged (/* newValue, oldValue */) {
-    // console.log(this.$props.size)
-    // this.repaint()
   }
 
   context: CanvasRenderingContext2D | undefined;
 }
 </script>
 
-<style>
+<style lang="scss">
 @import "../css/quasar.variables.scss";
 
 .preview {
@@ -247,23 +253,50 @@ export default class Preview2D extends Vue {
 }
 
 h1 {
-  font-size: 2em;
-  padding: 0;
-  margin: 0;
-}
-
-h2 {
   font-size: 1.5em;
   padding: 0;
   margin: 0;
+
+  padding: 0;
+  margin: 0;
+  line-height: 2em;
+}
+
+h2 {
+  font-size: 1.0em;
+  padding: 0;
+  margin: 0;
+
+  padding: 0;
+  margin: 0;
+  line-height: 2em;
 }
 
 .warning {
-  margin-top: 20em;
+
+  display: flex;
+  align-items: center;
+
+  margin-left: 4em;
+  margin-right: 4em;
+
+  div {
+    padding-left: 2em;
+    padding-right: 2em;
+  }
+
+  h1 {
+  }
 }
+
+  h1 {
+    font-size: 2em;
+    flex-grow: 2;
+  }
 
 .canvas {
   flex-grow: 2;
+  display: flex;
 }
 
 .flex {

@@ -89,10 +89,6 @@ export default new FlowComponentWithPreview({
 
           resolve()
         } else {
-          if (node.data.progress > progress) {
-            console.log(`${node.data.progress as number}, ${progress}`)
-          }
-
           node.data.progress = progress
         }
       }
