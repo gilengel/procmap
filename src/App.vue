@@ -22,3 +22,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss">
+  body {
+    font-size: 0.8em;
+  }
+</style>

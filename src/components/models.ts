@@ -10,6 +10,26 @@ export interface Point {
   x: number;
   y: number;
 }
+
+export interface Cell {
+  lines: CellLine,
+  center: Point,
+
+  neighbours: [Cell]
+}
+
+export interface CellLine {
+  start: number,
+  end: number,
+
+  leftCell: Cell,
+  rightCell: Cell
+}
+
+export interface VoronoiModel {
+  cells: [Cell]
+}
+
 export class RandomMap implements Map {
   dimension: Dimension;
   points: Array<Point>;

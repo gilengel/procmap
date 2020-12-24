@@ -1,10 +1,10 @@
-import { FlowComponent } from '../FlowGraph'
+import { FlowComponentWithPreview } from '../FlowGraph'
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi } from 'd3-delaunay'
 import { Color } from '../models'
 
-export default new FlowComponent({
+export default new FlowComponentWithPreview({
   label: 'mountains',
 
   inputs: [
@@ -50,13 +50,18 @@ export default new FlowComponent({
 
       const start = 1.0
       const colors = new Map<number, Color>()
+
+      for (const cell of voronoi.cellPolygons()) {
+        colors.set(cell.index, new Color(0, 0, 0))
+      }
+
       const selectedKeys = new Set<number>(inputs.indices[0] as Array<number>)
       for (const key of selectedKeys) {
         colors.set(key, new Color(start * 255, start * 255, start * 255))
       }
 
       const falloff = 0.05
-      const iterations = node.data.numPoints ? node.data.numPoints as number : 1
+      const iterations = node.data.amount ? node.data.amount as number : 1
       for (let i = 0; i < iterations; i++) {
         const indices = Array.from(selectedKeys)
         for (const index of indices) {

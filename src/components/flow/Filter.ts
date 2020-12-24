@@ -1,6 +1,7 @@
 import { FlowComponentWithPreview } from '../FlowGraph'
 // import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import VueNumberControl from '../controls/NumberControl.vue'
+import FunctionControlVue from '../controls/FunctionControl.vue'
 
 export default new FlowComponentWithPreview({
   label: 'filter',
@@ -42,6 +43,10 @@ export default new FlowComponentWithPreview({
       label: 'number'
     }
   ],
+
+  controls: [{
+    component: FunctionControlVue
+  }],
 
   workerFn: (
     // node: NodeData,

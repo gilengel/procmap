@@ -3,7 +3,7 @@ const ctx: Worker = self as any
 
 import * as d3 from 'd3'
 import { Voronoi, Delaunay } from 'd3-delaunay'
-import { Dimension } from '../models'
+import { Dimension, Cell, CellLine, VoronoiModel } from '../models'
 
 /**
  * Generates a voronoi diagram from an array of points. The diagram is bound by the provided size

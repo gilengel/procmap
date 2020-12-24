@@ -1,7 +1,7 @@
 
 import { Node, NodeEditor } from 'rete'
 
-import { getRegisteredFlowComponents } from '../flow'
+import { findRegisteredComponentById, getRegisteredComponentCategories } from '../flow'
 
 import { createNode } from './Utils'
 
@@ -12,8 +12,7 @@ function install (editor: NodeEditor) {
 
     const id = e.dataTransfer.getData('componentId')
 
-    const component = getRegisteredFlowComponents().find(component => component.id === id)
-
+    const component = findRegisteredComponentById(id)
     if (!component) throw new Error(`Component ${id} not found`)
 
     // force update the mouse position

@@ -11,13 +11,18 @@
           </div>
         </q-toolbar>
         <q-list dark padding>
-          <q-item v-for="component in availableComponents" :key="component.id" draggable="true" v-on:dragstart="dragstart(component.id, $event)" >
-            <q-item-section avatar>
-              <q-icon :name="component.icon" />
-            </q-item-section>
-            <q-item-section>{{component.label}}</q-item-section>
-          </q-item>
+          <template v-for="category in availableComponentCategories">
+            <q-item-label header v-bind:key="category.label">{{category.label}}</q-item-label>
 
+              <q-item v-for="component in category.components" :key="component.id" draggable="true" v-on:dragstart="dragstart(component.id, $event)" >
+                <q-item-section avatar>
+                  <q-icon :name="component.icon" />
+                </q-item-section>
+                <q-item-section>{{component.label}}</q-item-section>
+              </q-item>
+
+          </template>
+<!--
           <q-item-label header>Elementary Nodes</q-item-label>
           <q-item>
             <q-item-section avatar>
@@ -151,6 +156,7 @@
               <q-item-label>Ocean</q-item-label>
             </q-item-section>
           </q-item>
+          -->
         </q-list>
       </div>
 
@@ -166,16 +172,32 @@
               <ToggleButton icon="las la-map-marked" v-model="showMinimap" />
             </q-toolbar>
 
-            <FlowGraphComponent
-              :map.sync="map"
-              :geometry.sync="geometry"
-              :showMinimap="showMinimap"
-            />
+            <FlowGraphComponent />
           </template>
 
           <template v-slot:after>
             <q-page>
-              <Preview2D :geometry="geometry" :size.sync="map.dimension" />
+              <q-splitter horizontal v-model="verticalSplitter" class="right-splitter">
+                <template v-slot:before>
+                  <Preview2D/>
+                </template>
+
+                <template v-slot:after>
+                  <div class="q-pa-md bg-grey-10 text-white">
+                    <q-list dark bordered separator style="max-width: 318px">
+                      <q-item tag="label">
+                        <q-item-section>
+                          <q-item-label>Notifications</q-item-label>
+                        </q-item-section>
+
+                        <q-item-section side top>
+                          <q-checkbox value="true" />
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </div>
+                </template>
+              </q-splitter>
               <!--
               <div class="layers">
                 <div>Layer 1</div>
@@ -202,6 +224,7 @@ import { RandomMap } from 'components/models'
 import { Vue, Component } from 'vue-property-decorator'
 
 import { getRegisteredFlowComponents, MetaFlowComponent } from './flow'
+import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/Index'
 
 @Component({
   components: { ToggleButton, FlowGraphComponent, Preview2D }
@@ -213,14 +236,16 @@ export default class MapEditorComponent extends Vue {
 
   map: RandomMap = new RandomMap({ width: 1024, height: 1024 }, []);
 
-  availableComponents: Array<MetaFlowComponent> = [];
+  availableComponentCategories: Array<MetaFlowCategory> = [];
 
   geometry: Record<string, unknown> = {};
 
   horizontalSplitter = 70;
 
+  verticalSplitter = 50;
+
   mounted () {
-    this.availableComponents = getRegisteredFlowComponents()
+    this.availableComponentCategories = getRegisteredComponentCategories()
 
     this.$store.commit('increment')
   }
@@ -242,6 +267,19 @@ export default class MapEditorComponent extends Vue {
 .middle {
   flex-grow: 1;
   max-width: 90%;
+
+  .right-splitter {
+    .q-splitter__before {
+      overflow: hidden;
+    }
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+  }
 }
 
 .right {
@@ -303,4 +341,5 @@ export default class MapEditorComponent extends Vue {
     }
   }
 }
+
 </style>

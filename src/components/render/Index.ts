@@ -87,7 +87,6 @@ function install (editor: NodeEditor, params : Params) {
       listeners.set(el, true)
       el.addEventListener('dblclick', (e) => {
         e.stopPropagation()
-        console.log(e)
         // editor.trigger('resetconnection')
       })
     }

@@ -4,7 +4,7 @@ import { PreviewStateInterface } from './state'
 
 const mutation: MutationTree<PreviewStateInterface> = {
   update (state: PreviewStateInterface, node: Node) {
-    console.log('This is weird')
+
   }
 }
 

@@ -12,13 +12,12 @@
       />
       <!--v-show="node.data.preview == true || node.data.preview == false"-->
     </div>
-    <q-separator dark inset />
     <div class="content">
       <div
         class="column inputs"
         v-if="node.controls.size > 0 || node.inputs.size > 0"
       >
-        <div v-for="input in inputs()" :key="input.name" class="input">
+        <div v-for="input in inputs()" :key="input.name" class="input-container">
           <!-- Pin -->
           <Socket
             v-socket:input="input"
@@ -49,7 +48,7 @@
         ></div>
       </div>
       <div class="column outputs">
-        <div class="output" v-for="output in outputs()" :key="output.name">
+        <div class="output-container" v-for="output in outputs()" :key="output.name">
             <div class="output-title">{{ output.name }}</div>
             <Socket
               v-socket:output="output"
@@ -112,7 +111,7 @@ $group-color: rgba(15, 80, 255, 0.2);
 $group-handler-size: 40px;
 $group-handler-offset: -10px;
 $context-menu-round: 7px;
-$socket-size: 16px;
+$socket-size: 10px;
 $socket-margin: 10px;
 
 .selected::before {
@@ -133,7 +132,6 @@ $socket-margin: 10px;
   background: $node-color;
   cursor: pointer;
   height: auto;
-  min-height: 200px;
   box-sizing: content-box;
 
   display: flex;
@@ -144,6 +142,7 @@ $socket-margin: 10px;
     display: flex;
     flex-grow: 2;
     padding-top: 20px;
+    padding-bottom: 8px;
     //
 
     .node-column {
@@ -158,7 +157,7 @@ $socket-margin: 10px;
   }
 }
 
-.input, .output {
+.input-container, .output-container {
   padding-right: 6px;
   display: flex;
   align-items: center;
@@ -168,6 +167,8 @@ $socket-margin: 10px;
 
 .ouptut {
   padding-left: 6px;
+  justify-content: flex-end;
+
 }
 
 .node:hover {
@@ -181,7 +182,8 @@ $socket-margin: 10px;
 .title {
   color: white;
   display: flex;
-  padding: 8px;
+  line-height: 3em;
+  padding-left: 1em;
   overflow: hidden;
 
   justify-content: space-between;
@@ -197,8 +199,8 @@ $socket-margin: 10px;
 .inputs, .outputs {
   text-align: left;
 
-  display: flex;
-  flex-direction: column;
+  //display: flex;
+  //flex-direction: column;
 
 }
 
@@ -226,6 +228,15 @@ $socket-margin: 10px;
 
     font-weight: bold;
   }
+}
+
+.socket {
+  width: $socket-size !important;
+  height: $socket-size !important;
+}
+
+.socket::after {
+  visibility: hidden;
 }
 /*
 .input-title,

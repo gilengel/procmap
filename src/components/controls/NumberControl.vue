@@ -4,7 +4,7 @@
     dense
     filled
     v-model="value"
-
+    hide-bottom-space
     type="number"
     @input="change"
     :rules="[ val => isValid(val) || 'Use a number between 0 and 2000']"

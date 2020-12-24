@@ -8,6 +8,7 @@ import { Node as ReteNode } from 'rete'
 // import { ExampleStateInterface } from './module-example/state';
 
 import preview from './preview'
+import { renderConnection } from 'rete-connection-plugin/types/utils'
 
 /*
  * If not building with SSR mode, you can
@@ -15,7 +16,8 @@ import preview from './preview'
  */
 
 interface PreviewStateInterface {
-  previewNode: ReteNode
+  previewNode: ReteNode,
+  render: boolean
 }
 export interface StateInterface {
   // Define your own store structure, using submodules if needed
@@ -37,11 +39,12 @@ export default function () {
     name: 'global',
     state: {
       previewNode: undefined,
+      render: false,
       count: 0
     },
 
     getters: {
-      count: state => { console.log(state); return state.count },
+      render: state => state.render,
       previewNode: state => state.previewNode // state.previewNode }
     },
 
@@ -57,12 +60,20 @@ export default function () {
 
         state.previewNode = node
         state.previewNode.data.preview = true
+      },
+
+      render (state: PreviewStateInterface, render: boolean) {
+        state.render = render
       }
     },
 
     actions: {
       updatePreview ({ commit }, node: ReteNode) {
         commit('update', node)
+      },
+
+      render ({ commit }, render: boolean) {
+        commit('render', render)
       }
     }
     // mutations / getters / plugins/ other code

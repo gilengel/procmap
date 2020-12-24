@@ -21,11 +21,16 @@ import { RandomMap } from './models'
 
 import { store } from '../store'
 
+import { Action } from 'vuex-class'
+import { getRegisteredComponentCategories } from './flow/Index'
+
 @Component
 export default class FlowGraphComponent extends Vue {
   @Prop(RandomMap) map: RandomMap | undefined;
   @Prop(Object) geometry: Record<string, unknown> | undefined;
   @Prop({ default: true }) showMinimap: boolean | undefined;
+
+  @Action('render') updateRender!: (value: boolean) => void
 
   editor!: NodeEditor;
 
@@ -52,62 +57,65 @@ export default class FlowGraphComponent extends Vue {
   }
 
   registerComponents (engine: Engine) {
-    const components = getRegisteredFlowComponents()
-    components.map(c => {
-      this.editor.register(c.component)
-      engine.register(c.component)
-    })
+    for (const category of getRegisteredComponentCategories()) {
+      category.components.map(c => {
+        this.editor.register(c.component)
+        engine.register(c.component)
+      })
+    }
   }
 
   makeComponentDataReactive () {
-    const components = getRegisteredFlowComponents()
+    for (const category of getRegisteredComponentCategories()) {
+      category.components.forEach(c => {
+        const data = c.defaultData
+        Vue.set(data, 'progress', 1.0)
+        Vue.set(data, 'invalid', false)
 
-    components.forEach(c => {
-      const data = c.defaultData
-      Vue.set(data, 'progress', 1.0)
-      Vue.set(data, 'invalid', false)
-
-      // Convert all default values to vue reactive ones
-      for (const i in data) {
-        if (!(data[i] instanceof Object)) {
-          Vue.set(data, i, data[i])
+        // Convert all default values to vue reactive ones
+        for (const i in data) {
+          if (!(data[i] instanceof Object)) {
+            Vue.set(data, i, data[i])
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   async createDefaultNodes () {
-    const components = getRegisteredFlowComponents()
+    const components = getRegisteredComponentCategories()[0].components
 
     const mapNode = await components[0].component.createNode(
       components[0].defaultData
     )
-    mapNode.position = [80, 200]
+    mapNode.position = [0, 50]
     this.editor.addNode(mapNode)
 
     const randNode = await components[1].component.createNode(
       components[1].defaultData
     )
-    randNode.position = [80 + 375, 200]
+    randNode.position = [80 + 230, 50]
     this.editor.addNode(randNode)
 
     const voroniNode = await components[2].component.createNode({
       iterations: 2
     })
-    voroniNode.position = [80 + 800, 200]
+    voroniNode.position = [80 + 540, 50]
     this.editor.addNode(voroniNode)
 
     const selectRandomNode = await components[3].component.createNode({
       amount: 2
     })
-    selectRandomNode.position = [80 + 1210, 200]
+    selectRandomNode.position = [80 + 830, 50]
     this.editor.addNode(selectRandomNode)
 
-    /*
-    const mountainNode = await components[4].createNode({ amount: 20, preview: false, progress: 1 })
-    mountainNode.position = [80, 450]
+    const mountainNode = await components[4].component.createNode({ amount: 20, preview: false, progress: 1 })
+    mountainNode.position = [1200, 50]
     this.editor.addNode(mountainNode)
-    */
+
+    const functionNode = await components[5].component.createNode()
+    functionNode.position = [300, 300]
+    this.editor.addNode(functionNode)
 
     this.editor.connect(
       mapNode.outputs.get('dimension') as Output,
@@ -129,7 +137,6 @@ export default class FlowGraphComponent extends Vue {
       selectRandomNode.inputs.get('voronoi') as Input
     )
 
-    /*
     this.editor.connect(
       selectRandomNode.outputs.get('voronoi') as Output,
       mountainNode.inputs.get('voronoi') as Input
@@ -139,7 +146,6 @@ export default class FlowGraphComponent extends Vue {
       selectRandomNode.outputs.get('indices') as Output,
       mountainNode.inputs.get('indices') as Input
     )
-    */
   }
 
   registerEditorEvents (engine: Engine) {
@@ -160,6 +166,8 @@ export default class FlowGraphComponent extends Vue {
       async () => {
         await engine.abort()
         await engine.process(this.editor.toJSON())
+
+        this.updateRender(true)
       }
     )
 
@@ -179,12 +187,16 @@ export default class FlowGraphComponent extends Vue {
     this.editor.on(['noderemoved'], async () => {
       await engine.abort()
       await engine.process(this.editor.toJSON())
+
+      this.updateRender(true)
     })
 
     this.editor.on(['keyup'], async (e: KeyboardEvent) => {
       this.keyUpEvent(e)
 
       await engine.process(this.editor.toJSON())
+
+      this.updateRender(true)
     })
   }
 

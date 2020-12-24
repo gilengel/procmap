@@ -267,7 +267,7 @@ export class FlowComponent extends Rete.Component {
     if (this.schema.controls) {
       this.schema.controls.forEach(control => {
         node.addControl(
-          new control.Control(control.component, 'key'))
+          new FlowControl(control.component, this.editor, 'key'))
       })
     }
 

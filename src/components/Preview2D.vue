@@ -33,7 +33,8 @@
 <script lang="ts">
 import { Voronoi } from 'd3-delaunay'
 import { Vue, Component, Prop, PropSync, Watch } from 'vue-property-decorator'
-import { mapGetters } from 'vuex'
+
+import { Action } from 'vuex-class'
 
 import { Color, Dimension } from './models'
 
@@ -42,10 +43,6 @@ import { Node as ReteNode } from 'rete'
 import * as d3 from 'd3'
 import { zoom, ZoomTransform } from 'd3-zoom'
 import resize from 'vue-resize-directive'
-
-import {
-  Getter
-} from 'vuex-class'
 
 @Component({
   directives: {
@@ -60,6 +57,10 @@ export default class Preview2D extends Vue {
 
   protected get previewNode (): ReteNode {
     return this.$store.getters.previewNode as ReteNode
+  }
+
+  protected get rerender (): ReteNode {
+    return this.$store.getters.render as boolean
   }
 
   width = 512;
@@ -215,7 +216,6 @@ export default class Preview2D extends Vue {
       }
 
       const t1 = performance.now()
-      console.log(`Call to doSomething took ${t1 - t0} milliseconds.`)
     }
 
     if ((geometry as Record<string, unknown>)?.points !== undefined) {
@@ -232,6 +232,19 @@ export default class Preview2D extends Vue {
     this.getGeometryOfSelectedNode()
 
     this.repaint()
+  }
+
+  @Action('render') updateRender!: (value: boolean) => void
+
+  @Watch('rerender')
+  onRerender (newValue:boolean) {
+    if (newValue) {
+      this.getGeometryOfSelectedNode()
+
+      this.repaint()
+
+      this.updateRender(false)
+    }
   }
 
   context: CanvasRenderingContext2D | undefined;
