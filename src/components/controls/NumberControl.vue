@@ -20,6 +20,8 @@ import VueFlowControl from '../FlowControl'
 export default class NumberControl extends VueFlowControl {
   value = 20;
 
+  data: null;
+
   change (e: string) {
     if (!(this.putData instanceof Function)) {
       throw new Error('NumberControls putData was not specified. Make sure you pass it along as an argument while creating a new instance of it')
@@ -42,7 +44,6 @@ export default class NumberControl extends VueFlowControl {
 
   mounted () {
     const property = this.getValue<number>()
-
     this.value = property
   }
 }

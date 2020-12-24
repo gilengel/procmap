@@ -17,7 +17,10 @@ import { renderConnection } from 'rete-connection-plugin/types/utils'
 
 interface PreviewStateInterface {
   previewNode: ReteNode,
-  render: boolean
+  render: boolean,
+
+  system: JSON,
+  systemImported: boolean
 }
 export interface StateInterface {
   // Define your own store structure, using submodules if needed
@@ -40,12 +43,15 @@ export default function () {
     state: {
       previewNode: undefined,
       render: false,
-      count: 0
+      system: {},
+      systemImported: false
     },
 
     getters: {
       render: state => state.render,
-      previewNode: state => state.previewNode // state.previewNode }
+      previewNode: state => state.previewNode, // state.previewNode }
+      system: state => state.system,
+      systemImported: state => state.systemImported
     },
 
     mutations: {
@@ -62,6 +68,15 @@ export default function () {
         state.previewNode.data.preview = true
       },
 
+      saveSystem (state: PreviewStateInterface, arg: { system: JSON, imported: boolean }) {
+        state.system = arg.system
+        state.systemImported = arg.imported
+      },
+
+      resetSystemImported (state: PreviewStateInterface) {
+        state.systemImported = false
+      },
+
       render (state: PreviewStateInterface, render: boolean) {
         state.render = render
       }
@@ -74,6 +89,14 @@ export default function () {
 
       render ({ commit }, render: boolean) {
         commit('render', render)
+      },
+
+      saveSystem ({ commit }, arg: { system: JSON, imported: boolean }) {
+        commit('saveSystem', { system: arg.system, imported: arg.imported === undefined ? false : arg.imported })
+      },
+
+      resetSystemImported ({ commit }) {
+        commit('resetSystemImported')
       }
     }
     // mutations / getters / plugins/ other code

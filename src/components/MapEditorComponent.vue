@@ -1,5 +1,37 @@
 <template>
   <div class="map-editor">
+
+    <q-header class="bg-primary text-white">
+
+    <q-bar>
+      <q-btn dense flat round icon="lens" size="8.5px" color="red" />
+      <q-btn dense flat round icon="lens" size="8.5px" color="yellow" />
+      <q-btn dense flat round icon="lens" size="8.5px" color="green" />
+      <div class="col text-center text-weight-bold">
+              <q-icon
+        size='sm'
+        name="las la-map-marked"
+      />
+        Procedural Map Generator
+      </div>
+    </q-bar>
+
+      <q-toolbar>
+        <q-btn dark round flat icon="las la-download" @click="saveSystem" />
+        <q-btn dark round flat icon="las la-upload" @click="loadSystem"/>
+
+        <q-file ref="file" clearable filled color="purple-12" label="Label" v-model="file"  style="visibility: collapse" ></q-file>
+
+
+        <q-toolbar-title>
+        </q-toolbar-title>
+
+        <q-icon size='lg' name="las la-heart" />
+        <q-icon size='lg' name="las la-piggy-bank" />
+      </q-toolbar>
+    </q-header>
+
+
     <div class="content row">
       <div class="left">
         <q-toolbar class="bg-black text-white">
@@ -221,10 +253,19 @@ import FlowGraphComponent from 'components/FlowGraphComponent.vue'
 import Preview2D from 'components/Preview2D.vue'
 
 import { RandomMap } from 'components/models'
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Prop, PropSync, Watch } from 'vue-property-decorator'
 
 import { getRegisteredFlowComponents, MetaFlowComponent } from './flow'
 import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/Index'
+
+import * as fs from 'fs'
+
+import {
+  Getter, Action
+} from 'vuex-class'
+import { QFile } from 'quasar'
+
+
 
 @Component({
   components: { ToggleButton, FlowGraphComponent, Preview2D }
@@ -244,10 +285,45 @@ export default class MapEditorComponent extends Vue {
 
   verticalSplitter = 50;
 
+  file = []
+
+   @Getter('system') getterSystem
+
+   @Action('saveSystem') storeLoadedSystem!: ({system: JSON, imported: boolean}) => void
+
+  @Watch('file')
+  onSelectedMapFileChanged (newValue: File) {
+    const file = newValue
+
+    fs.readFile(file.path, 'utf-8', (err, data) => {
+      if(err){
+        alert("An error ocurred reading the file :" + err.message);
+        return;
+      }
+
+      this.storeLoadedSystem({system: JSON.parse(data), imported: true})
+    });
+  }
+
+
   mounted () {
     this.availableComponentCategories = getRegisteredComponentCategories()
 
     this.$store.commit('increment')
+  }
+
+  saveSystem() {
+    let payload = JSON.stringify(this.getterSystem);
+    var a = document.createElement("a");
+    var file = new Blob([payload], {type: "text/plain"});
+    a.href = URL.createObjectURL(file);
+    a.download = 'json.txt';
+    a.click();
+    
+  }
+
+  loadSystem() {
+    (this.$refs.file as QFile).pickFiles();
   }
 
   dragstart (id: string, ev: DragEvent) {

@@ -31,8 +31,27 @@ export default class FlowGraphComponent extends Vue {
   @Prop({ default: true }) showMinimap: boolean | undefined;
 
   @Action('render') updateRender!: (value: boolean) => void
+  @Action('saveSystem') saveSystem!: (arg: { system: JSON }) => void
+  @Action('resetSystemImported') resetSystemImported!: () => void
 
   editor!: NodeEditor;
+
+
+  protected get systemImported (): boolean {
+    return this.$store.getters.systemImported as boolean
+  }  
+
+  @Watch('systemImported') 
+  onSystemChanged(imported: boolean){
+    console.log(this.$store.getters.system)
+
+    if(imported) {
+      
+      this.editor.fromJSON(this.$store.getters.system)
+      this.resetSystemImported()
+    }
+    //this.editor.toJSON()
+  }
 
   @Watch('showMinimap')
   onShowMinimap (val: boolean) {
@@ -128,8 +147,8 @@ export default class FlowGraphComponent extends Vue {
     )
 
     this.editor.connect(
-      randNode.outputs.get('points') as Output,
-      voroniNode.inputs.get('points') as Input
+      randNode.outputs.get('point') as Output,
+      voroniNode.inputs.get('point') as Input
     )
 
     this.editor.connect(
@@ -164,8 +183,10 @@ export default class FlowGraphComponent extends Vue {
     this.editor.on(
       ['process', 'nodecreated', 'connectioncreated'],
       async () => {
+        let data = this.editor.toJSON();
+        this.saveSystem({ system: data as unknown as JSON })
         await engine.abort()
-        await engine.process(this.editor.toJSON())
+        await engine.process(data)
 
         this.updateRender(true)
       }
@@ -212,7 +233,7 @@ export default class FlowGraphComponent extends Vue {
 
     this.registerEditorEvents(engine)
 
-    await this.createDefaultNodes()
+    //await this.createDefaultNodes()
 
     this.editor.view.resize()
     this.editor.trigger('process')

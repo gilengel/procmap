@@ -1,14 +1,19 @@
 import { FlowComponentWithPreview } from '../FlowGraph'
 import FunctionControlVue from '../controls/FunctionControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
+import { evaluate } from 'mathjs'
 
 export default new FlowComponentWithPreview({
   label: 'function',
 
   inputs: [
     {
+      type: 'points',
+      label: 'Center'
+    },
+    {
       type: 'number',
-      label: 'number'
+      label: 'Radius'
     }
   ],
 

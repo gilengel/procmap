@@ -3,21 +3,21 @@ import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import NumberControl from '../../controls/NumberControl.vue'
 
 export default new FlowComponent({
-  label: 'Divide',
+  label: 'Make Point',
 
   inputs: [
     {
       type: 'number',
-      label: 'Number',
+      label: 'X',
 
       control: {
-        identifier: 'number_2',
+        identifier: 'number',
         component: NumberControl
       }
     },
     {
       type: 'number',
-      label: 'Number 2',
+      label: 'Y',
       id: 'number_2',
 
       control: {
@@ -29,8 +29,8 @@ export default new FlowComponent({
 
   outputs: [
     {
-      type: 'number',
-      label: 'Result'
+      type: 'points',
+      label: 'Point'
     }
   ],
 
@@ -44,16 +44,16 @@ export default new FlowComponent({
       const term2: number = getInputValue<number>('number_2', inputs, node)
 
       if (!term1) {
-        reject(rejectMessage('divide', 'number'))
+        reject(rejectMessage('add', 'number'))
       }
 
       if (!term1) {
-        reject(rejectMessage('divide', 'number_2'))
+        reject(rejectMessage('add', 'number_2'))
       }
 
-      const result = term1 / term2
-      console.log(result)
-      setOutputValue(node, outputs, 'number', result, true)
+      console.log(term1 + term2)
+
+      setOutputValue(node, outputs, 'number', { x: term1, y: term2 }, true)
 
       resolve()
     })

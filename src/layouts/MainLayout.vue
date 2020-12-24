@@ -1,33 +1,7 @@
 <template>
   <q-layout view="hHh lpR fFf">
 
-    <q-header class="bg-primary text-white">
 
-    <q-bar>
-      <q-btn dense flat round icon="lens" size="8.5px" color="red" />
-      <q-btn dense flat round icon="lens" size="8.5px" color="yellow" />
-      <q-btn dense flat round icon="lens" size="8.5px" color="green" />
-      <div class="col text-center text-weight-bold">
-              <q-icon
-        size='sm'
-        name="las la-map-marked"
-      />
-        Procedural Map Generator
-      </div>
-    </q-bar>
-
-      <q-toolbar>
-        <q-icon size='lg' name="las la-save" />
-        <q-icon size='lg' name="las la-download" />
-        <q-icon size='lg' name="las la-upload" />
-
-        <q-toolbar-title>
-        </q-toolbar-title>
-
-        <q-icon size='lg' name="las la-heart" />
-        <q-icon size='lg' name="las la-piggy-bank" />
-      </q-toolbar>
-    </q-header>
 
       <q-page-container>
         <q-page>
