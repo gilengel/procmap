@@ -1,21 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import './Filters'
-import Node from '../Node.vue'
+import VueNode from '../Node.vue'
 import Socket from '../Socket.vue'
-import Vue from 'vue'
+import Vue, { Component } from 'vue'
 import mixin from './Mixin'
 
+import { NodeEditor, Node as ReteNode, Control } from 'rete'
 interface VueElement {
-  component: unknown
+  component: Component
   props: Record<string, unknown>
-  vueContext: Node
+  vueContext: Vue
   render: string
+  _vue: Vue
+  update: () => void
 }
 
-import { NodeEditor, Node as ReteNode, Control } from 'rete'
-
-function createVue (el: HTMLElement, vueComponent: string | Record<string, unknown>, vueProps = {}, options = {}) : Vue {
+function createVue (el: HTMLElement, vueComponent: Component, vueProps = {}, options = {}): Vue {
   const app = new Vue({
     render: h => h(vueComponent, { props: vueProps }),
     ...options
@@ -29,17 +30,38 @@ function createVue (el: HTMLElement, vueComponent: string | Record<string, unkno
   return app
 }
 
-function createNode (editor: NodeEditor, CommonVueComponent: CommonVueComponent, { el, node, component, bindSocket, bindControl }: { el: HTMLElement; node: ReteNode; component: VueElement; bindSocket: Function; bindControl: Function }, options: Record<string, unknown> | undefined) : Vue {
-  const vueComponent = component.component || CommonVueComponent || Node
+interface VueReteWrapper {
+  vueContext: Vue,
+  _vue: Vue,
+  render: string
+}
+
+function createNode (editor: NodeEditor,
+  {
+    el,
+    node,
+    component,
+    bindSocket,
+    bindControl
+  }:
+    {
+      el: HTMLElement,
+      node: ReteNode & VueReteWrapper,
+      component: VueElement,
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      bindSocket: Function,
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      bindControl: Function
+    }, options: Record<string, unknown> | undefined): Vue {
   const vueProps = { ...component.props, node, editor, bindSocket, bindControl }
-  const app = createVue(el, vueComponent, vueProps, options)
+  const app = createVue(el, VueNode, vueProps, options)
 
   node.vueContext = app.$children[0]
 
   return app
 }
 
-function createControl (editor: NodeEditor, { el, control } : { el: HTMLElement, control: VueElement}, options: Record<string, unknown>) : VueControl {
+function createControl (editor: NodeEditor, { el, control }: { el: HTMLElement, control: Control & VueElement }, options: Record<string, unknown>) {
   const vueComponent = control.component
   const vueProps = { ...control.props, getData: control.getData.bind(control), putData: control.putData.bind(control) }
   const app = createVue(el, vueComponent, vueProps, options)
@@ -49,40 +71,27 @@ function createControl (editor: NodeEditor, { el, control } : { el: HTMLElement,
   return app
 }
 
-interface VueNode extends ReteNode {
-  vueContext: Vue
-}
-
-const update = (entity: VueNode) => {
+const update = (entity: VueElement) => {
   return new Promise((resolve) => {
     if (!entity.vueContext) return resolve(null)
 
     entity.vueContext.$forceUpdate()
+
     entity.vueContext.$nextTick(resolve)
   })
 }
 
-const listeners = new WeakMap()
-
-interface CommonVueComponent {
-    render: string
-}
-
-interface VueNode extends ReteNode {
-  _vue: Vue
-}
-
-interface VueControl extends Control {
-  _vue: Vue
-}
-
-interface Params {
-  component: CommonVueComponent
-  options: Record<string, unknown>
-}
-
-function install (editor: NodeEditor, params : Params) {
-  editor.on('rendernode', ({ el, node, component, bindSocket, bindControl }) => {
+// const listeners = new WeakMap()
+function install (editor: NodeEditor, options: Record<string, unknown>) {
+  editor.on('rendernode', (
+    {
+      el,
+      node,
+      component,
+      bindSocket,
+      bindControl
+    }) => {
+    /*
     if (!listeners.has(el)) {
       listeners.set(el, true)
       el.addEventListener('dblclick', (e) => {
@@ -90,25 +99,32 @@ function install (editor: NodeEditor, params : Params) {
         // editor.trigger('resetconnection')
       })
     }
+    */
+    const vueComponent = component as VueElement
 
-    if ((component as VueElement).render && (component as VueElement).render !== 'vue') return
-    (node as VueNode)._vue = createNode(editor, params.component, { el, node, component, bindSocket, bindControl }, params.options)
-    node.update = async () => await update(node as VueNode)
+    console.log(options)
+
+    if (vueComponent.render && vueComponent.render !== 'vue') return
+    const vueNode = node as ReteNode & VueElement
+    vueNode._vue = createNode(editor, { el, node: node as ReteNode & VueReteWrapper, component: vueComponent, bindSocket, bindControl }, options)
+    vueNode.update = async () => await update(vueNode)
   })
 
   editor.on(['rendercontrol'], ({ el, control }) => {
-    if (control.render && control.render !== 'vue') return
-    control._vue = createControl(editor, { el, control }, params.options)
-    control.update = async () => await update(control)
+    const vueControl = control as Control & VueElement
+
+    if (vueControl.render && vueControl.render !== 'vue') return
+    vueControl._vue = createControl(editor, { el, control: vueControl }, options)
+    vueControl.update = async () => await update(vueControl)
   })
 
-  editor.on(['connectioncreated', 'connectionremoved'], connection => {
-    update(connection.output.node)
-    update(connection.input.node)
+  editor.on(['connectioncreated', 'connectionremoved'], async connection => {
+    await update(connection.output.node as unknown as ReteNode & VueElement)
+    await update(connection.input.node as unknown as ReteNode & VueElement)
   })
 
   editor.on('nodeselected', () => {
-    editor.nodes.map(update)
+    editor.nodes.map(n => update(n as ReteNode & VueElement))
   })
 }
 

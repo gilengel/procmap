@@ -59,18 +59,18 @@
         </div>
       </div>
     </div>
-
-    <q-linear-progress dark class="q-mt-sm" size="8px" :value="node.data.progress" v-if="node.data.progress != 1.0"/>
-
+<!--
+    <q-linear-progress dark class="q-mt-sm" size="8px" :value="node.data.progress" v-if="node.data.progress && Fnode.data.progress != 1.0"/>
+-->
   </div>
 </template>
 
 <script lang="ts">
-import VueRender from 'rete-vue-render-plugin'
+import Mixin from './render/Mixin'
 import Socket from './Socket.vue'
 
-import { Component, Vue } from 'vue-property-decorator'
-import { NodeEditor, Node as ReteNode } from 'rete'
+import { Component } from 'vue-property-decorator'
+import { Node as ReteNode } from 'rete'
 
 import {
   Action
@@ -79,16 +79,16 @@ import {
 @Component({
   components: {
     Socket: Socket
-  },
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  mixins: [VueRender.mixin]
+  }
 })
-export default class Node extends Vue {
-  editor: NodeEditor | undefined
+export default class Node extends Mixin {
   node!: ReteNode
 
   @Action('updatePreview') updatePreview!: (el: ReteNode) => void
+
+  created () {
+    console.log(this.node)
+  }
 
   togglePreview () {
     if (this.editor === undefined || this.node === undefined) {

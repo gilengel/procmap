@@ -1,4 +1,3 @@
-import { store } from 'quasar/wrappers'
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -6,9 +5,6 @@ import { Node as ReteNode } from 'rete'
 
 // import example from './module-example';
 // import { ExampleStateInterface } from './module-example/state';
-
-import preview from './preview'
-import { renderConnection } from 'rete-connection-plugin/types/utils'
 
 /*
  * If not building with SSR mode, you can
@@ -30,7 +26,7 @@ export interface StateInterface {
 }
 
 // Use a new variable and export values to change default behaviour.
-let store = null
+let store: unknown = null
 
 Vue.use(Vuex)
 
@@ -55,9 +51,6 @@ export default function () {
     },
 
     mutations: {
-      increment (state) {
-        state.count++
-      },
 
       update (state: PreviewStateInterface, node: ReteNode) {
         if (state.previewNode !== undefined) {
@@ -111,21 +104,3 @@ export default function () {
 
 // add this line to access store wherever you need
 export { store }
-
-/*
-export default store(function ({ Vue }) {
-  Vue.use(Vuex)
-
-  const Store = new Vuex.Store<StateInterface>({
-    modules: {
-      preview
-    },
-
-    // enable strict mode (adds overhead!)
-    // for dev mode only
-    strict: !!process.env.DEBUGGING
-  })
-
-  return Store
-})
-*/

@@ -3,7 +3,7 @@
     dark
     dense
     filled
-    v-model="value"
+    v-model="controlValue"
     hide-bottom-space
     type="number"
     @input="change"
@@ -12,13 +12,22 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Prop } from 'vue-property-decorator'
 
 import VueFlowControl from '../FlowControl'
 
 @Component
 export default class NumberControl extends VueFlowControl {
-  value = 20;
+  // @Prop() value!: number;
+ value = 20;
+
+ get controlValue () : number {
+   return this.value
+ }
+
+ set controlValue (val: number) {
+   this.value = val
+ }
 
   data: null;
 
@@ -37,14 +46,18 @@ export default class NumberControl extends VueFlowControl {
 
     const newPropertyValue = parseInt(e)
     if (this.isValid !== undefined && (this.isValid as unknown as ((e: unknown) => boolean))(newPropertyValue)) {
-      this.putData(this.propertyKey, newPropertyValue)
+      // this.putData(this.propertyKey, newPropertyValue)
       this.emitter.trigger('process')
     }
+
+    this.$emit('update:value', 1010101010)
   }
 
   mounted () {
-    const property = this.getValue<number>()
-    this.value = property
+    // const property = this.getValue<number>()
+    // this.value = property
+
+    // console.log(this.$parent)
   }
 }
 </script>

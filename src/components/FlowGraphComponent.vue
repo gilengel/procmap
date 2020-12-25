@@ -15,7 +15,6 @@ import ConnectionPlugin from 'rete-connection-plugin'
 import VueRenderPlugin from './render'
 
 import DockPlugin from './dock'
-import { getRegisteredFlowComponents } from './flow'
 
 import { RandomMap } from './models'
 
@@ -36,21 +35,20 @@ export default class FlowGraphComponent extends Vue {
 
   editor!: NodeEditor;
 
-
   protected get systemImported (): boolean {
     return this.$store.getters.systemImported as boolean
-  }  
+  }
 
-  @Watch('systemImported') 
-  onSystemChanged(imported: boolean){
-    console.log(this.$store.getters.system)
-
-    if(imported) {
-      
-      this.editor.fromJSON(this.$store.getters.system)
-      this.resetSystemImported()
+  @Watch('systemImported')
+  onSystemChanged (imported: boolean) {
+    if (imported) {
+      this.editor.fromJSON(this.$store.getters.system).then(() => {
+        this.resetSystemImported()
+      }).catch((e) => {
+        console.error(e)
+      })
     }
-    //this.editor.toJSON()
+    // this.editor.toJSON()
   }
 
   @Watch('showMinimap')
@@ -67,7 +65,7 @@ export default class FlowGraphComponent extends Vue {
     this.editor = new Rete.NodeEditor('demo@0.1.0', container as HTMLElement)
 
     this.editor.use(ConnectionPlugin)
-    this.editor.use(VueRenderPlugin, { options: { store } })
+    this.editor.use(VueRenderPlugin, { store } as unknown as void)
     this.editor.use(DockPlugin)
   }
 
@@ -183,7 +181,7 @@ export default class FlowGraphComponent extends Vue {
     this.editor.on(
       ['process', 'nodecreated', 'connectioncreated'],
       async () => {
-        let data = this.editor.toJSON();
+        const data = this.editor.toJSON()
         this.saveSystem({ system: data as unknown as JSON })
         await engine.abort()
         await engine.process(data)
@@ -221,7 +219,7 @@ export default class FlowGraphComponent extends Vue {
     })
   }
 
-  async mounted () {
+  mounted () {
     this.createEditor()
     this.createCustomEditorEvents()
 
@@ -233,7 +231,7 @@ export default class FlowGraphComponent extends Vue {
 
     this.registerEditorEvents(engine)
 
-    //await this.createDefaultNodes()
+    // await this.createDefaultNodes()
 
     this.editor.view.resize()
     this.editor.trigger('process')
