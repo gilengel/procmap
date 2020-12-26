@@ -39,7 +39,8 @@
     "vue-property-decorator": "^9.1.2",
     "vue-resize-directive": "^1.2.0",
     "vue-router": "^3.4.9",
-    "vuex-class": "^0.3.2"
+    "vuex-class": "^0.3.2",
+    "vuex-module-decorators": "^1.0.1"
   },
   "devDependencies": {
     "@quasar/app": "^2.1.11",
