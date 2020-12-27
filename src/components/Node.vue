@@ -86,18 +86,14 @@ export default class Node extends Mixin {
 
   @Action('updatePreview') updatePreview!: (el: ReteNode) => void
 
-  created () {
-    console.log(this.node)
-  }
-
   togglePreview () {
     if (this.editor === undefined || this.node === undefined) {
-      return
+
     }
 
     this.updatePreview(this.node)
 
-    this.$forceUpdate()
+    // this.$forceUpdate()
   }
 }
 </script>

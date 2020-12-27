@@ -1,5 +1,6 @@
 import { app, BrowserWindow, nativeTheme } from 'electron'
 
+nativeTheme.themeSource = 'dark'
 try {
   if (process.platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
     require('fs').unlinkSync(require('path').join(app.getPath('userData'), 'DevTools Extensions'))
@@ -29,6 +30,7 @@ function createWindow () {
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
       nodeIntegration: process.env.QUASAR_NODE_INTEGRATION,
       nodeIntegrationInWorker: process.env.QUASAR_NODE_INTEGRATION,
+      
 
       // More info: /quasar-cli/developing-electron-apps/electron-preload-script
       // preload: path.resolve(__dirname, 'electron-preload.js')
@@ -36,6 +38,7 @@ function createWindow () {
   })
 
   mainWindow.loadURL(process.env.APP_URL)
+  mainWindow.setMenuBarVisibility(false)
 
   mainWindow.on('closed', () => {
     mainWindow = null

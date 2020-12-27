@@ -1,7 +1,8 @@
-import { FlowComponentWithPreview } from '../FlowGraph'
+import { FlowComponentWithPreview, setOutputValue } from '../FlowGraph'
 import FunctionControlVue from '../controls/FunctionControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
-import { evaluate } from 'mathjs'
+import NumberControl from '../controls/NumberControl.vue'
+// import { evaluate } from 'mathjs'
 
 export default new FlowComponentWithPreview({
   label: 'function',
@@ -13,18 +14,25 @@ export default new FlowComponentWithPreview({
     },
     {
       type: 'number',
-      label: 'Radius'
+      label: 'Radius',
+      id: 'radius',
+
+      control: {
+        identifier: 'radius',
+        component: NumberControl
+      }
     }
   ],
 
   outputs: [
     {
-      type: 'number',
-      label: 'number'
+      type: 'function',
+      label: 'Function'
     }
   ],
 
   controls: [{
+    identifier: 'function',
     component: FunctionControlVue
   }],
 
@@ -34,6 +42,7 @@ export default new FlowComponentWithPreview({
     outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve) => {
+      setOutputValue(node, outputs, 'function', node.data.function, true)
       /*
       const dimension = node.data.dimension as Dimension
       if (!dimension) {

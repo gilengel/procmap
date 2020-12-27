@@ -3,7 +3,7 @@
     dark
     dense
     filled
-    v-model="controlValue"
+    v-model="value"
     hide-bottom-space
     type="number"
     @input="change"
@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 
 import VueFlowControl from '../FlowControl'
 
@@ -21,44 +21,30 @@ export default class NumberControl extends VueFlowControl {
   // @Prop() value!: number;
  value = 20;
 
- get controlValue () : number {
-   return this.value
+ change (e: string) {
+   if (!(this.putData instanceof Function)) {
+     throw new Error('NumberControls putData was not specified. Make sure you pass it along as an argument while creating a new instance of it')
+   }
+
+   if (!this.emitter) {
+     throw new Error('NumberControls emitter was not specified. Make sure you pass it along as an argument while creating a new instance of it')
+   }
+
+   if (!this.propertyKey) {
+     throw new Error('NumberControls propertyKey was not specified. Make sure you pass it along as an argument while creating a new instance of it')
+   }
+
+   const newPropertyValue = parseInt(e)
+   if (this.isValid !== undefined && (this.isValid as unknown as ((e: unknown) => boolean))(newPropertyValue)) {
+     this.putData(this.propertyKey, newPropertyValue)
+     // this.emitter.trigger('process')
+   }
  }
 
- set controlValue (val: number) {
-   this.value = val
+ mounted () {
+   // const property = this.getValue<number>()
+   // this.value = property
  }
-
-  data: null;
-
-  change (e: string) {
-    if (!(this.putData instanceof Function)) {
-      throw new Error('NumberControls putData was not specified. Make sure you pass it along as an argument while creating a new instance of it')
-    }
-
-    if (!this.emitter) {
-      throw new Error('NumberControls emitter was not specified. Make sure you pass it along as an argument while creating a new instance of it')
-    }
-
-    if (!this.propertyKey) {
-      throw new Error('NumberControls propertyKey was not specified. Make sure you pass it along as an argument while creating a new instance of it')
-    }
-
-    const newPropertyValue = parseInt(e)
-    if (this.isValid !== undefined && (this.isValid as unknown as ((e: unknown) => boolean))(newPropertyValue)) {
-      // this.putData(this.propertyKey, newPropertyValue)
-      this.emitter.trigger('process')
-    }
-
-    this.$emit('update:value', 1010101010)
-  }
-
-  mounted () {
-    // const property = this.getValue<number>()
-    // this.value = property
-
-    // console.log(this.$parent)
-  }
 }
 </script>
 

@@ -51,8 +51,6 @@ export default new FlowComponent({
         reject(rejectMessage('subtract', 'number_2'))
       }
 
-      console.log(`subtract result ${term1 - term2}`)
-
       setOutputValue(node, outputs, 'number', term1 - term2, true)
 
       resolve()

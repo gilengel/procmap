@@ -30,6 +30,7 @@ export default new FlowComponent({
   outputs: [
     {
       type: 'points',
+      id: 'result',
       label: 'Point'
     }
   ],
@@ -51,9 +52,7 @@ export default new FlowComponent({
         reject(rejectMessage('add', 'number_2'))
       }
 
-      console.log(term1 + term2)
-
-      setOutputValue(node, outputs, 'number', { x: term1, y: term2 }, true)
+      setOutputValue(node, outputs, 'result', { x: term1, y: term2 }, true)
 
       resolve()
     })

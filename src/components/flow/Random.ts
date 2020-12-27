@@ -1,7 +1,8 @@
-import { FlowComponentWithPreview, setOutputValue, getInputValue, rejectMessage, hasInputValueChanged } from '../FlowGraph'
+import { FlowComponentWithPreview, setOutputValue, getInputValue, rejectMessage, hasInputValueChanged, getInputValueWithDefault } from '../FlowGraph'
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
-import { Dimension } from '../models'
+import { Dimension, Point } from '../models'
+import { Store } from 'vuex'
 
 import RandomWorker from 'worker-loader!./Random.worker'
 export default new FlowComponentWithPreview({
@@ -11,6 +12,12 @@ export default new FlowComponentWithPreview({
     {
       type: 'dimension',
       label: 'Dimension'
+    },
+
+    {
+      type: 'points',
+      id: 'min',
+      label: 'Offset'
     },
 
     {
@@ -44,22 +51,35 @@ export default new FlowComponentWithPreview({
   workerFn: (
     node: NodeData,
     inputs: WorkerInputs,
-    outputs: WorkerOutputs
+    outputs: WorkerOutputs,
+    store?: Store<unknown>
   ) : Promise<void> => {
     return new Promise((resolve, reject) => {
       const dimension: Dimension = getInputValue<Dimension>('dimension', inputs, node)
       const amount: number = getInputValue<number>('amount', inputs, node)
+      let offset: Point = getInputValue<Point>('min', inputs, node)
+
+      console.log(offset)
+      if (offset === undefined) {
+        offset = { x: 0, y: 0 }
+      }
 
       if (dimension === undefined) {
         node.data.preview = false
         delete node.data.points
         reject(rejectMessage('random', 'dimension'))
+
+        console.log('no dimension')
         return
       }
 
       // avoid recalculating random points if no input values changed
 
-      if (!hasInputValueChanged('amount', inputs, node) && !hasInputValueChanged('dimension', inputs, node)) {
+      if (
+        !hasInputValueChanged('amount', inputs, node) &&
+        !hasInputValueChanged('dimension', inputs, node) &&
+        !hasInputValueChanged('min', inputs, node)
+      ) {
         console.log('Everything stays the same at random :)')
 
         setOutputValue(node, outputs, 'points', node.data.points, node.outputs.points !== undefined)
@@ -72,7 +92,7 @@ export default new FlowComponentWithPreview({
       }
 
       const worker = new RandomWorker()
-      worker.postMessage({ amount: amount, dimension: dimension })
+      worker.postMessage({ amount: amount, dimension: dimension, offset: offset })
       worker.onerror = (e) => {
         console.error(`random web worker failed with error ${e.message}`)
         reject(e)

@@ -6,6 +6,8 @@ import { Node as ReteNode } from 'rete'
 // import example from './module-example';
 // import { ExampleStateInterface } from './module-example/state';
 
+import MessageModule from './messages'
+
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation
@@ -34,8 +36,10 @@ Vue.use(Vuex)
 
 export default function () {
   const Store = new Vuex.Store({
-    namespaced: true,
-    name: 'global',
+    modules: {
+      MessageModule
+    },
+
     state: {
       previewNode: undefined,
       render: false,

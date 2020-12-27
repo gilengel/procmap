@@ -1,4 +1,6 @@
 import Vue, { VueConstructor } from 'vue'
+import { Store } from 'vuex'
+
 import Rete, { Socket, Node as ReteNode } from 'rete'
 import { NodeEditor, Control as ReteControl } from 'rete/types'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
@@ -16,7 +18,8 @@ const registeredSockets = new Map([
   ['dimension', new Socket('dimension')],
   ['indices', new Socket('indices')],
   ['number', new Socket('number')],
-  ['variable', new Socket('variable')]
+  ['variable', new Socket('variable')],
+  ['function', new Socket('function')]
 ])
 
 function createControl (
@@ -115,12 +118,12 @@ interface FlowControlProps<T> {
   value: T
   readonly isValid: (input: T) => boolean
 }
-export class FlowControl<T extends Vue, S> extends Rete.Control {
-  component: Vue
+export class FlowControl<S> extends Rete.Control {
+  component: VueConstructor<Vue>
 
   props: FlowControlProps<S>
 
-  constructor (component: T, emitter: NodeEditor, key: string, value: S, isValid: (input: S) => boolean) {
+  constructor (component: VueConstructor<Vue>, emitter: NodeEditor, key: string, value: S, isValid: (input: S) => boolean) {
     super(key)
     this.component = component
     this.props = { emitter, propertyKey: key, value: value, isValid: isValid }
@@ -142,7 +145,8 @@ interface ComponentSchema {
   workerFn: (
     node: NodeData,
     inputs: WorkerInputs,
-    outputs: WorkerOutputs
+    outputs: WorkerOutputs,
+    store?: Store<unknown>
   ) => Promise<void>;
 }
 
@@ -267,7 +271,7 @@ export class FlowComponent extends Rete.Component {
     if (this.schema.controls) {
       this.schema.controls.forEach(control => {
         node.addControl(
-          new FlowControl(control.component, this.editor, control.identifier))
+          new FlowControl(control.component, this.editor, control.identifier, 0, control.isValid))
       })
     }
 
@@ -275,7 +279,16 @@ export class FlowComponent extends Rete.Component {
   }
 
   async worker (node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
-    await this.schema.workerFn(node, inputs, outputs)
+    // const vueStore = this.editor?.plugins['vue-render'].store
+    const nodeEditor = this.editor as NodeEditor
+
+    let vueStore: Store<unknown> | undefined
+    if (nodeEditor) {
+      const renderPlugin = nodeEditor.plugins.get('vue-render')
+      vueStore = renderPlugin.store as Store<unknown>
+    }
+
+    await this.schema.workerFn(node, inputs, outputs, vueStore)
   }
 }
 

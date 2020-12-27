@@ -70,6 +70,7 @@ export default new FlowComponentWithPreview({
 
       if (rejectCalc) {
         node.data.invalid = true
+        return
       }
 
       const worker = new VoronoiWorker()

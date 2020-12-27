@@ -102,8 +102,6 @@ function install (editor: NodeEditor, options: Record<string, unknown>) {
     */
     const vueComponent = component as VueElement
 
-    console.log(options)
-
     if (vueComponent.render && vueComponent.render !== 'vue') return
     const vueNode = node as ReteNode & VueElement
     vueNode._vue = createNode(editor, { el, node: node as ReteNode & VueReteWrapper, component: vueComponent, bindSocket, bindControl }, options)

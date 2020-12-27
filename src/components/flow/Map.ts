@@ -1,7 +1,7 @@
 import { FlowComponent, setOutputValue } from '../FlowGraph'
 import DimensionControlVue from '../controls/DimensionControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
-
+import { Store } from 'vuex'
 import { Dimension } from './../models'
 
 export default new FlowComponent({
@@ -21,7 +21,8 @@ export default new FlowComponent({
   workerFn: (
     node: NodeData,
     inputs: WorkerInputs,
-    outputs: WorkerOutputs
+    outputs: WorkerOutputs,
+    store?: Store<unknown>
   ) : Promise<void> => {
     return new Promise((resolve) => {
       const dimension = node.data.dimension as Dimension

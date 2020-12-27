@@ -51,8 +51,6 @@ export default new FlowComponent({
         reject(rejectMessage('add', 'number_2'))
       }
 
-      console.log(term1 + term2)
-
       setOutputValue(node, outputs, 'number', term1 + term2, true)
 
       resolve()

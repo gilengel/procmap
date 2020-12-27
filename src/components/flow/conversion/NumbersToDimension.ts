@@ -1,15 +1,14 @@
 import { FlowComponent, rejectMessage, getInputValue, setOutputValue } from '../../FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import NumberControl from '../../controls/NumberControl.vue'
-import { Store } from 'vuex'
 
 export default new FlowComponent({
-  label: 'Divide',
+  label: 'Make Dimension',
 
   inputs: [
     {
       type: 'number',
-      label: 'Number',
+      label: 'X',
 
       control: {
         identifier: 'number',
@@ -18,7 +17,7 @@ export default new FlowComponent({
     },
     {
       type: 'number',
-      label: 'Number 2',
+      label: 'Y',
       id: 'number_2',
 
       control: {
@@ -30,36 +29,29 @@ export default new FlowComponent({
 
   outputs: [
     {
-      type: 'number',
-      label: 'Result'
+      type: 'dimension',
+      label: 'Dimension'
     }
   ],
 
   workerFn: (
     node: NodeData,
     inputs: WorkerInputs,
-    outputs: WorkerOutputs,
-    store?: Store<unknown>
+    outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve, reject) => {
       const term1: number = getInputValue<number>('number', inputs, node)
       const term2: number = getInputValue<number>('number_2', inputs, node)
 
-      if (store) {
-        store.dispatch('MessageModule/addMessage', { message: `Process Node "Division" with inputs [number]=${term1} [number_2]=${term2}` })
+      if (!term1) {
+        reject(rejectMessage('add', 'number'))
       }
 
       if (!term1) {
-        reject(rejectMessage('divide', 'number'))
+        reject(rejectMessage('add', 'number_2'))
       }
 
-      if (!term1) {
-        reject(rejectMessage('divide', 'number_2'))
-      }
-
-      const result = term1 / term2
-
-      setOutputValue(node, outputs, 'number', result, node.outputs.number !== undefined)
+      setOutputValue(node, outputs, 'dimension', { width: term1, height: term2 }, true)
 
       resolve()
     })

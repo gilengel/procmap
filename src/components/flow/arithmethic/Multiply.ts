@@ -1,5 +1,6 @@
 import { FlowComponent, rejectMessage, getInputValue, setOutputValue } from '../../FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
+import NumberControl from '../../controls/NumberControl.vue'
 
 export default new FlowComponent({
   label: 'Multiply',
@@ -7,12 +8,22 @@ export default new FlowComponent({
   inputs: [
     {
       type: 'number',
-      label: 'Number'
+      label: 'Number',
+
+      control: {
+        identifier: 'number',
+        component: NumberControl
+      }
     },
     {
       type: 'number',
       label: 'Number 2',
-      id: 'number_2'
+      id: 'number_2',
+
+      control: {
+        identifier: 'number_2',
+        component: NumberControl
+      }
     }
   ],
 
@@ -40,7 +51,7 @@ export default new FlowComponent({
         reject(rejectMessage('multiply', 'number_2'))
       }
 
-      setOutputValue(node, outputs, 'number', term1 * term2, true)
+      setOutputValue(node, outputs, 'number', term1 * term2, node.outputs.number !== undefined)
 
       resolve()
     })

@@ -1,7 +1,6 @@
 <template>
   <q-page>
     <div id="rete" ref="rete"></div>
-    <div class="dock">Hello?</div>
   </q-page>
 </template>
 
@@ -29,9 +28,9 @@ export default class FlowGraphComponent extends Vue {
   @Prop(Object) geometry: Record<string, unknown> | undefined;
   @Prop({ default: true }) showMinimap: boolean | undefined;
 
-  @Action('render') updateRender!: (value: boolean) => void
-  @Action('saveSystem') saveSystem!: (arg: { system: JSON }) => void
-  @Action('resetSystemImported') resetSystemImported!: () => void
+  @Action('render') updateRender!: (value: boolean) => void;
+  @Action('saveSystem') saveSystem!: (arg: { system: JSON }) => void;
+  @Action('resetSystemImported') resetSystemImported!: () => void;
 
   editor!: NodeEditor;
 
@@ -42,11 +41,14 @@ export default class FlowGraphComponent extends Vue {
   @Watch('systemImported')
   onSystemChanged (imported: boolean) {
     if (imported) {
-      this.editor.fromJSON(this.$store.getters.system).then(() => {
-        this.resetSystemImported()
-      }).catch((e) => {
-        console.error(e)
-      })
+      this.editor
+        .fromJSON(this.$store.getters.system)
+        .then(() => {
+          this.resetSystemImported()
+        })
+        .catch((e) => {
+          console.error(e)
+        })
     }
     // this.editor.toJSON()
   }
@@ -65,7 +67,7 @@ export default class FlowGraphComponent extends Vue {
     this.editor = new Rete.NodeEditor('demo@0.1.0', container as HTMLElement)
 
     this.editor.use(ConnectionPlugin)
-    this.editor.use(VueRenderPlugin, { store } as unknown as void)
+    this.editor.use(VueRenderPlugin, { store })
     this.editor.use(DockPlugin)
   }
 
@@ -75,7 +77,7 @@ export default class FlowGraphComponent extends Vue {
 
   registerComponents (engine: Engine) {
     for (const category of getRegisteredComponentCategories()) {
-      category.components.map(c => {
+      category.components.map((c) => {
         this.editor.register(c.component)
         engine.register(c.component)
       })
@@ -84,7 +86,7 @@ export default class FlowGraphComponent extends Vue {
 
   makeComponentDataReactive () {
     for (const category of getRegisteredComponentCategories()) {
-      category.components.forEach(c => {
+      category.components.forEach((c) => {
         const data = c.defaultData
         Vue.set(data, 'progress', 1.0)
         Vue.set(data, 'invalid', false)
@@ -102,15 +104,11 @@ export default class FlowGraphComponent extends Vue {
   async createDefaultNodes () {
     const components = getRegisteredComponentCategories()[0].components
 
-    const mapNode = await components[0].component.createNode(
-      components[0].defaultData
-    )
+    const mapNode = await components[0].component.createNode(components[0].defaultData)
     mapNode.position = [0, 50]
     this.editor.addNode(mapNode)
 
-    const randNode = await components[1].component.createNode(
-      components[1].defaultData
-    )
+    const randNode = await components[1].component.createNode(components[1].defaultData)
     randNode.position = [80 + 230, 50]
     this.editor.addNode(randNode)
 
@@ -126,7 +124,11 @@ export default class FlowGraphComponent extends Vue {
     selectRandomNode.position = [80 + 830, 50]
     this.editor.addNode(selectRandomNode)
 
-    const mountainNode = await components[4].component.createNode({ amount: 20, preview: false, progress: 1 })
+    const mountainNode = await components[4].component.createNode({
+      amount: 20,
+      preview: false,
+      progress: 1
+    })
     mountainNode.position = [1200, 50]
     this.editor.addNode(mountainNode)
 
@@ -178,17 +180,14 @@ export default class FlowGraphComponent extends Vue {
     })
     */
 
-    this.editor.on(
-      ['process', 'nodecreated', 'connectioncreated'],
-      async () => {
-        const data = this.editor.toJSON()
-        this.saveSystem({ system: data as unknown as JSON })
-        await engine.abort()
-        await engine.process(data)
+    this.editor.on(['process', 'nodecreated', 'connectioncreated'], async () => {
+      const data = this.editor.toJSON()
+      this.saveSystem({ system: (data as unknown) as JSON })
+      await engine.abort()
+      await engine.process(data)
 
-        this.updateRender(true)
-      }
-    )
+      this.updateRender(true)
+    })
 
     /*
     this.editor.on(['connectionremoved'], async c => {
@@ -242,7 +241,7 @@ export default class FlowGraphComponent extends Vue {
       e.code === 'Delete' &&
       (e.target as HTMLElement).tagName.toUpperCase() !== 'INPUT'
     ) {
-      this.editor.selected.each(n => this.editor.removeNode(n))
+      this.editor.selected.each((n) => this.editor.removeNode(n))
     }
   }
 }

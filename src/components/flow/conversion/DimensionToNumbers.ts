@@ -42,8 +42,6 @@ export default new FlowComponent({
       setOutputValue(node, outputs, 'width', dimension.width, true)
       setOutputValue(node, outputs, 'height', dimension.height, true)
 
-      console.log(dimension.width)
-
       resolve()
     })
   }

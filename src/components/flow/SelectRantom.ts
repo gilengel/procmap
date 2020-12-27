@@ -3,6 +3,8 @@ import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi, Delaunay } from 'd3-delaunay'
 
+import { evaluate } from 'mathjs'
+
 export default new FlowComponentWithPreview({
   label: 'select random',
 
@@ -26,6 +28,11 @@ export default new FlowComponentWithPreview({
           return (number >= 0)
         }
       }
+    },
+
+    {
+      type: 'function',
+      label: 'Function'
     }
   ],
 
@@ -48,6 +55,9 @@ export default new FlowComponentWithPreview({
     return new Promise((resolve, reject) => {
       const voronoi: Voronoi<number> = getInputValue<Voronoi<number>>('voronoi', inputs, node)
       const amount: number = getInputValue<number>('amount', inputs, node)
+      const func: string = getInputValue<string>('function', inputs, node)
+
+      console.log(`SelectRandom.functon = ${func}`)
 
       if (voronoi === undefined) {
         reject(rejectMessage('select_random', 'voronoi'))

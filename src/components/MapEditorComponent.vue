@@ -22,7 +22,6 @@
 
         <q-file ref="file" clearable filled color="purple-12" label="Label" v-model="file"  style="visibility: collapse" ></q-file>
 
-
         <q-toolbar-title>
         </q-toolbar-title>
 
@@ -30,7 +29,6 @@
         <q-icon size='lg' name="las la-piggy-bank" />
       </q-toolbar>
     </q-header>
-
 
     <div class="content row">
       <div class="left">
@@ -215,7 +213,10 @@
                 </template>
 
                 <template v-slot:after>
+                  <MessageLog />
                   <div class="q-pa-md bg-grey-10 text-white">
+
+                    <!--
                     <q-list dark bordered separator style="max-width: 318px">
                       <q-item tag="label">
                         <q-item-section>
@@ -227,6 +228,7 @@
                         </q-item-section>
                       </q-item>
                     </q-list>
+                    -->
                   </div>
                 </template>
               </q-splitter>
@@ -248,14 +250,14 @@
 </template>
 
 <script lang="ts">
-import ToggleButton from 'components/ToggleButton.vue'
-import FlowGraphComponent from 'components/FlowGraphComponent.vue'
-import Preview2D from 'components/Preview2D.vue'
+import ToggleButton from './ToggleButton.vue'
+import FlowGraphComponent from './FlowGraphComponent.vue'
+import Preview2D from './Preview2D.vue'
+import MessageLog from './MessageLog.vue'
 
 import { RandomMap } from 'components/models'
-import { Vue, Component, Prop, PropSync, Watch } from 'vue-property-decorator'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 
-import { getRegisteredFlowComponents, MetaFlowComponent } from './flow'
 import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/Index'
 
 import * as fs from 'fs'
@@ -265,10 +267,8 @@ import {
 } from 'vuex-class'
 import { QFile } from 'quasar'
 
-
-
 @Component({
-  components: { ToggleButton, FlowGraphComponent, Preview2D }
+  components: { ToggleButton, FlowGraphComponent, Preview2D, MessageLog }
 })
 export default class MapEditorComponent extends Vue {
   showMinimap = true;
@@ -287,43 +287,39 @@ export default class MapEditorComponent extends Vue {
 
   file = []
 
-   @Getter('system') getterSystem
+  @Getter('system') getterSystem
 
-   @Action('saveSystem') storeLoadedSystem!: ({system: JSON, imported: boolean}) => void
+  @Action('saveSystem') storeLoadedSystem!: ({ system, imported } : { system: Map<string, unknown>, imported: boolean}) => void
 
   @Watch('file')
   onSelectedMapFileChanged (newValue: File) {
     const file = newValue
 
     fs.readFile(file.path, 'utf-8', (err, data) => {
-      if(err){
-        alert("An error ocurred reading the file :" + err.message);
-        return;
+      if (err) {
+        alert('An error ocurred reading the file :' + err.message)
+        return
       }
 
-      this.storeLoadedSystem({system: JSON.parse(data), imported: true})
-    });
+      this.storeLoadedSystem({ system: JSON.parse(data) as Map<string, unknown>, imported: true })
+    })
   }
-
 
   mounted () {
     this.availableComponentCategories = getRegisteredComponentCategories()
-
-    this.$store.commit('increment')
   }
 
-  saveSystem() {
-    let payload = JSON.stringify(this.getterSystem);
-    var a = document.createElement("a");
-    var file = new Blob([payload], {type: "text/plain"});
-    a.href = URL.createObjectURL(file);
-    a.download = 'json.txt';
-    a.click();
-    
+  saveSystem () {
+    const payload = JSON.stringify(this.getterSystem)
+    var a = document.createElement('a')
+    var file = new Blob([payload], { type: 'text/plain' })
+    a.href = URL.createObjectURL(file)
+    a.download = 'json.txt'
+    a.click()
   }
 
-  loadSystem() {
-    (this.$refs.file as QFile).pickFiles();
+  loadSystem () {
+    (this.$refs.file as QFile).pickFiles()
   }
 
   dragstart (id: string, ev: DragEvent) {
