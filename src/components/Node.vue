@@ -234,21 +234,4 @@ $socket-margin: 10px;
 .socket::after {
   visibility: hidden;
 }
-/*
-.input-title,
-.output-title {
-  vertical-align: middle;
-  color: white;
-  display: inline-block;
-  margin: $socket-margin 0;
-  line-height: $socket-size;
-}
-*/
-
-/*
-.control {
-  width: 100%;
-  padding: $socket-margin $socket-size/2 + $socket-margin;
-}
-*/
 </style>

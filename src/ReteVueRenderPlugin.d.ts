@@ -1,7 +1,7 @@
 import Mixin from './components/render/Mixin'
 
 /* eslint-disable no-inner-declarations */
-declare module 'rete-vue-render-plugin' {
+declare module 'rete-vue-render-plugin-ts' {
     import Vue from 'vue'
     import { NodeEditor } from 'Rete'
     export interface mixin{

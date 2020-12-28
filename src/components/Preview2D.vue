@@ -1,38 +1,21 @@
 <template>
-  <div class="preview" v-resize="onResize">
-    <q-toolbar class="bg-black text-white">
+  <div class="preview" style="display: flex; flex-direction: column;height: 100%">
+    <q-toolbar class="bg-grey-9 text-white">
       <q-toolbar-title>
         Preview
       </q-toolbar-title>
     </q-toolbar>
-    <div class="canvas">
-      <canvas ref="renderer" v-show="geometry" :width="width" :height="height">
+
+    <div style="flex-grow: 2" v-resize="onResize">
+    <canvas ref="renderer" v-show="geometry" :width="width" :height="height">
       </canvas>
-
-      <div v-show="!geometry && previewNode" class="warning">
-        <q-icon name="las la-skull-crossbones" color="warning" style="font-size: 8em;" />
-        <h1 class="text-warning">This is awkward</h1>
-        <h2 class="text-warning">
-          Check that all inputs are connected and values are set
-        </h2>
-      </div>
-
-      <div v-show="!previewNode" class="warning">
-        <q-icon name="las la-seedling" color="primary" style="font-size: 4em;" />
-        <div class="text">
-          <h1 class="text-white">At the beginning was a seed</h1>
-          <h2 class="text-white">
-            Currently is nothing to see here. Click on a <q-icon color="primary"style="font-size: 1.5em;" name="las la-video-slash" /> icon on a node on the left side to view its output.
-          </h2>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Voronoi } from 'd3-delaunay'
-import { Vue, Component, Prop, PropSync, Watch } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 
 import { Action } from 'vuex-class'
 
@@ -107,12 +90,9 @@ export default class Preview2D extends Vue {
 
   onResize (e : HTMLElement) {
     this.width = e.scrollWidth - (e.scrollWidth % 50)
-    // this.height = e.scrollHeight - (e.scrollHeight % 50)
+    this.height = e.scrollHeight - (e.scrollHeight % 50)
 
     this.repaint()
-
-    // this.width = canvasElement.parentElement.scrollWidth
-    // this.height = canvasElement.parentElement?.scrollHeight
   }
 
   getGeometryOfSelectedNode () {
@@ -205,7 +185,6 @@ export default class Preview2D extends Vue {
       const voronoi = (geometry as Record<string, unknown>).voronoi as Voronoi<number>
       const colors = (geometry as Record<string, unknown>).colors as Map<number, Color>
 
-      const t0 = performance.now()
       for (const cell of voronoi.cellPolygons()) {
         if (!colors.has(cell.index)) continue
 
@@ -214,8 +193,6 @@ export default class Preview2D extends Vue {
         voronoi.renderCell(cell.index, ctx)
         ctx.fill()
       }
-
-      const t1 = performance.now()
     }
 
     if ((geometry as Record<string, unknown>)?.points !== undefined) {
@@ -251,68 +228,6 @@ export default class Preview2D extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../css/quasar.variables.scss";
-
-.preview {
-  display: flex;
-  flex-direction: column;
-
-  overflow: hidden;
-}
-
-.viewport {
-  flex-grow: 2;
-}
-
-h1 {
-  font-size: 1.5em;
-  padding: 0;
-  margin: 0;
-
-  padding: 0;
-  margin: 0;
-  line-height: 2em;
-}
-
-h2 {
-  font-size: 1.0em;
-  padding: 0;
-  margin: 0;
-
-  padding: 0;
-  margin: 0;
-  line-height: 2em;
-}
-
-.warning {
-
-  display: flex;
-  align-items: center;
-
-  margin-left: 4em;
-  margin-right: 4em;
-
-  div {
-    padding-left: 2em;
-    padding-right: 2em;
-  }
-
-  h1 {
-  }
-}
-
-  h1 {
-    font-size: 2em;
-    flex-grow: 2;
-  }
-
-.canvas {
-  flex-grow: 2;
-  display: flex;
-}
-
-.flex {
-  display: flex;
-}
 </style>

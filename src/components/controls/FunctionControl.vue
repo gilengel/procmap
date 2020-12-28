@@ -12,9 +12,8 @@
 </template>
 
 <script lang="ts">
-import { NodeEditor } from 'rete'
 
-import { Component, Prop, Watch } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 
 import VueFlowControl from '../FlowControl'
 

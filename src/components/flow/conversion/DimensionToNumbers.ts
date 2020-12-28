@@ -1,6 +1,5 @@
 import { FlowComponent, rejectMessage, getInputValue, setOutputValue } from '../../FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
-import NumberControl from '../../controls/NumberControl.vue'
 import { Dimension } from 'src/components/models'
 
 export default new FlowComponent({

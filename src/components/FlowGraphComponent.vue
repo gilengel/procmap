@@ -1,7 +1,15 @@
 <template>
-  <q-page>
-    <div id="rete" ref="rete"></div>
-  </q-page>
+  <div class="preview">
+    <q-toolbar class="bg-grey-9 text-white">
+      <q-toolbar-title>
+        Flow
+      </q-toolbar-title>
+    </q-toolbar>
+
+    <div class="flow" v-resize="onResize">
+      <div id="rete" ref="rete"></div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -22,7 +30,13 @@ import { store } from '../store'
 import { Action } from 'vuex-class'
 import { getRegisteredComponentCategories } from './flow/Index'
 
-@Component
+import resize from 'vue-resize-directive'
+
+@Component({
+  directives: {
+    resize
+  }
+})
 export default class FlowGraphComponent extends Vue {
   @Prop(RandomMap) map: RandomMap | undefined;
   @Prop(Object) geometry: Record<string, unknown> | undefined;
@@ -244,13 +258,41 @@ export default class FlowGraphComponent extends Vue {
       this.editor.selected.each((n) => this.editor.removeNode(n))
     }
   }
+
+  width = 512;
+  height = 512;
+
+  onResize (e : HTMLElement) {
+    this.width = e.scrollWidth // - (e.scrollWidth % 50)
+    this.height = e.scrollHeight // - (e.scrollHeight % 50)
+
+    if (this.width !== e.scrollWidth || this.height !== e.scrollHeight) {
+      this.editor.view.resize()
+    }
+  }
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .preview {
-  position: relative;
-  width: 100%;
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  overflow: hidden;
+
+  .flow {
+    flex-grow: 2;
+    display: flex;
+    flex-direction: column;
+
+    #rete {
+      height: 100%;
+      overflow: collapse;
+
+      flex-grow: 2;
+    }
+  }
 }
+
 </style>
