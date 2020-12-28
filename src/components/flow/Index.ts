@@ -33,48 +33,6 @@ export interface MetaFlowComponent {
   readonly defaultData: Record<string, unknown>
 }
 
-const arithmeticCategory: MetaFlowCategory = {
-  label: 'Basic Math',
-  icon: '',
-
-  components: [
-    {
-      id: 'add',
-      label: 'Addition',
-      icon: 'las la-plus',
-      component: Add,
-      defaultData: {
-        number: 0,
-        number_2: 0
-      }
-    },
-    {
-      id: 'subtract',
-      label: 'Subtraction',
-      icon: 'las la-minus',
-      component: Subtract,
-      defaultData: {
-        number: 0,
-        number_2: 0
-      }
-    },
-    {
-      id: 'multiplication',
-      label: 'Multiplication',
-      icon: 'las la-times',
-      component: Multiply,
-      defaultData: { }
-    },
-    {
-      id: 'division',
-      label: 'Division',
-      icon: 'las la-divide',
-      component: Divide,
-      defaultData: { }
-    }
-  ]
-}
-
 const basicCategory: MetaFlowCategory = {
   label: 'Basic',
   icon: '',
@@ -215,7 +173,7 @@ const debugCategory: MetaFlowCategory = {
 // Unfortunatly vue does not support Maps for v-for which is necessary to display the registered components.
 // Therefore we use an Array, see https://github.com/vuejs/vue/issues/6644
 export function getRegisteredComponentCategories () : Array<MetaFlowCategory> {
-  return [basicCategory, arithmeticCategory, typesCategory, conversionCategory, debugCategory]
+  return [basicCategory, typesCategory, conversionCategory, debugCategory]
 }
 
 export function findRegisteredComponentById (id : string): MetaFlowComponent | undefined {
