@@ -3,7 +3,35 @@ const ctx: Worker = self as any
 
 import * as d3 from 'd3'
 import { Voronoi, Delaunay } from 'd3-delaunay'
-import { Dimension } from '../models'
+import { Dimension, Point } from '../models'
+
+function generateRandomPoints (amount: number, dimension: Dimension) : Array<[number, number]> {
+  const randomX = d3.randomNormal(
+    dimension.width / 2,
+    dimension.height / 3
+  )
+  const randomY = d3.randomNormal(
+    dimension.height / 2,
+    dimension.height / 3
+  )
+
+  const points : Array<[number, number]> = []
+  for (let i = 0; i < amount; i++) {
+    const x = Math.floor(randomX())
+    const y = Math.floor(randomY())
+
+    // filter out points outside of the dimensions and generate a new point
+    // TODO make this more intelligent
+    if (x < 0 || x > dimension.width || y < 0 || y > dimension.height) {
+      i--
+      continue
+    }
+
+    points.push([x, y])
+  }
+
+  return points
+}
 
 /**
  * Generates a voronoi diagram from an array of points. The diagram is bound by the provided size
@@ -53,10 +81,13 @@ function relax (voronoi: Voronoi<number>, iterations: number): Voronoi<number> {
 
 ctx.addEventListener('message', (event) => {
   const data = event.data as Record<string, unknown>
-  const points = data.points as ArrayLike<Delaunay.Point>
+
+  console.log(data)
+  const amount = data.amount as number
   const size = data.dimension as Dimension
   const iterations = data.relaxIterations as number
+  const points = !data.points ? generateRandomPoints(amount, size) : data.points as Array<[number, number]>
 
   const voronoi = relax(constructVoronoi(points, size), iterations)
-  ctx.postMessage({ progress: 1, voronoi: voronoi })
+  ctx.postMessage({ progress: 1, voronoi: voronoi, points: points })
 })

@@ -29,7 +29,7 @@ export default new FlowComponent({
         throw new Error(`FlowComponent[map]: Output value of pin [dimension] has wrong type or is undefined. Typeof == ${typeof (dimension)} `)
       }
 
-      setOutputValue(node, outputs, 'dimension', dimension, node.outputs.dimension !== undefined)
+      setOutputValue(node, outputs, 'dimension', dimension)
       resolve()
     })
   }

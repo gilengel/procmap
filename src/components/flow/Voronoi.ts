@@ -1,5 +1,5 @@
 
-import { FlowComponentWithPreview, getInputValue, setOutputValue, rejectMessage } from '../FlowGraph'
+import { FlowComponentWithPreview, getInputValue, setOutputValue, rejectMessage, hasInputValueChanged } from '../FlowGraph'
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Delaunay, Voronoi } from 'd3-delaunay'
@@ -18,12 +18,24 @@ export default new FlowComponentWithPreview({
     },
 
     {
-      type: 'points',
-      label: 'Points'
+      type: 'number',
+      id: 'amount',
+      label: 'Amount',
+
+      control: {
+        identifier: 'amount',
+        component: NumberControl,
+        isValid: (input: unknown) : boolean => {
+          const number = input as number
+
+          return (number >= 0 && number <= 20000)
+        }
+      }
     },
 
     {
       type: 'number',
+      id: 'iterations',
       label: 'Iterartions',
       control: {
         identifier: 'iterations',
@@ -48,18 +60,25 @@ export default new FlowComponentWithPreview({
     return new Promise((resolve, reject) => {
       node.data.invalid = false
 
+      console.log(node.data)
+
       const dimension: Dimension = getInputValue<Dimension>('dimension', inputs, node)
-      const points: Array<[number, number]> = getInputValue<Array<[number, number]>>('points', inputs, node)
       const iterations: number = getInputValue<number>('iterations', inputs, node)
+      const amount: number = getInputValue<number>('amount', inputs, node)
+      let points: Array<[number, number]> | undefined = node.data.points as Array<[number, number]>
+
+      // generate new random points if the amount of total points or the dimension of the map changed
+      if (
+        hasInputValueChanged('amount', inputs, node) &&
+        hasInputValueChanged('dimension', inputs, node)
+      ) {
+        console.log('FOOOOOOOOOOOOOOOOOOOOOOO')
+        points = undefined
+      }
 
       let rejectCalc = false
       if (dimension === undefined) {
         reject(rejectMessage('voronoi', 'dimension'))
-        rejectCalc = true
-      }
-
-      if (points === undefined) {
-        reject(rejectMessage('voronoi', 'points'))
         rejectCalc = true
       }
 
@@ -74,7 +93,7 @@ export default new FlowComponentWithPreview({
       }
 
       const worker = new VoronoiWorker()
-      worker.postMessage({ points: points, relaxIterations: isNaN(iterations) ? 1 : iterations, dimension: dimension })
+      worker.postMessage({ points, relaxIterations: isNaN(iterations) ? 1 : iterations, dimension, amount })
       worker.onerror = (e) => {
         console.error(`voronoi web worker failed with error ${e.message}`)
         reject(e)
@@ -89,10 +108,10 @@ export default new FlowComponentWithPreview({
           voronoi.__proto__ = Voronoi.prototype
           voronoi.delaunay.__proto__ = Delaunay.prototype
 
-          setOutputValue(node, outputs, 'voronoi', voronoi, node.outputs.voronoi !== undefined)
-          setOutputValue(node, outputs, 'points', data.points, node.outputs.points !== undefined)
-          setOutputValue(node, outputs, 'iterations', iterations, node.outputs.iterations !== undefined)
-
+          setOutputValue(node, outputs, 'voronoi', voronoi)
+          setOutputValue(node, outputs, 'points', data.points)
+          setOutputValue(node, outputs, 'iterations', iterations)
+          setOutputValue(node, outputs, 'amount', amount)
           resolve()
         } else {
           node.data.progress = progress

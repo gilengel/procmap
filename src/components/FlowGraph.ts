@@ -54,11 +54,11 @@ export function hasNodeDataPropertyChanged (node: NodeData, key: string, value: 
   return oldValue !== value
 }
 
-export function setOutputValue (node: NodeData, outputs: WorkerOutputs, key: string, value: unknown, outputValue: boolean) {
+export function setOutputValue (node: NodeData, outputs: WorkerOutputs, key: string, value: unknown) {
   node.data['old_' + key] = node.data[key]
   node.data[key] = value
 
-  if (outputValue) {
+  if (node.outputs[key]) {
     outputs[key] = value
   }
 }
@@ -76,7 +76,7 @@ export function setOutputValue (node: NodeData, outputs: WorkerOutputs, key: str
  */
 export function getInputValue<T> (key: string, inputs: WorkerInputs, node: NodeData, index = 0) : T {
   if (inputs[key] === undefined && node.data[key] === undefined) {
-    throw new Error(`input[${key}] of ${node.name} has no value`)
+    console.error(`input[${key}] of ${node.name} has no value`)
   }
 
   if (inputs[key] !== undefined && inputs[key][index] !== undefined) {

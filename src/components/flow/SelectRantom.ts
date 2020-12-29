@@ -55,8 +55,6 @@ export default new FlowComponentWithPreview({
       const amount: number = getInputValue<number>('amount', inputs, node)
       const func: string = getInputValue<string>('function', inputs, node)
 
-      console.log(`SelectRandom.functon = ${func}`)
-
       if (voronoi === undefined) {
         reject(rejectMessage('select_random', 'voronoi'))
         return

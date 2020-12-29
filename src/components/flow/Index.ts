@@ -57,6 +57,7 @@ const basicCategory: MetaFlowCategory = {
       icon: 'las la-map-marked',
       component: Voronoi,
       defaultData: {
+        amount: 100,
         iterations: 2
       }
     },
