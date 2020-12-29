@@ -40,13 +40,13 @@ import resize from 'vue-resize-directive'
 export default class FlowGraphComponent extends Vue {
   @Prop(RandomMap) map: RandomMap | undefined;
   @Prop(Object) geometry: Record<string, unknown> | undefined;
-  @Prop({ default: true }) showMinimap: boolean | undefined;
 
   @Action('render') updateRender!: (value: boolean) => void;
   @Action('saveSystem') saveSystem!: (arg: { system: JSON }) => void;
   @Action('resetSystemImported') resetSystemImported!: () => void;
 
   editor!: NodeEditor;
+  engine!: Engine;
 
   protected get systemImported (): boolean {
     return this.$store.getters.systemImported as boolean
@@ -55,24 +55,9 @@ export default class FlowGraphComponent extends Vue {
   @Watch('systemImported')
   onSystemChanged (imported: boolean) {
     if (imported) {
-      this.editor
-        .fromJSON(this.$store.getters.system)
-        .then(() => {
-          this.resetSystemImported()
-        })
-        .catch((e) => {
-          console.error(e)
-        })
-    }
-    // this.editor.toJSON()
-  }
-
-  @Watch('showMinimap')
-  onShowMinimap (val: boolean) {
-    const minimapPlugin = this.editor.plugins.get('minimap')
-
-    if (minimapPlugin instanceof Object && 'enable' in minimapPlugin) {
-      (minimapPlugin as Record<string, unknown>).enable = val
+      this.editor.fromJSON(this.$store.getters.system)
+        .then(() => this.resetSystemImported())
+        .catch((e) => console.error(e))
     }
   }
 
@@ -89,11 +74,11 @@ export default class FlowGraphComponent extends Vue {
     this.editor.bind('previewnode')
   }
 
-  registerComponents (engine: Engine) {
+  registerComponents () {
     for (const category of getRegisteredComponentCategories()) {
       category.components.map((c) => {
         this.editor.register(c.component)
-        engine.register(c.component)
+        this.engine.register(c.component)
       })
     }
   }
@@ -115,73 +100,7 @@ export default class FlowGraphComponent extends Vue {
     }
   }
 
-  async createDefaultNodes () {
-    const components = getRegisteredComponentCategories()[0].components
-
-    const mapNode = await components[0].component.createNode(components[0].defaultData)
-    mapNode.position = [0, 50]
-    this.editor.addNode(mapNode)
-
-    const randNode = await components[1].component.createNode(components[1].defaultData)
-    randNode.position = [80 + 230, 50]
-    this.editor.addNode(randNode)
-
-    const voroniNode = await components[2].component.createNode({
-      iterations: 2
-    })
-    voroniNode.position = [80 + 540, 50]
-    this.editor.addNode(voroniNode)
-
-    const selectRandomNode = await components[3].component.createNode({
-      amount: 2
-    })
-    selectRandomNode.position = [80 + 830, 50]
-    this.editor.addNode(selectRandomNode)
-
-    const mountainNode = await components[4].component.createNode({
-      amount: 20,
-      preview: false,
-      progress: 1
-    })
-    mountainNode.position = [1200, 50]
-    this.editor.addNode(mountainNode)
-
-    const functionNode = await components[5].component.createNode()
-    functionNode.position = [300, 300]
-    this.editor.addNode(functionNode)
-
-    this.editor.connect(
-      mapNode.outputs.get('dimension') as Output,
-      randNode.inputs.get('dimension') as Input
-    )
-
-    this.editor.connect(
-      randNode.outputs.get('dimension') as Output,
-      voroniNode.inputs.get('dimension') as Input
-    )
-
-    this.editor.connect(
-      randNode.outputs.get('point') as Output,
-      voroniNode.inputs.get('point') as Input
-    )
-
-    this.editor.connect(
-      voroniNode.outputs.get('voronoi') as Output,
-      selectRandomNode.inputs.get('voronoi') as Input
-    )
-
-    this.editor.connect(
-      selectRandomNode.outputs.get('voronoi') as Output,
-      mountainNode.inputs.get('voronoi') as Input
-    )
-
-    this.editor.connect(
-      selectRandomNode.outputs.get('indices') as Output,
-      mountainNode.inputs.get('indices') as Input
-    )
-  }
-
-  registerEditorEvents (engine: Engine) {
+  registerEditorEvents () {
     /*
     const listeners = new WeakMap()
     this.editor.on('previewnode', node => {
@@ -197,8 +116,8 @@ export default class FlowGraphComponent extends Vue {
     this.editor.on(['process', 'nodecreated', 'connectioncreated'], async () => {
       const data = this.editor.toJSON()
       this.saveSystem({ system: (data as unknown) as JSON })
-      await engine.abort()
-      await engine.process(data)
+      await this.engine.abort()
+      await this.engine.process(data)
 
       this.updateRender(true)
     })
@@ -215,10 +134,16 @@ export default class FlowGraphComponent extends Vue {
       this.updatePreviewGeometry()
     })
 */
+    this.editor.on(['import'], async () => {
+      await this.engine.abort()
+      await this.engine.process(this.editor.toJSON())
+
+      this.updateRender(true)
+    })
 
     this.editor.on(['noderemoved'], async () => {
-      await engine.abort()
-      await engine.process(this.editor.toJSON())
+      await this.engine.abort()
+      await this.engine.process(this.editor.toJSON())
 
       this.updateRender(true)
     })
@@ -226,7 +151,7 @@ export default class FlowGraphComponent extends Vue {
     this.editor.on(['keyup'], async (e: KeyboardEvent) => {
       this.keyUpEvent(e)
 
-      await engine.process(this.editor.toJSON())
+      await this.engine.process(this.editor.toJSON())
 
       this.updateRender(true)
     })
@@ -236,13 +161,13 @@ export default class FlowGraphComponent extends Vue {
     this.createEditor()
     this.createCustomEditorEvents()
 
-    const engine = new Rete.Engine('demo@0.1.0')
-    this.registerComponents(engine)
+    this.engine = new Rete.Engine('demo@0.1.0')
+    this.registerComponents()
 
     // Progress is used for longer task to display a progress bar
     this.makeComponentDataReactive()
 
-    this.registerEditorEvents(engine)
+    this.registerEditorEvents()
 
     // await this.createDefaultNodes()
 

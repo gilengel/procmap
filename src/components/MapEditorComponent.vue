@@ -53,7 +53,7 @@
             <div class="column full-height">
               <!--
               <q-scroll-area class="col q-pa-sm" visible>
-               
+
               </q-scroll-area>
               -->
                <FlowGraphComponent />
@@ -96,8 +96,6 @@ import { Getter, Action } from 'vuex-class'
   }
 })
 export default class MapEditorComponent extends Vue {
-  showMinimap = true;
-
   left = true;
 
   map: RandomMap = new RandomMap({ width: 1024, height: 1024 }, []);
@@ -138,6 +136,7 @@ export default class MapEditorComponent extends Vue {
         return
       }
 
+      // Save new map system into the vuex store
       this.storeLoadedSystem({
         system: JSON.parse(data) as Map<string, unknown>,
         imported: true
@@ -161,7 +160,6 @@ export default class MapEditorComponent extends Vue {
   loadSystem () {
     (this.$refs.file as QFile).pickFiles()
   }
-
 }
 </script>
 

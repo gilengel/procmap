@@ -3,8 +3,6 @@ import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi, Delaunay } from 'd3-delaunay'
 
-import { evaluate } from 'mathjs'
-
 export default new FlowComponentWithPreview({
   label: 'select random',
 

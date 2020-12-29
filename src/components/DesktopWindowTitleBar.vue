@@ -13,29 +13,45 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 
+import { QVueGlobals } from 'quasar'
+
+import { BrowserWindow } from 'electron'
+
+class QVueGlobalsWithElectron {
+  electron = {
+    remote: {
+      BrowserWindow: BrowserWindow
+    }
+  }
+}
+
 @Component
 export default class MapEditorComponent extends Vue {
+  window: BrowserWindow|undefined
+
+  mounted () {
+    this.window = (this.$q as QVueGlobals & QVueGlobalsWithElectron).electron.remote.BrowserWindow.getFocusedWindow() as BrowserWindow
+  }
+
   minimize () {
-    if (process.env.MODE === 'electron') {
-      this.$q.electron.remote.BrowserWindow.getFocusedWindow().minimize()
+    if (process.env.MODE === 'electron' && this.window) {
+      this.window.minimize()
     }
   }
 
   maximize () {
-    if (process.env.MODE === 'electron') {
-      const win = this.$q.electron.remote.BrowserWindow.getFocusedWindow()
-
-      if (win.isMaximized()) {
-        win.unmaximize()
+    if (process.env.MODE === 'electron' && this.window) {
+      if (this.window.isMaximized()) {
+        this.window.unmaximize()
       } else {
-        win.maximize()
+        this.window.maximize()
       }
     }
   }
 
   close () {
-    if (process.env.MODE === 'electron') {
-      this.$q.electron.remote.BrowserWindow.getFocusedWindow().close()
+    if (process.env.MODE === 'electron' && this.window) {
+      this.window.close()
     }
   }
 }

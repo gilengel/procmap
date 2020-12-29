@@ -1,10 +1,11 @@
-import { FlowComponentWithPreview, setOutputValue, getInputValue, rejectMessage, hasInputValueChanged, getInputValueWithDefault } from '../FlowGraph'
+import { FlowComponentWithPreview, setOutputValue, getInputValue, rejectMessage, hasInputValueChanged } from '../FlowGraph'
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Dimension, Point } from '../models'
 import { Store } from 'vuex'
 
 import RandomWorker from 'worker-loader!./Random.worker'
+import { assert } from 'console'
 export default new FlowComponentWithPreview({
   label: 'random',
 
@@ -51,8 +52,7 @@ export default new FlowComponentWithPreview({
   workerFn: (
     node: NodeData,
     inputs: WorkerInputs,
-    outputs: WorkerOutputs,
-    store?: Store<unknown>
+    outputs: WorkerOutputs
   ) : Promise<void> => {
     return new Promise((resolve, reject) => {
       const dimension: Dimension = getInputValue<Dimension>('dimension', inputs, node)
@@ -106,6 +106,10 @@ export default new FlowComponentWithPreview({
           setOutputValue(node, outputs, 'points', data.points, node.outputs.points !== undefined)
           setOutputValue(node, outputs, 'dimension', dimension, node.outputs.dimension !== undefined)
           setOutputValue(node, outputs, 'amount', amount, node.outputs.amount !== undefined)
+
+          console.assert(data.points instanceof Array, 'node[random].output[points] is not an array')
+          console.assert(dimension.width && dimension.width > 0 && dimension.height && dimension.height > 0, 'node[random].output[dimension] is not a valid dimension object with values greater than 0')
+          console.assert(amount && amount > 0, 'node[random].output[amount] is not a valid number')
 
           resolve()
         } else {

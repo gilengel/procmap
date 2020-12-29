@@ -25,7 +25,7 @@ export default new FlowComponent({
     inputs: WorkerInputs,
     outputs: WorkerOutputs
   ) : Promise<void> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setOutputValue(node, outputs, 'result', node.data.result, true)
 
       resolve()

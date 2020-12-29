@@ -27,16 +27,16 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
+import { Vue, Component } from 'vue-property-decorator'
 
-import { getRegisteredComponentCategories, MetaFlowCategory } from "./flow/Index";
+import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/Index'
 
 @Component
 export default class MapEditorComponent extends Vue {
   availableComponentCategories: Array<MetaFlowCategory> = [];
 
-  mounted() {
-    this.availableComponentCategories = getRegisteredComponentCategories();
+  mounted () {
+    this.availableComponentCategories = getRegisteredComponentCategories()
   }
 
   dragstart (id: string, ev: DragEvent) {

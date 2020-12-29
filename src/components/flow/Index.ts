@@ -11,7 +11,6 @@ import Mountains from './Mountains'
 import DimensionToNumbers from './conversion/DimensionToNumbers'
 import NumbersToPoint from './conversion/NumbersToPoint'
 import NumbersToDimension from './conversion/NumbersToDimension'
-import PrintNumber from './debug/PrintNumber'
 import Number from './types/Number'
 
 export interface MetaFlowCategory {
@@ -148,28 +147,10 @@ const conversionCategory: MetaFlowCategory = {
   ]
 }
 
-const debugCategory: MetaFlowCategory = {
-  label: 'Debug',
-  icon: '',
-
-  components: [
-    {
-      id: 'print',
-      label: 'Print',
-      icon: 'las la-bug',
-      component: PrintNumber,
-      defaultData: {
-        number: 0,
-        result: 42
-      }
-    }
-  ]
-}
-
 // Unfortunatly vue does not support Maps for v-for which is necessary to display the registered components.
 // Therefore we use an Array, see https://github.com/vuejs/vue/issues/6644
 export function getRegisteredComponentCategories () : Array<MetaFlowCategory> {
-  return [basicCategory, typesCategory, conversionCategory, debugCategory]
+  return [basicCategory, typesCategory, conversionCategory]
 }
 
 export function findRegisteredComponentById (id : string): MetaFlowComponent | undefined {

@@ -42,8 +42,8 @@ export default class NumberControl extends VueFlowControl {
  }
 
  mounted () {
-   // const property = this.getValue<number>()
-   // this.value = property
+   const property = this.getValue<number>()
+   this.value = property
  }
 }
 </script>
