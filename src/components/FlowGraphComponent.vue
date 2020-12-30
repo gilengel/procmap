@@ -16,7 +16,6 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import '@babel/polyfill'
 import Rete, { Engine, NodeEditor } from 'rete'
-import { Input, Output } from 'rete/types'
 
 import ConnectionPlugin from 'rete-connection-plugin'
 import VueRenderPlugin from './render'
@@ -27,7 +26,7 @@ import { RandomMap } from './models'
 
 import { store } from '../store'
 
-import { Action } from 'vuex-class'
+import { Action, Getter } from 'vuex-class'
 import { getRegisteredComponentCategories } from './flow/Index'
 
 import resize from 'vue-resize-directive'
@@ -45,12 +44,16 @@ export default class FlowGraphComponent extends Vue {
   @Action('saveSystem') saveSystem!: (arg: { system: JSON }) => void;
   @Action('resetSystemImported') resetSystemImported!: () => void;
 
+  @Getter('systemImported') systemImported!: boolean
+
   editor!: NodeEditor;
   engine!: Engine;
 
+  /*
   protected get systemImported (): boolean {
     return this.$store.getters.systemImported as boolean
   }
+  */
 
   @Watch('systemImported')
   onSystemChanged (imported: boolean) {

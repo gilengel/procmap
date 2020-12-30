@@ -7,6 +7,7 @@ import { Node as ReteNode } from 'rete'
 // import { ExampleStateInterface } from './module-example/state';
 
 import MessageModule from './messages'
+import { Data } from 'rete/types/core/data'
 
 /*
  * If not building with SSR mode, you can
@@ -14,10 +15,9 @@ import MessageModule from './messages'
  */
 
 interface PreviewStateInterface {
-  previewNode: ReteNode,
+  previewNode: ReteNode | undefined,
   render: boolean,
-
-  system: JSON,
+  system: Data | undefined,
   systemImported: boolean
 }
 export interface StateInterface {
@@ -43,14 +43,14 @@ export default function () {
     state: {
       previewNode: undefined,
       render: false,
-      system: {},
+      system: undefined,
       systemImported: false
     },
 
     getters: {
       render: state => state.render,
-      previewNode: state => state.previewNode, // state.previewNode }
-      system: state => state.system,
+      previewNode: (state: PreviewStateInterface): ReteNode | undefined => state.previewNode,
+      system: (state: PreviewStateInterface): Data | undefined => state.system,
       systemImported: state => state.systemImported
     },
 
@@ -65,7 +65,7 @@ export default function () {
         state.previewNode.data.preview = true
       },
 
-      saveSystem (state: PreviewStateInterface, arg: { system: JSON, imported: boolean }) {
+      saveSystem (state: PreviewStateInterface, arg: { system: Data, imported: boolean }) {
         state.system = arg.system
         state.systemImported = arg.imported
       },

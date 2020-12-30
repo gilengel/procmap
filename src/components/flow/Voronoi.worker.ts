@@ -3,9 +3,9 @@ const ctx: Worker = self as any
 
 import * as d3 from 'd3'
 import { Voronoi, Delaunay } from 'd3-delaunay'
-import { Dimension, Point } from '../models'
+import { Cell, Dimension, Point, VoronoiModel } from '../models'
 
-function generateRandomPoints (amount: number, dimension: Dimension) : Array<[number, number]> {
+function generateRandomPoints (amount: number, dimension: Dimension): Array<[number, number]> {
   const randomX = d3.randomNormal(
     dimension.width / 2,
     dimension.height / 3
@@ -15,7 +15,7 @@ function generateRandomPoints (amount: number, dimension: Dimension) : Array<[nu
     dimension.height / 3
   )
 
-  const points : Array<[number, number]> = []
+  const points: Array<[number, number]> = []
   for (let i = 0; i < amount; i++) {
     const x = Math.floor(randomX())
     const y = Math.floor(randomY())
@@ -42,6 +42,27 @@ function constructVoronoi (points: ArrayLike<Delaunay.Point>, size: Dimension): 
   const delaunay: Delaunay<number> = Delaunay.from(points)
 
   return delaunay.voronoi([0, 0, size.width, size.height])
+}
+
+function convert (voronoi: Voronoi<number>): VoronoiModel {
+  const model = new VoronoiModel()
+
+  const points = voronoi.delaunay.points
+  for (let i = 0; i < points.length; i += 2) {
+    model.points.push({ x: Math.floor(points[i]), y: Math.floor(points[i + 1]) })
+  }
+
+  for (const cell of voronoi.cellPolygons()) {
+    const convertedCell: Cell = new Cell()
+
+    for (const point of cell) {
+      convertedCell.points.push({ x: Math.floor(point[0]), y: Math.floor(point[1]) })
+    }
+
+    model.cells.push(convertedCell)
+  }
+
+  return model
 }
 
 /**
@@ -81,13 +102,12 @@ function relax (voronoi: Voronoi<number>, iterations: number): Voronoi<number> {
 
 ctx.addEventListener('message', (event) => {
   const data = event.data as Record<string, unknown>
-
-  console.log(data)
   const amount = data.amount as number
   const size = data.dimension as Dimension
   const iterations = data.relaxIterations as number
   const points = !data.points ? generateRandomPoints(amount, size) : data.points as Array<[number, number]>
 
   const voronoi = relax(constructVoronoi(points, size), iterations)
-  ctx.postMessage({ progress: 1, voronoi: voronoi, points: points })
+
+  ctx.postMessage({ progress: 1, voronoi: convert(voronoi), points: points })
 })

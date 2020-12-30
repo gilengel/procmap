@@ -19,7 +19,7 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 
 import { Action } from 'vuex-class'
 
-import { Color, Dimension } from './models'
+import { Color, Dimension, VoronoiModel, Drawable } from './models'
 
 import { Node as ReteNode } from 'rete'
 
@@ -112,6 +112,7 @@ export default class Preview2D extends Vue {
         break
       }
       case 'voronoi': {
+        console.log(node.data.voronoi)
         this.geometry = node.data.voronoi
         break
       }
@@ -151,17 +152,18 @@ export default class Preview2D extends Vue {
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
     ctx.clearRect(0, 0, 8000, 8000)
 
-    const geometry: unknown = this.geometry
+    if (this.geometry && this.geometry instanceof Drawable) {
+      this.geometry.draw(ctx)
+    }
+
+    /*
+    console.log(geometry)
 
     if (this.previewNode === undefined) {
       return
     }
 
-    if (geometry instanceof Voronoi) {
-      const voronoi = geometry
-      ctx.beginPath()
-      voronoi.render(ctx)
-      ctx.stroke()
+    if (geometry instanceof VoronoiModel) {
 
       return
     }
@@ -202,6 +204,7 @@ export default class Preview2D extends Vue {
         ctx.fill()
       })
     }
+    */
   }
 
   @Watch('previewNode')

@@ -25,7 +25,7 @@ export default new FlowComponentWithPreview({
       control: {
         identifier: 'amount',
         component: NumberControl,
-        isValid: (input: unknown) : boolean => {
+        isValid: (input: unknown): boolean => {
           const number = input as number
 
           return (number >= 0 && number <= 20000)
@@ -56,11 +56,9 @@ export default new FlowComponentWithPreview({
     node: NodeData,
     inputs: WorkerInputs,
     outputs: WorkerOutputs
-  ) : Promise<void> => {
+  ): Promise<void> => {
     return new Promise((resolve, reject) => {
       node.data.invalid = false
-
-      console.log(node.data)
 
       const dimension: Dimension = getInputValue<Dimension>('dimension', inputs, node)
       const iterations: number = getInputValue<number>('iterations', inputs, node)
@@ -72,7 +70,6 @@ export default new FlowComponentWithPreview({
         hasInputValueChanged('amount', inputs, node) &&
         hasInputValueChanged('dimension', inputs, node)
       ) {
-        console.log('FOOOOOOOOOOOOOOOOOOOOOOO')
         points = undefined
       }
 
@@ -105,8 +102,8 @@ export default new FlowComponentWithPreview({
           node.data.progress = 1.0
 
           const voronoi = data.voronoi as Voronoi<number>
-          voronoi.__proto__ = Voronoi.prototype
-          voronoi.delaunay.__proto__ = Delaunay.prototype
+          // voronoi.__proto__ = Voronoi.prototype
+          // voronoi.delaunay.__proto__ = Delaunay.prototype
 
           setOutputValue(node, outputs, 'voronoi', voronoi)
           setOutputValue(node, outputs, 'points', data.points)

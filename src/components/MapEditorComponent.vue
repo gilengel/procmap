@@ -2,7 +2,9 @@
   <div class="map-editor">
     <q-header class="bg-primary text-white">
       <template v-if="$q.platform.is.electron">
+        <!--
         <DekstopWindowTitleBar />
+        -->
       </template>
 
       <q-toolbar>
@@ -70,14 +72,14 @@ import ToggleButton from './ToggleButton.vue'
 import FlowGraphComponent from './FlowGraphComponent.vue'
 import Preview2D from './Preview2D.vue'
 import MessageLog from './MessageLog.vue'
-import DekstopWindowTitleBar from './DesktopWindowTitleBar.vue'
+// import DekstopWindowTitleBar from './DesktopWindowTitleBar.vue'
 
 import { RandomMap } from 'components/models'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 
 import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/Index'
 
-import { Platform, QFile } from 'quasar'
+import { QFile } from 'quasar'
 
 import MapNodesList from './MapNodesList.vue'
 
@@ -87,7 +89,7 @@ import { Getter, Action } from 'vuex-class'
 
 @Component({
   components: {
-    DekstopWindowTitleBar,
+    // DekstopWindowTitleBar,
     MapNodesList,
     ToggleButton,
     FlowGraphComponent,

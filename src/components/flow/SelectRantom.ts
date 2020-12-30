@@ -2,6 +2,7 @@ import { FlowComponentWithPreview, getInputValue, setOutputValue, rejectMessage 
 import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Voronoi, Delaunay } from 'd3-delaunay'
+import { VoronoiModel, Cell } from '../models'
 
 export default new FlowComponentWithPreview({
   label: 'select random',
@@ -20,7 +21,7 @@ export default new FlowComponentWithPreview({
       control: {
         identifier: 'amount',
         component: NumberControl,
-        isValid: (input: unknown) : boolean => {
+        isValid: (input: unknown): boolean => {
           const number = input as number
 
           return (number >= 0)
@@ -49,24 +50,18 @@ export default new FlowComponentWithPreview({
     node: NodeData,
     inputs: WorkerInputs,
     outputs: WorkerOutputs
-  ) : Promise<void> => {
+  ): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const voronoi: Voronoi<number> = getInputValue<Voronoi<number>>('voronoi', inputs, node)
+      const voronoi: VoronoiModel = getInputValue<VoronoiModel>('voronoi', inputs, node)
       const amount: number = getInputValue<number>('amount', inputs, node)
-      const func: string = getInputValue<string>('function', inputs, node)
 
       if (voronoi === undefined) {
         reject(rejectMessage('select_random', 'voronoi'))
         return
       }
 
-      const cells = new Map<number, Delaunay.Polygon>()
-      for (const cell of voronoi.cellPolygons()) {
-        cells.set(cell.index, cell)
-      }
-
-      const keys = Array.from(cells.keys())
-      let keysLength = keys.length
+      let keysLength = voronoi.cells.length
+      const keys = Array.from(Array(keysLength).keys())
 
       let selectedKeys = []
       for (let i = 0; i < amount; i++) {
@@ -79,8 +74,8 @@ export default new FlowComponentWithPreview({
       }
       selectedKeys = selectedKeys.sort()
 
-      setOutputValue(node, outputs, 'voronoi', voronoi, node.outputs.voronoi !== undefined)
-      setOutputValue(node, outputs, 'indices', selectedKeys, node.outputs.indices !== undefined)
+      setOutputValue(node, outputs, 'voronoi', voronoi)
+      setOutputValue(node, outputs, 'indices', selectedKeys)
 
       resolve()
     })
