@@ -4,7 +4,7 @@ import NumberControl from '../controls/NumberControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Delaunay, Voronoi } from 'd3-delaunay'
 
-import { Dimension } from '../models'
+import { Dimension, VoronoiModel } from '../models'
 
 import VoronoiWorker from 'worker-loader!./Voronoi.worker'
 
@@ -101,7 +101,7 @@ export default new FlowComponentWithPreview({
         if (progress === 1.0) {
           node.data.progress = 1.0
 
-          const voronoi = data.voronoi as Voronoi<number>
+          const voronoi = data.voronoi as VoronoiModel
           // voronoi.__proto__ = Voronoi.prototype
           // voronoi.delaunay.__proto__ = Delaunay.prototype
 

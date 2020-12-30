@@ -27,6 +27,30 @@ import * as d3 from 'd3'
 import { zoom, ZoomTransform } from 'd3-zoom'
 import resize from 'vue-resize-directive'
 
+function randColor (): string {
+  const r = Math.floor(Math.random() * 255)
+  const g = Math.floor(Math.random() * 255)
+  const b = Math.floor(Math.random() * 255)
+
+  return `rgba(${r}, ${g}, ${b}, 0.6)`
+}
+
+function drawVoronoi (voronoi: VoronoiModel, ctx: CanvasRenderingContext2D) {
+  for (const cell of voronoi.cells) {
+    const points = cell.points
+
+    ctx.beginPath()
+    ctx.moveTo(points[0].x, points[0].y)
+
+    for (let i = 1; i < points.length - 1; i++) {
+      ctx.lineTo(points[i].x, points[i].y)
+    }
+    ctx.closePath()
+    ctx.fillStyle = randColor()
+    ctx.fill()
+  }
+}
+
 @Component({
   directives: {
     resize
@@ -152,8 +176,8 @@ export default class Preview2D extends Vue {
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
     ctx.clearRect(0, 0, 8000, 8000)
 
-    if (this.geometry && this.geometry instanceof Drawable) {
-      this.geometry.draw(ctx)
+    if (this.geometry && this.geometry.points && this.geometry.cells) {
+      drawVoronoi(this.geometry as unknown as VoronoiModel, ctx)
     }
 
     /*

@@ -167,9 +167,9 @@ interface ControlSchema {
 interface ParameterSchema {
   type: string;
   id?: string;
+  mandatory: boolean;
   label: string;
   value?: unknown;
-
   control?: ControlSchema;
 }
 
