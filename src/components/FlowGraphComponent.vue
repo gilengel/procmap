@@ -4,6 +4,9 @@
       <q-toolbar-title>
         Flow
       </q-toolbar-title>
+      <q-btn flat round dense>
+        <q-icon name="las la-window-minimize" />
+      </q-btn>
     </q-toolbar>
 
     <div class="flow" v-resize="onResize">

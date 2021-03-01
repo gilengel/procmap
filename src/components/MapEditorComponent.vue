@@ -47,7 +47,7 @@
         <q-splitter horizontal v-model="rightToolbar" style="height: 100%">
           <template v-slot:before>
             <div class="column full-height">
-              <Preview2D />
+
             </div>
           </template>
 
@@ -70,8 +70,6 @@
 <script lang="ts">
 import ToggleButton from './ToggleButton.vue'
 import FlowGraphComponent from './FlowGraphComponent.vue'
-import Preview2D from './Preview2D.vue'
-import MessageLog from './MessageLog.vue'
 // import DekstopWindowTitleBar from './DesktopWindowTitleBar.vue'
 
 import { RandomMap } from 'components/models'
@@ -92,9 +90,7 @@ import { Getter, Action } from 'vuex-class'
     // DekstopWindowTitleBar,
     MapNodesList,
     ToggleButton,
-    FlowGraphComponent,
-    Preview2D,
-    MessageLog
+    FlowGraphComponent
   }
 })
 export default class MapEditorComponent extends Vue {

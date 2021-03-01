@@ -8,13 +8,12 @@ import * as StringSimilarity from 'string-similarity'
 import Node from './Node.vue'
 declare module 'rete/types/events' {
   interface EventsTypes {
-    previewnode: { node: ReteNode}
+    previewnode: { node: ReteNode }
   }
 }
 
 const registeredSockets = new Map([
   ['points', new Socket('points')],
-  ['voronoi', new Socket('voronoi')],
   ['dimension', new Socket('dimension')],
   ['indices', new Socket('indices')],
   ['number', new Socket('number')],
@@ -41,7 +40,7 @@ export function setNodeValue (node: NodeData, key: string, value: unknown) {
   node.data[key] = value
 }
 
-export function rejectMessage (nodeIdentifier: string, keyIdentifier: string) : string {
+export function rejectMessage (nodeIdentifier: string, keyIdentifier: string): string {
   return `FlowNode[${nodeIdentifier}.${keyIdentifier}] is not set or invalid. Check that the pin is connected or a value is provided via a control element`
 }
 
@@ -74,7 +73,7 @@ export function setOutputValue (node: NodeData, outputs: WorkerOutputs, key: str
  * @param inputs
  * @param node
  */
-export function getInputValue<T> (key: string, inputs: WorkerInputs, node: NodeData, index = 0) : T {
+export function getInputValue<T> (key: string, inputs: WorkerInputs, node: NodeData, index = 0): T {
   if (inputs[key] === undefined && node.data[key] === undefined) {
     console.error(`input[${key}] of ${node.name} has no value`)
   }
@@ -86,11 +85,11 @@ export function getInputValue<T> (key: string, inputs: WorkerInputs, node: NodeD
   return node.data[key] as T
 }
 
-function xor (value1: boolean, value2: boolean) : boolean {
+function xor (value1: boolean, value2: boolean): boolean {
   return value1 ? !value2 : value2
 }
 
-export function hasInputValueChanged (key: string, inputs: WorkerInputs, node: NodeData, index = 0) : boolean {
+export function hasInputValueChanged (key: string, inputs: WorkerInputs, node: NodeData, index = 0): boolean {
   const hasInputValue = inputs[key] !== undefined && inputs[key][index] !== undefined
   const hasDataValue = node.data[key] !== undefined
   const hasOldDataValue = node.data['old_' + key] !== undefined
@@ -123,7 +122,7 @@ export class FlowControl<S> extends Rete.Control {
 
   props: FlowControlProps<S>
 
-  constructor (component: VueConstructor<Vue>, emitter: NodeEditor, key: string, value: S, isValid: (input: S) => boolean) {
+  constructor(component: VueConstructor<Vue>, emitter: NodeEditor, key: string, value: S, isValid: (input: S) => boolean) {
     super(key)
     this.component = component
     this.props = { emitter, propertyKey: key, value: value, isValid: isValid }
@@ -157,7 +156,7 @@ enum Direction {
 
 interface ControlSchema {
   component: VueConstructor<Vue>;
-  isValid?(input: unknown) : boolean;
+  isValid?(input: unknown): boolean;
   // Node property key, this is set automatically to the key of the input/output the control is connected to.
   // However sometimes you want to specify it by yourself for example if you want to add a control to an array of
   // random numbers and the control should control how many random numbers are generated.
@@ -176,7 +175,7 @@ interface ParameterSchema {
 export class FlowComponent extends Rete.Component {
   readonly schema: ComponentSchema;
 
-  constructor (inSchema: ComponentSchema) {
+  constructor(inSchema: ComponentSchema) {
     super(inSchema.label)
 
     this.schema = inSchema
@@ -202,9 +201,9 @@ export class FlowComponent extends Rete.Component {
 
       throw new Error(
         `Socket with the name ${parameter.type} does not exists.` +
-          (bestMatch.bestMatch.rating > 0.5
-            ? ` Did you mean the socket "${bestMatch.bestMatch.target}"?`
-            : 'Make sure that a socket with this name is registered in the FlowGraphComponent.')
+        (bestMatch.bestMatch.rating > 0.5
+          ? ` Did you mean the socket "${bestMatch.bestMatch.target}"?`
+          : 'Make sure that a socket with this name is registered in the FlowGraphComponent.')
       )
     }
 
