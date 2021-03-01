@@ -16,21 +16,23 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable */
+
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import '@babel/polyfill'
 import Rete, { Engine, NodeEditor } from 'rete'
 
 import ConnectionPlugin from 'rete-connection-plugin'
-import VueRenderPlugin from './render'
+import VueRenderPlugin from '../render'
 
-import DockPlugin from './dock'
+import DockPlugin from '../dock'
 
-import { RandomMap } from './models'
+import { RandomMap } from '../models'
 
-import { store } from '../store'
+import { store } from '../../store'
 
 import { Action, Getter } from 'vuex-class'
-import { getRegisteredComponentCategories } from './flow/Index'
+import { getRegisteredComponentCategories } from '../flow/Index'
 
 import resize from 'vue-resize-directive'
 

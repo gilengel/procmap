@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import Mixin from './render/Mixin'
+import Mixin from '../render/Mixin'
 import Socket from './Socket.vue'
 
 import { Component } from 'vue-property-decorator'

@@ -47,17 +47,21 @@
         <q-splitter horizontal v-model="rightToolbar" style="height: 100%">
           <template v-slot:before>
             <div class="column full-height">
-
+              <div class="col">
+              <q-toolbar class="bg-grey-9 text-white">
+                <q-toolbar-title>
+                  Data Preview
+                </q-toolbar-title>
+              </q-toolbar>
+              </div>
+              <div class="col">
+               <TableView/>
+              </div>
             </div>
           </template>
 
           <template v-slot:after>
             <div class="column full-height">
-              <!--
-              <q-scroll-area class="col q-pa-sm" visible>
-
-              </q-scroll-area>
-              -->
                <FlowGraphComponent />
             </div>
           </template>
@@ -69,7 +73,7 @@
 
 <script lang="ts">
 import ToggleButton from './ToggleButton.vue'
-import FlowGraphComponent from './FlowGraphComponent.vue'
+import FlowGraphComponent from './flow/FlowGraphComponent.vue'
 // import DekstopWindowTitleBar from './DesktopWindowTitleBar.vue'
 
 import { RandomMap } from 'components/models'
@@ -85,12 +89,15 @@ import * as fs from 'fs'
 
 import { Getter, Action } from 'vuex-class'
 
+import TableView from './TableView.vue'
+
 @Component({
   components: {
     // DekstopWindowTitleBar,
     MapNodesList,
     ToggleButton,
-    FlowGraphComponent
+    FlowGraphComponent,
+    TableView
   }
 })
 export default class MapEditorComponent extends Vue {
