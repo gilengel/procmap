@@ -3,7 +3,7 @@ import { FlowComponent } from './FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 
 export default new FlowComponent({
-    label: 'map',
+    label: 'table',
 
     outputs: [
         {

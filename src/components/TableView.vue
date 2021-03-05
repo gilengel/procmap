@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      darkc
+      dark
+      flat
       title="Treats"
       :data="data"
       :columns="columns"

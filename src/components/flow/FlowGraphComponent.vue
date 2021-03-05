@@ -36,6 +36,9 @@ import { getRegisteredComponentCategories } from '../flow/Index'
 
 import resize from 'vue-resize-directive'
 
+import TableView from '../TableView.vue'
+import Vue from 'vue'
+
 @Component({
   directives: {
     resize
@@ -109,17 +112,11 @@ export default class FlowGraphComponent extends Vue {
   }
 
   registerEditorEvents () {
-    /*
-    const listeners = new WeakMap()
-    this.editor.on('previewnode', node => {
-      if (this.previewNode instanceof ReteNode) {
-        this.previewNode.data.preview = false
-      }
+    this.editor.on(['nodecreate'], node => {
+        this.$emit('addWidget', node.name);
 
-      this.previewNode = node
-      this.updatePreviewGeometry()
+        return node;
     })
-    */
 
     this.editor.on(['process', 'nodecreated', 'connectioncreated'], async () => {
       const data = this.editor.toJSON()
@@ -130,18 +127,6 @@ export default class FlowGraphComponent extends Vue {
       this.updateRender(true)
     })
 
-    /*
-    this.editor.on(['connectionremoved'], async c => {
-      // remove cached values in the node
-      delete c.input.node.data['old_' + c.input.key]
-      delete c.input.node.data[c.input.key]
-
-      await engine.abort()
-      await engine.process(this.editor.toJSON())
-
-      this.updatePreviewGeometry()
-    })
-*/
     this.editor.on(['import'], async () => {
       await this.engine.abort()
       await this.engine.process(this.editor.toJSON())

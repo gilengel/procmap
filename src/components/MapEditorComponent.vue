@@ -54,15 +54,15 @@
                 </q-toolbar-title>
               </q-toolbar>
               </div>
-              <div class="col">
-               <TableView/>
+              <div class="col" ref="container">
+               
               </div>
             </div>
           </template>
 
           <template v-slot:after>
             <div class="column full-height">
-               <FlowGraphComponent />
+               <FlowGraphComponent @addWidget="addWidget" />
             </div>
           </template>
         </q-splitter>
@@ -130,6 +130,17 @@ export default class MapEditorComponent extends Vue {
     system: Map<string, unknown>;
     imported: boolean;
   }) => void;
+
+  addWidget(element: string) {
+      if(element === 'table') {
+            var ComponentClass = Vue.extend(TableView)
+            var instance = new ComponentClass()
+            instance.$mount() // pass nothing
+
+            console.log(this.$refs)
+            this.$refs.container.appendChild(instance.$el)          
+      }
+  };
 
   @Watch('file')
   onSelectedMapFileChanged (newValue: File) {
@@ -295,9 +306,6 @@ export default class MapEditorComponent extends Vue {
               <q-icon name="las la-map-marked" />
             </q-item-section>
 
-            <q-item-section>
-              <q-item-label>Voronoi</q-item-label>
-            </q-item-section>
           </q-item>
 
           <q-separator spaced inset="item" />
