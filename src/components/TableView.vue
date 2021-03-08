@@ -1,32 +1,25 @@
 <template>
-<div>
-  <q-toolbar class="bg-black text-white">
-    <q-toolbar-title> Table </q-toolbar-title>
-  </q-toolbar>
+  <div class="q-pa-md">
     <q-table
+      dark
+      flat
       title="Treats"
       :data="data"
       :columns="columns"
       row-key="name"
-      dark
-      color="amber"
     />
-</div>
+  </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
+<script>
+/* eslint-disable */
 
-@Component({
-    name: 'TableWidget'
-})
-export default class TableWidget extends Vue {
+export default {
   data () {
     return {
       columns: [
         {
-          name: 'desc',
+          name: 'name',
           required: true,
           label: 'Dessert (100g serving)',
           align: 'left',
@@ -145,9 +138,10 @@ export default class TableWidget extends Vue {
         }
       ]
     }
-  }    
+  }
 }
 </script>
 
 <style lang="scss">
+
 </style>
