@@ -1,8 +1,5 @@
 <template>
-<div>
-  <q-toolbar class="bg-black text-white">
-    <q-toolbar-title> Table </q-toolbar-title>
-  </q-toolbar>
+<Widget title="Test">
     <q-table
       title="Treats"
       :data="data"
@@ -11,20 +8,25 @@
       dark
       color="amber"
     />
-</div>
+</Widget>
 </template>
 
 <script lang="ts">
+import Widget from './Widget.vue'
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import axios from 'axios'
 
 @Component({
-    name: 'TableWidget'
+    name: 'TableWidget',
+
+    components: {
+      Widget
+    }
 })
 export default class TableWidget extends Vue {
-  data () {
-    return {
-      columns: [
+
+      columns = [
         {
           name: 'desc',
           required: true,
@@ -41,8 +43,9 @@ export default class TableWidget extends Vue {
         { name: 'sodium', label: 'Sodium (mg)', field: 'sodium' },
         { name: 'calcium', label: 'Calcium (%)', field: 'calcium', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
         { name: 'iron', label: 'Iron (%)', field: 'iron', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) }
-      ],
-      data: [
+      ]
+
+      data = [
         {
           name: 'Frozen Yogurt',
           calories: 159,
@@ -144,8 +147,7 @@ export default class TableWidget extends Vue {
           iron: '6%'
         }
       ]
-    }
-  }    
+    
 }
 </script>
 

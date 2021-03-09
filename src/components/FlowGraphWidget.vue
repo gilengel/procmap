@@ -6,7 +6,7 @@
       </template>
 
       <template v-slot:after>
-        <FlowGraphComponent />
+        <FlowGraphComponent v-on="$listeners" />
       </template>
     </q-splitter>
     
@@ -43,7 +43,7 @@ export default class FlowGraphWidget extends Vue {
   verticalSplitter = 50;
 
   // width of left toolbar
-  leftToolbar = 10;
+  leftToolbar = 40;
 
   // width of right toolbar
   rightToolbar = 50;

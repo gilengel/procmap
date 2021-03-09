@@ -1,25 +1,22 @@
-/* eslint-disable */
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FlowComponent } from './FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 
 export default new FlowComponent({
-    label: 'table_view',
+    label: 'image',
 
-    inputs: [
+    outputs: [
         {
             type: 'table_data',
-            label: 'Data'
+            label: 'Data',
+            mandatory: true
         }
     ],
 
-    outputs: [
-    ],
-
     workerFn: (
-        node: NodeData,
-        inputs: WorkerInputs,
-        outputs: WorkerOutputs
+        _node: NodeData,
+        _inputs: WorkerInputs,
+        _outputs: WorkerOutputs
     ): Promise<void> => {
         return new Promise((resolve) => {
             resolve()

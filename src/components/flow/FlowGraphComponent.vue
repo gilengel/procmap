@@ -88,6 +88,8 @@ export default class FlowGraphComponent extends Vue {
 
   registerEditorEvents () {
     this.editor.on(['nodecreate'], node => {
+        this.$emit("add-widget", node.name);
+
         return node;
     })
 

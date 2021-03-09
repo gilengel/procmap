@@ -1,5 +1,6 @@
 import { Component } from 'rete'
 import Table from './Table'
+import Image from './Image'
 
 export interface MetaFlowCategory {
     readonly label: string;
@@ -26,9 +27,14 @@ const basicCategory: MetaFlowCategory = {
             label: 'Table',
             icon: 'las la-map-marked',
             component: Table,
-            defaultData: {
-                dimension: { width: 1024, height: 1024 }
-            }
+            defaultData: {}
+        },
+        {
+            id: 'image',
+            label: 'Image',
+            icon: 'las la-map-marked',
+            component: Image,
+            defaultData: {}
         }
     ]
 }
