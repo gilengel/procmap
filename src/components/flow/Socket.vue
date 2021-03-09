@@ -1,8 +1,10 @@
 <template>
-    <div class="socket" :class="[type, socket.name, used ? 'used' : ''] | kebab" :title="socket.name+'\\n'+socket.hint">
-
-    </div>
-    <!-- Hello World -->
+  <div
+    class="socket"
+    :class="[type, socket.name, used ? 'used' : ''] | kebab"
+    :title="socket.name+'\\n'+socket.hint"
+  />
+  <!-- Hello World -->
 </template>
 
 <script lang="ts">

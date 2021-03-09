@@ -2,8 +2,14 @@
   <div :class="[selected(), 'node shadow-4']">
     <div class="title">
       {{ node.name }}
-      <q-icon v-if="node.data.invalid" name="las la-skull-crossbones" size="sm" color="warning" />
-      <q-btn v-if="node.data.hasPreview && !node.data.invalid"
+      <q-icon
+        v-if="node.data.invalid"
+        name="las la-skull-crossbones"
+        size="sm"
+        color="warning"
+      />
+      <q-btn
+        v-if="node.data.hasPreview && !node.data.invalid"
         flat
         round
         :color="node.data.preview ? 'primary' : ''"
@@ -14,10 +20,14 @@
     </div>
     <div class="content">
       <div
-        class="column inputs"
         v-if="node.controls.size > 0 || node.inputs.size > 0"
+        class="column inputs"
       >
-        <div v-for="input in inputs()" :key="input.name" class="input-container">
+        <div
+          v-for="input in inputs()"
+          :key="input.name"
+          class="input-container"
+        >
           <!-- Pin -->
           <Socket
             v-socket:input="input"
@@ -27,39 +37,48 @@
           />
 
           <!-- Pin Name -->
-          <div class="input-title" v-show="!input.showControl()">
+          <div
+            v-show="!input.showControl()"
+            class="input-title"
+          >
             {{ input.name }}
           </div>
 
           <!-- Pin Control -->
           <div
-            class="input-control"
             v-show="input.showControl()"
             v-control="input.control"
-          ></div>
+            class="input-control"
+          />
         </div>
       </div>
       <div class="column">
         <div
-          class="control"
           v-for="(control, index) in controls()"
-          v-control="control"
           :key="index"
-        ></div>
+          v-control="control"
+          class="control"
+        />
       </div>
       <div class="column outputs">
-        <div class="output-container" v-for="output in outputs()" :key="output.name">
-            <div class="output-title">{{ output.name }}</div>
-            <Socket
-              v-socket:output="output"
-              type="output"
-              :socket="output.socket"
-              :used="output.connections.length > 0"
-            ></Socket>
+        <div
+          v-for="output in outputs()"
+          :key="output.name"
+          class="output-container"
+        >
+          <div class="output-title">
+            {{ output.name }}
+          </div>
+          <Socket
+            v-socket:output="output"
+            type="output"
+            :socket="output.socket"
+            :used="output.connections.length > 0"
+          />
         </div>
       </div>
     </div>
-<!--
+    <!--
     <q-linear-progress dark class="q-mt-sm" size="8px" :value="node.data.progress" v-if="node.data.progress && Fnode.data.progress != 1.0"/>
 -->
   </div>
@@ -79,7 +98,6 @@ import { Node as ReteNode } from 'rete'
 })
 export default class Node extends Mixin {
   node!: ReteNode
-
 
   togglePreview () {
     if (this.editor === undefined || this.node === undefined) {

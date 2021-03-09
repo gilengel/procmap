@@ -1,5 +1,5 @@
 <template>
-<Widget title="Test">
+  <Widget title="Test">
     <q-table
       title="Treats"
       :data="data"
@@ -8,14 +8,21 @@
       dark
       color="amber"
     />
-</Widget>
+  </Widget>
 </template>
 
 <script lang="ts">
 import Widget from './Widget.vue'
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import axios from 'axios'
+
+interface TableRow {
+  name: string,
+  align: string,
+  label: string,
+  field: string,
+  sortable: boolean
+}
 
 @Component({
     name: 'TableWidget',
@@ -25,15 +32,14 @@ import axios from 'axios'
     }
 })
 export default class TableWidget extends Vue {
-
       columns = [
         {
           name: 'desc',
           required: true,
           label: 'Dessert (100g serving)',
           align: 'left',
-          field: row => row.name,
-          format: val => `${val}`,
+          field: (row: TableRow) => row.name,
+          format: (val: unknown) => `${val as string}`,
           sortable: true
         },
         { name: 'calories', align: 'center', label: 'Calories', field: 'calories', sortable: true },
@@ -41,8 +47,8 @@ export default class TableWidget extends Vue {
         { name: 'carbs', label: 'Carbs (g)', field: 'carbs' },
         { name: 'protein', label: 'Protein (g)', field: 'protein' },
         { name: 'sodium', label: 'Sodium (mg)', field: 'sodium' },
-        { name: 'calcium', label: 'Calcium (%)', field: 'calcium', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-        { name: 'iron', label: 'Iron (%)', field: 'iron', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) }
+        { name: 'calcium', label: 'Calcium (%)', field: 'calcium', sortable: true, sort: (a: string, b: string) => parseInt(a, 10) - parseInt(b, 10) },
+        { name: 'iron', label: 'Iron (%)', field: 'iron', sortable: true, sort: (a: string, b: string) => parseInt(a, 10) - parseInt(b, 10) }
       ]
 
       data = [
@@ -147,7 +153,6 @@ export default class TableWidget extends Vue {
           iron: '6%'
         }
       ]
-    
 }
 </script>
 

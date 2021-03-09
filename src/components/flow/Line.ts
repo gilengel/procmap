@@ -3,9 +3,9 @@ import { FlowComponent } from './FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 
 export default new FlowComponent({
-    label: 'table',
+    label: 'chart',
 
-    outputs: [
+    inputs: [
         {
             type: 'table_data',
             label: 'Data',
@@ -16,8 +16,10 @@ export default new FlowComponent({
     workerFn: (
         _node: NodeData,
         _inputs: WorkerInputs,
-        outputs: WorkerOutputs
+        _outputs: WorkerOutputs
     ): Promise<void> => {
-        console.log(outputs)
+        return new Promise((resolve) => {
+            resolve()
+        })
     }
 })
