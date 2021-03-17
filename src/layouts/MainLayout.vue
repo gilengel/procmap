@@ -44,6 +44,7 @@ import { GridLayout, GridItem } from 'vue-grid-layout';
 import Widget from 'components/Widget.vue'
 import TableWidget from 'components/TableWidget.vue'
 import ImageWidget from 'components/ImageWidget.vue'
+import TextWidget from 'components/TextWidget.vue'
 import FlowGraphWidget from 'components/FlowGraphWidget.vue'
 
 import Vue from 'vue'
@@ -61,6 +62,7 @@ export default defineComponent({
     Widget,
     TableWidget,
     ImageWidget,
+    TextWidget,
     FlowGraphWidget
   },
 
@@ -68,7 +70,7 @@ export default defineComponent({
     return {
       layout: [      
         { x: 0, y: 0, w: 6, h: 16, i: '0', static: true, component: 'FlowGraphWidget' },
-
+        //{ x: 6, y: 0, w: 6, h: 16, i: '1', static: true, component: 'text' },
         //{ x: 9, y: 0, w: 3, h: 8, i: '3', static: false, component: 'Widget' },
         //{ x: 9, y: 8, w: 3, h: 8, i: '4', static: false, component: 'Widget' },
 
@@ -88,13 +90,15 @@ export default defineComponent({
     onAddWidget(element: string) { 
       var ComponentClass = null;  
            
-        if(element === 'table') {
+        if (element === 'table') {
           ComponentClass = Vue.extend(TableWidget)
 
 
               //this.$refs['Widget1'].appendChild(instance.$el)          
-        }else if(element === 'image') {
+        } else if (element === 'image') {
           ComponentClass = Vue.extend(ImageWidget)
+        } else if (element === 'text') {
+          ComponentClass = Vue.extend(TextWidget)
         }
 
         if(ComponentClass === null) {
@@ -107,11 +111,11 @@ export default defineComponent({
         let len = this.$data.layout.length;
         this.layout.push({
                               x: 6,
-                              y: this.layout.length + (this.colNum || 12), // puts it at the bottom
-                              w: 2,
+                              y: 0, // puts it at the bottom
+                              w: 6,
                               h: 6,
                               i: `${this.index}`,
-                              static: false,
+                              static: true,
                               component: (element as String).capitalize() + 'Widget'
         });
               

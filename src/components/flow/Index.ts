@@ -1,6 +1,7 @@
 import { Component } from 'rete'
 import Table from './Table'
 import Image from './Image'
+import Text from './Text'
 
 export interface MetaFlowCategory {
     readonly label: string;
@@ -34,6 +35,13 @@ const basicCategory: MetaFlowCategory = {
             label: 'Image',
             icon: 'las la-map-marked',
             component: Image,
+            defaultData: {}
+        },
+        {
+            id: 'text',
+            label: 'Text',
+            icon: 'las la-map-marked',
+            component: Text,
             defaultData: {}
         }
     ]

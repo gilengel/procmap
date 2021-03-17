@@ -26,4 +26,7 @@ export default class Widget extends WidgetProps {}
 </script>
 
 <style lang="scss">
+  .q-toolbar {
+    background: $dark !important;
+  }
 </style>
