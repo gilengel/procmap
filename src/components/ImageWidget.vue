@@ -1,10 +1,10 @@
 <template>
-<Widget title="Image">
-        <q-img
-          src="https://placeimg.com/500/300/nature"
-          :ratio="1"
-        />
-</Widget>
+  <Widget title="Image">
+    <q-img
+      src="https://placeimg.com/500/300/nature"
+      :ratio="1"
+    />
+  </Widget>
 </template>
 
 <script lang="ts">
@@ -19,7 +19,7 @@ import Component from 'vue-class-component'
       Widget
     }
 })
-export default class ImageWidget extends Vue {    
+export default class ImageWidget extends Vue {
 }
 </script>
 

@@ -3,32 +3,32 @@
     <q-page-container>
       <q-page>
         <grid-layout
-          :layout.sync='layout'
-          :col-num='12'
-          :row-height='30'
-          :is-draggable='true'
-          :is-resizable='true'
-          :vertical-compact='true'
-          :use-css-transforms='true'
-          :margin='[0, 0]'
+          :layout.sync="layout"
+          :col-num="12"
+          :row-height="30"
+          :is-draggable="true"
+          :is-resizable="true"
+          :vertical-compact="true"
+          :use-css-transforms="true"
+          :margin="[0, 0]"
         >
           <grid-item
-            v-for='item in layout'
-            :static='item.static'
-            :x='item.x'
-            :y='item.y'
-            :w='item.w'
-            :h='item.h'
-            :i='item.i'
+            v-for="item in layout"
             :key="item.i"
+            :static="item.static"
+            :x="item.x"
+            :y="item.y"
+            :w="item.w"
+            :h="item.h"
+            :i="item.i"
+            drag-allow-from=".vue-draggable-handle"
+            drag-ignore-from=".no-drag"
           >
-
-            <component 
-              :is='item.component' 
-              :ref='item.component + item.i'
-              @add-widget='onAddWidget'  
-            >
-            </component> 
+            <component
+              :is="item.component"
+              :ref="item.component + item.i"
+              @add-widget="onAddWidget"
+            />
           </grid-item>
         </grid-layout>
       </q-page>
@@ -38,19 +38,25 @@
 
 <script lang='ts'>
 import { defineComponent } from '@vue/composition-api'
-//import MapEditorComponent from 'components/MapEditorComponent.vue'
 
-import { GridLayout, GridItem } from 'vue-grid-layout';
+import { GridLayout, GridItem } from 'vue-grid-layout'
 import Widget from 'components/Widget.vue'
 import TableWidget from 'components/TableWidget.vue'
 import ImageWidget from 'components/ImageWidget.vue'
 import TextWidget from 'components/TextWidget.vue'
+import ChartWidget from 'src/components/ChartWidget.vue'
 import FlowGraphWidget from 'components/FlowGraphWidget.vue'
 
 import Vue from 'vue'
 
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
+interface WidgetData {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  i: string;
+  component: string;
+  static: boolean;
 }
 
 export default defineComponent({
@@ -63,74 +69,74 @@ export default defineComponent({
     TableWidget,
     ImageWidget,
     TextWidget,
-    FlowGraphWidget
+    FlowGraphWidget,
+    ChartWidget
   },
 
-  data() {
+  data () {
     return {
-      layout: [      
-        { x: 0, y: 0, w: 6, h: 16, i: '0', static: true, component: 'FlowGraphWidget' },
-        //{ x: 6, y: 0, w: 6, h: 16, i: '1', static: true, component: 'text' },
-        //{ x: 9, y: 0, w: 3, h: 8, i: '3', static: false, component: 'Widget' },
-        //{ x: 9, y: 8, w: 3, h: 8, i: '4', static: false, component: 'Widget' },
-
+      layout: [
+        { x: 0, y: 0, w: 6, h: 16, i: '0', static: true, component: 'FlowGraphWidget' }
+        // { x: 6, y: 0, w: 6, h: 16, i: '1', static: true, component: 'text' },
+        // { x: 9, y: 0, w: 3, h: 8, i: '3', static: false, component: 'Widget' },
+        // { x: 9, y: 8, w: 3, h: 8, i: '4', static: false, component: 'Widget' },
       ],
       draggable: true,
       resizable: true,
       colNum: 12,
-      index: 0,
-    };
+      index: 0
+    }
   },
-  
-  mounted() {
-    this.index = this.layout.length;
-  }, 
+
+  mounted () {
+    this.index = this.layout.length
+  },
 
   methods: {
-    onAddWidget(element: string) { 
-      var ComponentClass = null;  
-           
-        if (element === 'table') {
-          ComponentClass = Vue.extend(TableWidget)
+    getWidgetName (element: string) {
+      return `${element.charAt(0).toUpperCase()}${element.slice(1)}Widget`
+    },
 
+    onAddWidget (element: string) {
+      var ComponentClass = null
 
-              //this.$refs['Widget1'].appendChild(instance.$el)          
-        } else if (element === 'image') {
+              // this.$refs['Widget1'].appendChild(instance.$el)
+        if (element === 'image') {
           ComponentClass = Vue.extend(ImageWidget)
         } else if (element === 'text') {
           ComponentClass = Vue.extend(TextWidget)
+        } else if (element === 'table') {
+          ComponentClass = Vue.extend(TableWidget)
+        } else if (element === 'chart') {
+          ComponentClass = Vue.extend(ChartWidget)
         }
 
-        if(ComponentClass === null) {
-          return;
+        if (ComponentClass === null) {
+          return
         }
-              
-        //var instance = new ComponentClass()
-        //instance.$mount() // pass nothing
 
-        let len = this.$data.layout.length;
-        this.layout.push({
-                              x: 6,
-                              y: 0, // puts it at the bottom
-                              w: 6,
-                              h: 6,
-                              i: `${this.index}`,
-                              static: true,
-                              component: (element as String).capitalize() + 'Widget'
-        });
-              
-        this.index++;
+          this.layout.push({
+          x: 6,
+          y: this.layout.length + (this.colNum || 12), // puts it at the bottom
+          w: 2,
+          h: 16,
+          i: `${this.index}`,
+          static: false,
+          component: this.getWidgetName(element)
+        })
+
+        this.index++
     },
 
-    itemTitle(item) {
-      let result = item.i;
+    itemTitle (item: WidgetData) {
+      let result = item.i
       if (item.static) {
-        result += ' - Static';
+        result += ' - Static'
       }
-      return result;
-    },
-  },
-});
+      return result
+    }
+  }
+})
 </script>
 
 <style lang='scss'>

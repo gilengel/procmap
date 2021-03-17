@@ -2,19 +2,27 @@
   <div>
     <q-toolbar class="bg-black text-white">
       <q-toolbar-title> Notes </q-toolbar-title>
-      <div class="q-gutter-sm"></div>
+      <div class="q-gutter-sm" />
     </q-toolbar>
-    <q-list dark padding>
+    <q-list
+      dark
+      padding
+    >
       <template v-for="category in availableComponentCategories">
-        <q-item-label header v-bind:key="category.label">{{
-          category.label
-        }}</q-item-label>
+        <q-item-label
+          :key="category.label"
+          header
+        >
+          {{
+            category.label
+          }}
+        </q-item-label>
 
         <q-item
           v-for="component in category.components"
           :key="component.id"
           draggable="true"
-          v-on:dragstart="dragstart(component.id, $event)"
+          @dragstart="dragstart(component.id, $event)"
         >
           <q-item-section avatar>
             <q-icon :name="component.icon" />

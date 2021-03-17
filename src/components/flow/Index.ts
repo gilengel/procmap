@@ -2,13 +2,7 @@ import { Component } from 'rete'
 import Table from './Table'
 import Image from './Image'
 import Text from './Text'
-
-export interface MetaFlowCategory {
-    readonly label: string;
-    readonly icon: string;
-
-    readonly components: Array<MetaFlowComponent>
-}
+import Line from './Line'
 
 export interface MetaFlowComponent {
     readonly id: string;
@@ -16,6 +10,13 @@ export interface MetaFlowComponent {
     readonly icon: string;
     readonly component: Component,
     readonly defaultData: Record<string, unknown>
+}
+
+export interface MetaFlowCategory {
+    readonly label: string;
+    readonly icon: string;
+
+    readonly components: Array<MetaFlowComponent>
 }
 
 const basicCategory: MetaFlowCategory = {
@@ -42,6 +43,13 @@ const basicCategory: MetaFlowCategory = {
             label: 'Text',
             icon: 'las la-map-marked',
             component: Text,
+            defaultData: {}
+        },
+        {
+            id: 'chart',
+            label: 'Chart',
+            icon: 'las la-map-marked',
+            component: Line,
             defaultData: {}
         }
     ]

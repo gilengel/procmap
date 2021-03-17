@@ -4,13 +4,23 @@
       <q-toolbar-title>
         Flow
       </q-toolbar-title>
-      <q-btn flat round dense>
+      <q-btn
+        flat
+        round
+        dense
+      >
         <q-icon name="las la-window-minimize" />
       </q-btn>
     </q-toolbar>
 
-    <div class="flow" v-resize="onResize">
-      <div id="rete" ref="rete"></div>
+    <div
+      v-resize="onResize"
+      class="flow"
+    >
+      <div
+        id="rete"
+        ref="rete"
+      />
     </div>
   </div>
 </template>
@@ -27,8 +37,6 @@ import VueRenderPlugin from '../render/Index'
 
 import DockPlugin from '../dock/Index'
 
-import { RandomMap } from '../models'
-
 import { getRegisteredComponentCategories } from '../flow/Index'
 
 import resize from 'vue-resize-directive'
@@ -41,7 +49,6 @@ import TableView from '../TableView.vue'
   }
 })
 export default class FlowGraphComponent extends Vue {
-  @Prop(RandomMap) map: RandomMap | undefined;
   @Prop(Object) geometry: Record<string, unknown> | undefined;
 
   editor!: NodeEditor;

@@ -1,15 +1,16 @@
 <template>
-  
-    <q-splitter v-model="leftToolbar" style="height: 100%">
-      <template v-slot:before>
-        <FlowGraphNodesList />
-      </template>
+  <q-splitter
+    v-model="leftToolbar"
+    style="height: 100%"
+  >
+    <template #before>
+      <FlowGraphNodesList />
+    </template>
 
-      <template v-slot:after>
-        <FlowGraphComponent v-on="$listeners" />
-      </template>
-    </q-splitter>
-    
+    <template #after>
+      <FlowGraphComponent v-on="$listeners" />
+    </template>
+  </q-splitter>
 </template>
 
 <script lang="ts">

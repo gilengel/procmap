@@ -8,5 +8,4 @@
 		"experimentalDecorators": true
 	},
 	"include": [ "./src/**/*.ts", "./src/**/*.vue" ],
-	
 }
