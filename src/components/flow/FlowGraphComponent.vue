@@ -41,7 +41,7 @@ import { getRegisteredComponentCategories } from '../flow/Index'
 
 import resize from 'vue-resize-directive'
 
-import TableView from '../TableView.vue'
+import { store } from '../../store/Index'
 
 @Component({
   directives: {
@@ -59,7 +59,7 @@ export default class FlowGraphComponent extends Vue {
     this.editor = new Rete.NodeEditor('demo@0.1.0', container as HTMLElement)
 
     this.editor.use(ConnectionPlugin)
-    this.editor.use(VueRenderPlugin)
+    this.editor.use(VueRenderPlugin, { store })
     this.editor.use(DockPlugin)
   }
 

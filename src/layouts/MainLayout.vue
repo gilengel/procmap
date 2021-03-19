@@ -11,6 +11,8 @@
           :vertical-compact="true"
           :use-css-transforms="true"
           :margin="[0, 0]"
+
+          class="noselect"
         >
           <grid-item
             v-for="item in layout"
@@ -189,5 +191,15 @@ body {
   background-origin: content-box;
   box-sizing: border-box;
   cursor: pointer;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
 </style>

@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FlowComponent } from './FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
-import { Store } from 'vuex'
-import { resolve } from 'dns'
 
 export default new FlowComponent({
-    label: 'table',
+    label: 'Text Filter',
 
-    outputs: [
+    inputs: [
         {
             type: 'table_data',
-            label: 'Data',
+            label: 'Text',
             mandatory: true
         }
     ],
@@ -18,11 +16,9 @@ export default new FlowComponent({
     workerFn: (
         _node: NodeData,
         _inputs: WorkerInputs,
-        outputs: WorkerOutputs,
-        store: Store<unknown>
+        _outputs: WorkerOutputs
     ): Promise<void> => {
-        return new Promise((resolve, reject) => {
-            console.log(store)
+        return new Promise((resolve) => {
             resolve()
         })
     }

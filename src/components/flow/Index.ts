@@ -2,6 +2,7 @@ import { Component } from 'rete'
 import Table from './Table'
 import Image from './Image'
 import Text from './Text'
+import TextFilter from './TextFilter'
 import Line from './Line'
 
 export interface MetaFlowComponent {
@@ -41,8 +42,15 @@ const basicCategory: MetaFlowCategory = {
         {
             id: 'text',
             label: 'Text',
-            icon: 'las la-map-marked',
+            icon: 'las la-file-alt',
             component: Text,
+            defaultData: {}
+        },
+        {
+            id: 'text_filter',
+            label: 'Text Filter',
+            icon: 'las la-filter',
+            component: TextFilter,
             defaultData: {}
         },
         {

@@ -142,6 +142,7 @@ interface ComponentSchema {
         node: NodeData,
         inputs: WorkerInputs,
         outputs: WorkerOutputs,
+        store?: Store<unknown>
     ) => Promise<void>;
 }
 
@@ -279,15 +280,17 @@ export class FlowComponent extends Rete.Component {
     }
 
     async worker (node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
-        // const vueStore = this.editor?.plugins['vue-render'].store
         const nodeEditor = this.editor as NodeEditor
 
         let vueStore: Store<unknown> | undefined
         if (nodeEditor) {
             const renderPlugin = nodeEditor.plugins.get('vue-render')
+            //vueStore = renderPlugin.store as Store<unknown>
+            console.log(renderPlugin.store)
         }
-
-        await this.schema.workerFn(node, inputs, outputs)
+        
+        //console.log(vueStore);
+        await this.schema.workerFn(node, inputs, outputs, vueStore)
     }
 }
 
