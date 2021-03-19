@@ -3,11 +3,11 @@ import { FlowComponent } from './FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 
 export default new FlowComponent({
-    label: 'Text Filter',
+    label: 'Text',
 
     inputs: [
         {
-            type: 'table_data',
+            type: 'text',
             label: 'Text',
             mandatory: true
         }
@@ -15,7 +15,7 @@ export default new FlowComponent({
 
     workerFn: (
         _node: NodeData,
-        _inputs: WorkerInputs,
+        inputs: WorkerInputs,
         _outputs: WorkerOutputs
     ): Promise<void> => {
         return new Promise((resolve) => {

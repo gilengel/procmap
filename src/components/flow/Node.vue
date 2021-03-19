@@ -80,7 +80,7 @@
     </div>
     <!--
     <q-linear-progress dark class="q-mt-sm" size="8px" :value="node.data.progress" v-if="node.data.progress && Fnode.data.progress != 1.0"/>
--->
+    -->
   </div>
 </template>
 
@@ -97,11 +97,10 @@ import { Node as ReteNode } from 'rete'
   }
 })
 export default class Node extends Mixin {
-  node!: ReteNode
+  node!: ReteNode;
 
   togglePreview () {
     if (this.editor === undefined || this.node === undefined) {
-
     }
   }
 }
@@ -162,7 +161,8 @@ $socket-margin: 10px;
   }
 }
 
-.input-container, .output-container {
+.input-container,
+.output-container {
   padding-right: 6px;
   display: flex;
   align-items: center;
@@ -173,7 +173,6 @@ $socket-margin: 10px;
 .ouptut {
   padding-left: 6px;
   justify-content: flex-end;
-
 }
 
 .node:hover {
@@ -201,12 +200,12 @@ $socket-margin: 10px;
   padding-right: 20px;
 }
 
-.inputs, .outputs {
+.inputs,
+.outputs {
   text-align: left;
 
   //display: flex;
   //flex-direction: column;
-
 }
 
 .outputs {

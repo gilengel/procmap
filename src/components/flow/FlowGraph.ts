@@ -15,7 +15,10 @@ declare module 'rete/types/events' {
 }
 
 const registeredSockets = new Map([
-    ['table_data', new Socket('table_data')]
+
+    ['table_data', new Socket('table_data')],
+    ['text', new Socket('text')]
+
 ])
 
 function createControl (
@@ -268,10 +271,10 @@ export class FlowComponent extends Rete.Component {
             this.schema.controls.forEach(control => {
                 node.addControl(
                     new FlowControl(
-                        control.component, 
-                        this.editor as NodeEditor, 
-                        control.identifier as string, 
-                        0, 
+                        control.component,
+                        this.editor as NodeEditor,
+                        control.identifier as string,
+                        0,
                         control.isValid as (input: 0) => boolean))
             })
         }
@@ -285,10 +288,9 @@ export class FlowComponent extends Rete.Component {
         let vueStore: Store<unknown> | undefined
         if (nodeEditor) {
             const renderPlugin = nodeEditor.plugins.get('vue-render')
-            //vueStore = renderPlugin.store as Store<unknown>
-            console.log(renderPlugin.store)
+            vueStore = renderPlugin.store as Store<unknown>
         }
-        
+
         //console.log(vueStore);
         await this.schema.workerFn(node, inputs, outputs, vueStore)
     }

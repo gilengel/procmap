@@ -2,7 +2,6 @@
 import { FlowComponent } from './FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Store } from 'vuex'
-import { resolve } from 'dns'
 
 export default new FlowComponent({
     label: 'table',
@@ -22,7 +21,6 @@ export default new FlowComponent({
         store: Store<unknown>
     ): Promise<void> => {
         return new Promise((resolve, reject) => {
-            console.log(store)
             resolve()
         })
     }

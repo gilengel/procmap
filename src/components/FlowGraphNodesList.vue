@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-toolbar class="bg-black text-white">
-      <q-toolbar-title> Notes </q-toolbar-title>
+      <q-toolbar-title>Notes</q-toolbar-title>
       <div class="q-gutter-sm" />
     </q-toolbar>
     <q-list
@@ -37,7 +37,10 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 
-import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/Index'
+import {
+  getRegisteredComponentCategories,
+  MetaFlowCategory
+} from './flow/Index'
 
 @Component
 export default class MapEditorComponent extends Vue {

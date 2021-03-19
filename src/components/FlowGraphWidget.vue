@@ -17,7 +17,10 @@
 import FlowGraphComponent from './flow/FlowGraphComponent.vue'
 import { Vue, Component } from 'vue-property-decorator'
 
-import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/Index'
+import {
+  getRegisteredComponentCategories,
+  MetaFlowCategory
+} from './flow/Index'
 
 import FlowGraphNodesList from './FlowGraphNodesList.vue'
 

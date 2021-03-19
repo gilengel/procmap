@@ -13,14 +13,13 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 @Component({
-    name: 'ImageWidget',
+  name: 'ImageWidget',
 
-    components: {
-      Widget
-    }
+  components: {
+    Widget
+  }
 })
-export default class ImageWidget extends Vue {
-}
+export default class ImageWidget extends Vue {}
 </script>
 
 <style lang="scss">

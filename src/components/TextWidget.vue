@@ -36,36 +36,46 @@
         </div>
       </editor-menu-bubble>
 
-      <editor-content class="editor__content" :editor="editor" />
+      <editor-content
+        class="editor__content"
+        :editor="editor"
+      />
     </div>
   </Widget>
 </template>
 
 <script lang="ts">
-import Widget from "./Widget.vue";
-import Vue from "vue";
-import Component from "vue-class-component";
-import { Editor, EditorContent, EditorMenuBubble } from "tiptap";
-import { Bold, Strike } from "tiptap-extensions";
+/* eslint @typescript-eslint/no-unsafe-call: off */
+
+import Widget from './Widget.vue'
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Editor, EditorContent, EditorMenuBubble } from 'tiptap'
+import { Bold, Strike } from 'tiptap-extensions'
 
 @Component({
-  name: "TextWidget",
+  name: 'TextWidget',
 
   components: {
     Widget,
     EditorContent,
-    EditorMenuBubble,
-  },
+    EditorMenuBubble
+  }
 })
 export default class TextWidget extends Vue {
-  editor = new Editor({
-    content:
-      "<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>",
-    extensions: [new Bold(), new Strike()],
-  });
+  @Prop({ type: String, required: true, default: 'foo' })
+  readonly text!: string;
 
-  beforeDestroy() {
-    this.editor.destroy();
+  editor: Editor = '';
+
+  created () {
+    this.editor = new Editor({
+      content: `<p>${this.text}</p>`,
+      extensions: [new Bold(), new Strike()]
+    })
+  }
+
+  beforeDestroy () {
+    this.editor.destroy()
   }
 }
 </script>
