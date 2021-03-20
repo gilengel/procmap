@@ -18,9 +18,9 @@ import '@babel/polyfill'
 import Rete, { Engine, NodeEditor } from 'rete'
 
 import ConnectionPlugin from 'rete-connection-plugin'
-import VueRenderPlugin from './render'
+import VueRenderPlugin from './render/Index'
 
-import DockPlugin from './dock'
+import DockPlugin from './dock/Index'
 
 import { RandomMap } from './models'
 
