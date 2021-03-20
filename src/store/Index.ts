@@ -25,8 +25,6 @@ export default function () {
 
   store = Store
 
-
-
   return Store
 }
 

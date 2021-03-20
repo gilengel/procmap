@@ -291,7 +291,6 @@ export class FlowComponent extends Rete.Component {
             vueStore = renderPlugin.store as Store<unknown>
         }
 
-        //console.log(vueStore);
         await this.schema.workerFn(node, inputs, outputs, vueStore)
     }
 }

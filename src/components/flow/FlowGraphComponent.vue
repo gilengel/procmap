@@ -56,9 +56,6 @@ export default class FlowGraphComponent extends Vue {
     const container = this.$refs.rete;
     this.editor = new Rete.NodeEditor("demo@0.1.0", container as HTMLElement);
 
-    console.log("=============================")
-    console.log(store
-    console.log("=============================")
     this.editor.use(ConnectionPlugin);
     this.editor.use(VueRenderPlugin, { store });
     this.editor.use(DockPlugin);

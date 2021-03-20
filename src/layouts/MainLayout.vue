@@ -49,6 +49,8 @@ import TextWidget from 'components/TextWidget.vue'
 import ChartWidget from 'src/components/ChartWidget.vue'
 import FlowGraphWidget from 'components/FlowGraphWidget.vue'
 
+import { store } from '../store/Index'
+
 import { Node as ReteNode } from 'rete'
 
 interface WidgetData {
@@ -106,6 +108,7 @@ export default class MainLayout extends Vue {
   }
 
   onAddWidget (element: ReteNode) {
+
     let properties = null
     // this.$refs['Widget1'].appendChild(instance.$el)
     if (element.name === 'image') {
@@ -174,14 +177,12 @@ Yeah
 We'll never fade away
 We'll never fade away
 We'll never fade away
-We'll never fade away        
+We'll never fade away
         `
       }
     } else if (element.name === 'table') {
     } else if (element.name === 'chart') {
     }
-
-    console.log(properties)
 
     this.layout.push({
       x: 6,
