@@ -2,6 +2,8 @@
 import { FlowComponent } from './FlowGraph'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 
+import { Store } from 'vuex'
+
 export default new FlowComponent({
     label: 'text',
 
@@ -16,9 +18,11 @@ export default new FlowComponent({
     workerFn: (
         node: NodeData,
         _inputs: WorkerInputs,
-        outputs: WorkerOutputs
+        outputs: WorkerOutputs,
+        store?: Store<unknown>
     ): Promise<void> => {
         return new Promise((resolve) => {
+          console.log(store);
             outputs.text = `Our whole universe was in a hot, dense state
 Then nearly fourteen billion years ago expansion started, wait
 The earth began to cool, the autotrophs began to drool

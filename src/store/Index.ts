@@ -1,33 +1,33 @@
-import { store } from 'quasar/wrappers';
-import Vuex from 'vuex';
-
-// import example from './module-example';
-// import { ExampleStateInterface } from './module-example/state';
+import Vue from 'vue'
+import Vuex from 'vuex'
+import { Store } from 'vuex'
+import Layout from './Layout';
 
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation
  */
 
-export interface StateInterface {
-  // Define your own store structure, using submodules if needed
-  // example: ExampleStateInterface;
-  // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
-  example: unknown;
-}
+let store: Store<unknown> | undefined;
 
-export default store(function ({ Vue }) {
-  Vue.use(Vuex);
+Vue.use(Vuex)
 
-  const Store = new Vuex.Store<StateInterface>({
+export default function () {
+  const Store = new Vuex.Store({
     modules: {
-      // example
+      Layout
     },
 
     // enable strict mode (adds overhead!)
     // for dev mode and --debug builds only
     strict: !!process.env.DEBUGGING
-  });
+  })
 
-  return Store;
-});
+  store = Store
+
+
+
+  return Store
+}
+
+export { store }
