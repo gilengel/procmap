@@ -39,17 +39,19 @@
 </template>
 
 <script lang='ts'>
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component } from "vue-property-decorator";
 
-import { GridLayout, GridItem } from 'vue-grid-layout'
-import Widget from 'components/Widget.vue'
-import TableWidget from 'components/TableWidget.vue'
-import ImageWidget from 'components/ImageWidget.vue'
-import TextWidget from 'components/TextWidget.vue'
-import ChartWidget from 'src/components/ChartWidget.vue'
-import FlowGraphWidget from 'components/FlowGraphWidget.vue'
+import { GridLayout, GridItem } from "vue-grid-layout";
+import Widget from "components/Widget.vue";
+import TableWidget from "components/TableWidget.vue";
+import ImageWidget from "components/ImageWidget.vue";
+import TextWidget from "components/TextWidget.vue";
+import ChartWidget from "src/components/ChartWidget.vue";
+import FlowGraphWidget from "components/FlowGraphWidget.vue";
+import MapWidget from "components/MapWidget.vue";
+import TodoWidget from "components/TodoWidget.vue";
 
-import { Node as ReteNode } from 'rete'
+import { Node as ReteNode } from "rete";
 
 interface WidgetData {
   x: number;
@@ -63,7 +65,7 @@ interface WidgetData {
 }
 
 @Component({
-  name: 'MainLayout',
+  name: "MainLayout",
 
   components: {
     GridLayout,
@@ -73,7 +75,9 @@ interface WidgetData {
     ImageWidget,
     TextWidget,
     FlowGraphWidget,
-    ChartWidget
+    ChartWidget,
+    MapWidget,
+    TodoWidget
   }
 })
 export default class MainLayout extends Vue {
@@ -83,9 +87,9 @@ export default class MainLayout extends Vue {
       y: 0,
       w: 6,
       h: 16,
-      i: '0',
+      i: "0",
       static: true,
-      component: 'FlowGraphWidget'
+      component: "FlowGraphWidget"
     }
     // { x: 6, y: 0, w: 6, h: 16, i: '1', static: true, component: 'text' },
     // { x: 9, y: 0, w: 3, h: 8, i: '3', static: false, component: 'Widget' },
@@ -97,19 +101,19 @@ export default class MainLayout extends Vue {
   colNum = 12;
   index = 0;
 
-  mounted () {
-    this.index = this.layout.length
+  mounted() {
+    this.index = this.layout.length;
   }
 
-  getWidgetName (element: string) {
-    return `${element.charAt(0).toUpperCase()}${element.slice(1)}Widget`
+  getWidgetName(element: string) {
+    return `${element.charAt(0).toUpperCase()}${element.slice(1)}Widget`;
   }
 
-  onAddWidget (element: ReteNode) {
-    let properties = null
+  onAddWidget(element: ReteNode) {
+    let properties = null;
     // this.$refs['Widget1'].appendChild(instance.$el)
-    if (element.name === 'image') {
-    } else if (element.name === 'text') {
+    if (element.name === "image") {
+    } else if (element.name === "text") {
       properties = {
         text: `
 [Intro]
@@ -176,33 +180,31 @@ We'll never fade away
 We'll never fade away
 We'll never fade away        
         `
-      }
-    } else if (element.name === 'table') {
-    } else if (element.name === 'chart') {
+      };
+    } else if (element.name === "table") {
+    } else if (element.name === "chart") {
     }
-
-    console.log(properties)
 
     this.layout.push({
       x: 6,
       y: this.layout.length + (this.colNum || 12), // puts it at the bottom
-      w: 2,
+      w: 3,
       h: 16,
       i: `${this.index}`,
       static: false,
       properties: properties,
       component: this.getWidgetName(element.name)
-    })
+    });
 
-    this.index++
+    this.index++;
   }
 
-  itemTitle (item: WidgetData) {
-    let result = item.i
+  itemTitle(item: WidgetData) {
+    let result = item.i;
     if (item.static) {
-      result += ' - Static'
+      result += " - Static";
     }
-    return result
+    return result;
   }
 }
 </script>

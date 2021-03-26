@@ -28,6 +28,7 @@
     "d3-zoom": "^2.0.0",
     "flatbuffers": "^1.12.0",
     "function-plot": "^1.22.2",
+    "leaflet": "^1.7.1",
     "mathjs": "^8.1.0",
     "quasar": "^1.14.7",
     "rete": "^1.4.5-rc.1",
@@ -44,6 +45,7 @@
     "vue-property-decorator": "^9.1.2",
     "vue-resize-directive": "^1.2.0",
     "vue-router": "^3.4.9",
+    "vue2-leaflet": "^2.7.0",
     "vuex-class": "^0.3.2",
     "vuex-module-decorators": "^1.0.1"
   },
