@@ -1,16 +1,18 @@
 <template>
-  <q-splitter
-    v-model="leftToolbar"
-    style="height: 100%"
-  >
-    <template #before>
-      <FlowGraphNodesList />
-    </template>
+  <Widget title="Flow" @remove-widget="removeWidget">
+    <q-splitter
+      v-model="leftToolbar"
+      style="height: 100%"
+    >
+      <template #before>
+        <FlowGraphNodesList />
+      </template>
 
-    <template #after>
-      <FlowGraphComponent v-on="$listeners" />
-    </template>
-  </q-splitter>
+      <template #after>
+        <FlowGraphComponent v-on="$listeners" />
+      </template>
+    </q-splitter>
+  </Widget>
 </template>
 
 <script lang="ts">
@@ -23,7 +25,7 @@ import {
 } from './flow/Index'
 
 import FlowGraphNodesList from './FlowGraphNodesList.vue'
-
+import Widget from './Widget.vue'
 @Component({
   name: 'FlowGraphWidget',
 
@@ -32,7 +34,7 @@ import FlowGraphNodesList from './FlowGraphNodesList.vue'
     FlowGraphComponent,
   }
 })
-export default class FlowGraphWidget extends Vue {
+export default class FlowGraphWidget extends Widget {
   left = true;
 
   availableComponentCategories: Array<MetaFlowCategory> = [];

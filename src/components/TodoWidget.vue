@@ -1,5 +1,5 @@
 <template>
-  <Widget title="Todo">
+  <Widget title="Todo" @remove-widget="removeWidget">
     <div class="q-pa-md q-gutter-md">
       <q-list dark v-for="todo in todos" :key="todo.text">
         <q-item>
@@ -37,7 +37,7 @@ interface Todo {
     Widget
   }
 })
-export default class TodoWidget extends Vue {
+export default class TodoWidget extends Widget {
   todos: Todo[] = [
     { text: "Read a book", checked: false },
     { text: "Try not to fall asleep", checked: false },

@@ -1,5 +1,5 @@
 <template>
-  <Widget title="Text">
+  <Widget title="Text" @remove-widget="removeWidget">
     <div class="editor">
       <editor-menu-bubble
         :editor="editor"
@@ -67,7 +67,7 @@ import IModel from '../store/Model'
     EditorMenuBubble
   }
 })
-export default class TextWidget extends Vue {
+export default class TextWidget extends Widget {
   get model () {
     return this.getModel(this.uuid)
   }

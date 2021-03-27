@@ -60,7 +60,6 @@ export default class FlowGraphComponent extends Vue {
   registerComponents() {
     for (const category of getRegisteredComponentCategories()) {
       category.components.map((c) => {
-        console.log(c);
         this.editor.register(c.component);
         this.engine.register(c.component);
       });
@@ -188,7 +187,7 @@ export default class FlowGraphComponent extends Vue {
 
     console.log(this.editor.components);
 
-    await this.editor.fromJSON(data);
+    //await this.editor.fromJSON(data);
 
     this.editor.view.resize();
     this.editor.trigger("process");

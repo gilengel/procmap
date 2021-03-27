@@ -2,37 +2,46 @@
   <q-layout>
     <q-page-container>
       <q-page>
-        <grid-layout
-          :layout.sync="layout"
-          :col-num="12"
-          :row-height="30"
-          :is-draggable="true"
-          :is-resizable="true"
-          :vertical-compact="true"
-          :use-css-transforms="true"
-          :margin="[0, 0]"
-          class="noselect"
-        >
-          <grid-item
-            v-for="item in layout"
-            :key="item.i"
-            :static="item.static"
-            :x="item.x"
-            :y="item.y"
-            :w="item.w"
-            :h="item.h"
-            :i="item.i"
-            drag-allow-from=".vue-draggable-handle"
+        <q-toolbar class="bg-black text-white vue-draggable-handle">
+          <q-toolbar-title>View Builder</q-toolbar-title>
+          <q-btn flat round dense>
+            <q-btn round color="primary" icon="las la-save" v-on:click="saveLayout" />
+          </q-btn>
+        </q-toolbar>
+
+        <h1 v-if="!layout">Something went wrong loading the view :(</h1>
+
+    <grid-layout v-else :layout.sync="layout.widgets"
+                 :col-num="12"
+                 :row-height="30"
+                 :is-draggable="true"
+                 :is-resizable="true"
+                 :vertical-compact="true"
+                 :use-css-transforms="false"
+                 :margin="[0, 0]"
+                 class="noselect"
+    >
+        <grid-item v-for="widget in layout.widgets"
+                    :key="widget.id"
+                   :static="widget.static"
+                   :x="widget.x"
+                   :y="widget.y"
+                   :w="widget.w"
+                   :h="widget.h"
+                   :i="widget.i"
+                               drag-allow-from=".vue-draggable-handle"
             drag-ignore-from=".no-drag"
-          >
+        >
             <component
-              :is="item.component"
-              :uuid="item.i"
-              v-bind="item.properties"
+              :is="widget.component"
+              :uuid="widget.i"
+              v-bind="widget.properties"
               @add-widget="onAddWidget"
+              @remove-widget="onRemoveWidget"
             />
-          </grid-item>
-        </grid-layout>
+        </grid-item>
+    </grid-layout>
+
       </q-page>
     </q-page-container>
   </q-layout>
@@ -56,6 +65,29 @@ import { Node as ReteNode } from "rete";
 
 import { v4 as uuidv4 } from 'uuid'
 
+import axios from 'axios'
+
+interface Widget {
+  i: string,
+  x: number,
+  y: number,
+  w: number;
+  h: number;
+  movable: boolean;
+  component: string;
+  properties?: {};
+}
+
+interface View {
+  id: string,
+  name: string,
+  widgets: [Widget]
+}
+
+interface ServerResponse {
+  data: View
+}
+
 @Component({
   name: "MainLayout",
 
@@ -68,7 +100,7 @@ import { v4 as uuidv4 } from 'uuid'
     TextWidget,
     FlowGraphWidget,
     ChartWidget,
-    IdeWidget
+    IdeWidget,
     MapWidget,
     TodoWidget
   }
@@ -79,21 +111,34 @@ export default class MainLayout extends Vue {
   colNum = 12;
   index = 0;
 
-   layout = [
-    {
-      x: 0,
-      y: 0,
-      w: 6,
-      h: 16,
-      i: uuidv4(),
-      static: true,
-      properties: {},
-      component: 'FlowGraphWidget'
-    },
-  ];
+   layout: View | null = null;
 
-  mounted () {
-    this.index = this.layout.length
+  /** Calls the server backend to receive the layout json file */
+  private loadLayout() {
+
+    axios.request<View>({
+      url: 'http://localhost:8000/view/load/123',
+      transformResponse: (r: ServerResponse) => r.data
+    }).then((response) => {
+      this.layout = JSON.parse(response.request.response);
+    })
+
+
+  }
+
+  private saveLayout() {
+    console.log(this.layout)
+    axios.post('http://localhost:8000/view/save', this.layout)
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  async mounted () {
+    await this.loadLayout();
   }
 
   getWidgetName(element: string) {
@@ -106,17 +151,27 @@ export default class MainLayout extends Vue {
       return
     }
 
-    this.layout.push({
-      x: 6,
-      y: this.layout.length + (this.colNum || 12), // puts it at the bottom
-      w: 6,
-      h: 16,
+    const layout = (this.layout as View);
+    layout.widgets.push({
       i: `${element.data.uuid}`,
-      static: false,
+      x: 6,
+      y: layout.widgets.length + (this.colNum || 12), // puts it at the bottom
+      w: 2,
+      h: 4,
+
+      movable: false,
       properties: properties,
       component: this.getWidgetName(element.name)
     })
     this.index++
+  }
+
+  onRemoveWidget(id: string) {
+    const index = this.layout?.widgets.findIndex((widget : Widget)=> widget.i === id);
+
+    if(index !== -1) {
+      this.layout?.widgets.splice(index as number, 1);
+    }
   }
 }
 </script>
@@ -130,7 +185,16 @@ html,
 body {
   height: 100%;
 }
+.vue-grid-layout {
+}
+.vue-grid-item:not(.vue-grid-placeholder) {
+}
+.vue-grid-item .resizing {
+    opacity: 0.9;
+}
 
+
+/*
 .vue-grid-layout {
   height: 100vh !important;
   overflow: hidden;
@@ -170,14 +234,14 @@ body {
   box-sizing: border-box;
   cursor: pointer;
 }
-
+*/
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
+
 </style>

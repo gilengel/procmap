@@ -1,5 +1,5 @@
 <template>
-  <Widget title="Image">
+  <Widget title="Image" @remove-widget="removeWidget">
     <q-img
       src="https://placeimg.com/500/300/nature"
       :ratio="1"
@@ -14,12 +14,8 @@ import Component from 'vue-class-component'
 
 @Component({
   name: 'ImageWidget',
-
-  components: {
-    Widget
-  }
 })
-export default class ImageWidget extends Vue {}
+export default class ImageWidget extends Widget {}
 </script>
 
 <style lang="scss">
