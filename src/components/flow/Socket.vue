@@ -17,11 +17,6 @@ export default class Socket extends Vue {
   @Prop() readonly socket!: any;
   @Prop() readonly used!: boolean;
 }
-/*
-export default Vue.extend({
-  props: ['type', 'socket', 'used']
-})
-*/
 </script>
 
 <style lang="scss">
@@ -60,5 +55,9 @@ $socket-margin: 10px;
 }
 .socket.multiple {
   border-color: yellow;
+}
+
+.main-path {
+  stroke: $info !important;
 }
 </style>

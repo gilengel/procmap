@@ -27,7 +27,7 @@
           >
             <component
               :is="item.component"
-              :ref="item.component + item.i"
+              :uuid="item.i"
               v-bind="item.properties"
               @add-widget="onAddWidget"
             />
@@ -45,24 +45,13 @@ import { GridLayout, GridItem } from 'vue-grid-layout'
 import Widget from 'components/Widget.vue'
 import TableWidget from 'components/TableWidget.vue'
 import ImageWidget from 'components/ImageWidget.vue'
-import TextWidget from 'components/TextWidget.vue'
+import TextWidget from 'src/components/TextWidget.vue'
 import ChartWidget from 'src/components/ChartWidget.vue'
 import FlowGraphWidget from 'components/FlowGraphWidget.vue'
-
-import { store } from '../store/Index'
-
+import IdeWidget from 'components/IdeWidget.vue'
 import { Node as ReteNode } from 'rete'
 
-interface WidgetData {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  i: string;
-  component: string;
-  properties?: any;
-  static: boolean;
-}
+import { v4 as uuidv4 } from 'uuid'
 
 @Component({
   name: 'MainLayout',
@@ -75,29 +64,38 @@ interface WidgetData {
     ImageWidget,
     TextWidget,
     FlowGraphWidget,
-    ChartWidget
+    ChartWidget,
+    IdeWidget
   }
 })
 export default class MainLayout extends Vue {
-  layout = [
+  draggable = true;
+  resizable = true;
+  colNum = 12;
+  index = 0;
+
+   layout = [
     {
       x: 0,
       y: 0,
       w: 6,
       h: 16,
-      i: '0',
+      i: uuidv4(),
       static: true,
+      properties: {},
       component: 'FlowGraphWidget'
+    },
+    {
+      x: 6,
+      y: 0,
+      w: 6,
+      h: 30,
+      i: uuidv4(),
+      static: true,
+      properties: {},
+      component: 'IdeWidget'
     }
-    // { x: 6, y: 0, w: 6, h: 16, i: '1', static: true, component: 'text' },
-    // { x: 9, y: 0, w: 3, h: 8, i: '3', static: false, component: 'Widget' },
-    // { x: 9, y: 8, w: 3, h: 8, i: '4', static: false, component: 'Widget' },
   ];
-
-  draggable = true;
-  resizable = true;
-  colNum = 12;
-  index = 0;
 
   mounted () {
     this.index = this.layout.length
@@ -108,114 +106,33 @@ export default class MainLayout extends Vue {
   }
 
   onAddWidget (element: ReteNode) {
-
-    let properties = null
-    // this.$refs['Widget1'].appendChild(instance.$el)
-    if (element.name === 'image') {
-    } else if (element.name === 'text') {
-      properties = {
-        text: `
-[Intro]
-We lost everything
-We had to pay the price
-Yeah we lost everything
-We had to pay the price
-
-[Verse 1]
-I saw in you what life was missing
-You lit a flame that consumed my hate
-I'm not one for reminiscing but
-I'd trade it all for your sweet embrace
-
-[Post-Verse]
-Yeah
-Cause we lost everything
-We had to pay the price
-
-[Verse 2]
-There's a canvas with two faces
-Of fallen angels who loved and lost
-It was a passion for the ages
-And in the end guess we paid the cost
-
-[Bridge]
-A thing of beauty — I know
-Will never fade away
-What you did to me — I know
-Said what you had to say
-But a thing of beauty
-[Chorus]
-Will never fade away
-Will never fade away
-Will never fade away
-
-[Verse 3]
-I see your eyes, i know you see me
-You're like a ghost how you're everywhere
-I am your demon never leaving
-A metal soul of rage and fear
-
-[Post-Verse]
-That one thing that changed it all
-That one sin that caused the fall
-
-[Bridge]
-A thing of beauty — I know
-Will never fade away
-What you did to me — I know
-Said what you had to say
-But a thing of beauty — I know
-Will never fade away
-And I'll do my duty — I know
-Somehow I'll find a way
-But a thing of beauty
-Will never fade away
-And I'll do my duty
-
-[Chorus]
-Yeah
-We'll never fade away
-We'll never fade away
-We'll never fade away
-We'll never fade away
-        `
-      }
-    } else if (element.name === 'table') {
-    } else if (element.name === 'chart') {
+    const properties = {}
+    if (element.name === 'TextFilter') {
+      return
     }
 
     this.layout.push({
       x: 6,
       y: this.layout.length + (this.colNum || 12), // puts it at the bottom
-      w: 2,
+      w: 6,
       h: 16,
-      i: `${this.index}`,
+      i: `${element.data.uuid}`,
       static: false,
       properties: properties,
       component: this.getWidgetName(element.name)
     })
-
     this.index++
-  }
-
-  itemTitle (item: WidgetData) {
-    let result = item.i
-    if (item.static) {
-      result += ' - Static'
-    }
-    return result
   }
 }
 </script>
 
 <style lang='scss'>
 body {
-  background: rgb(30, 30, 30);
+  background: $dark-page;
 }
 
 html,
 body {
-  background: $dark-page;
   height: 100%;
 }
 

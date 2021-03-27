@@ -48,9 +48,15 @@
 /* eslint @typescript-eslint/no-unsafe-call: off */
 
 import Widget from './Widget.vue'
-import { Vue, Component, Prop } from 'vue-property-decorator'
-import { Editor, EditorContent, EditorMenuBubble } from 'tiptap'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Editor, EditorContent, EditorMenuBubble, EditorUpdateEvent } from 'tiptap'
 import { Bold, Strike } from 'tiptap-extensions'
+import {
+  Getter,
+  Action
+} from 'vuex-class'
+
+import IModel from '../store/Model'
 
 @Component({
   name: 'TextWidget',
@@ -62,20 +68,43 @@ import { Bold, Strike } from 'tiptap-extensions'
   }
 })
 export default class TextWidget extends Vue {
-  @Prop({ type: String, required: true, default: 'foo' })
-  readonly text!: string;
+  get model () {
+    return this.getModel(this.uuid)
+  }
 
-  editor: Editor = '';
+  @Prop({ default: 'uuid' }) uuid!: string
+
+  @Getter('model')
+  getModel!: (uuid: string) => Map<string, unknown>
+
+  @Action('updateModel')
+  updateModel!: (params: IModel) => void
+
+  @Watch('model.text')
+  onModelChanged (val: string) {
+    this.editor?.setContent(`${val}`)
+  }
+
+  onEditorContentChange(event: EditorUpdateEvent) {
+    this.updateModel({
+      uuid: this.uuid,
+      model: {
+        text: event.getHTML()
+      }
+    })
+  }
+  editor: Editor | undefined;
 
   created () {
     this.editor = new Editor({
-      content: `<p>${this.text}</p>`,
-      extensions: [new Bold(), new Strike()]
+      content: `<p>${this.model}</p>`,
+      extensions: [new Bold(), new Strike()],
+      onUpdate: this.onEditorContentChange,
     })
   }
 
   beforeDestroy () {
-    this.editor.destroy()
+    this.editor?.destroy()
   }
 }
 </script>

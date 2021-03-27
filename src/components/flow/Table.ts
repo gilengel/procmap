@@ -4,24 +4,33 @@ import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import { Store } from 'vuex'
 
 export default new FlowComponent({
-    label: 'table',
+  label: 'table',
 
-    outputs: [
-        {
-            type: 'table_data',
-            label: 'Data',
-            mandatory: true
-        }
-    ],
-
-    workerFn: (
-        _node: NodeData,
-        _inputs: WorkerInputs,
-        outputs: WorkerOutputs,
-        store: Store<unknown>
-    ): Promise<void> => {
-        return new Promise((resolve, reject) => {
-            resolve()
-        })
+  inputs: [
+    {
+      type: 'map',
+      label: 'Map',
+      mandatory: true
+    },
+    {
+      type: 'data',
+      label: 'Data',
+      mandatory: true
     }
+  ],
+
+  outputs: [],
+
+  workerFn: (
+    node: NodeData,
+    inputs: WorkerInputs,
+    _outputs: WorkerOutputs,
+    store: Store<unknown>
+  ): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      store.dispatch('updateModel', { uuid: node.data.uuid, model: { columns: inputs.map[0] } })
+
+      resolve()
+    })
+  }
 })

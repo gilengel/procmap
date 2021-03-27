@@ -1,21 +1,20 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { Store } from 'vuex'
-import Layout from './Layout';
+import Model from './Model'
 
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation
  */
 
-let store: Store<unknown> | undefined;
+let store: unknown = null
 
 Vue.use(Vuex)
 
 export default function () {
   const Store = new Vuex.Store({
     modules: {
-      Layout
+      Model
     },
 
     // enable strict mode (adds overhead!)
@@ -23,9 +22,12 @@ export default function () {
     strict: !!process.env.DEBUGGING
   })
 
+  // add this so that we export store
   store = Store
 
+  // Quasar default
   return Store
 }
 
+// add this line to access store wherever you need
 export { store }

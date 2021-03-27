@@ -17,7 +17,9 @@ declare module 'rete/types/events' {
 const registeredSockets = new Map([
 
     ['table_data', new Socket('table_data')],
-    ['text', new Socket('text')]
+    ['text', new Socket('text')],
+    ['map', new Socket('map')],
+    ['data', new Socket('data')]
 
 ])
 

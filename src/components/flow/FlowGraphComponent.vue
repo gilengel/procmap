@@ -2,23 +2,13 @@
   <div class="preview">
     <q-toolbar class="bg-black text-white">
       <q-toolbar-title>Flow</q-toolbar-title>
-      <q-btn
-        flat
-        round
-        dense
-      >
+      <q-btn flat round dense>
         <q-icon name="las la-window-minimize" />
       </q-btn>
     </q-toolbar>
 
-    <div
-      v-resize="onResize"
-      class="flow"
-    >
-      <div
-        id="rete"
-        ref="rete"
-      />
+    <div v-resize="onResize" class="flow">
+      <div id="rete" ref="rete" />
     </div>
   </div>
 </template>
@@ -37,14 +27,16 @@ import DockPlugin from "../dock/Index";
 
 import { getRegisteredComponentCategories } from "../flow/Index";
 
+import { v4 as uuidv4 } from "uuid";
+
 import resize from "vue-resize-directive";
 
-import { store } from "../../store/Index";
+import { store } from "../../store/index";
 
 @Component({
   directives: {
-    resize
-  }
+    resize,
+  },
 })
 export default class FlowGraphComponent extends Vue {
   @Prop(Object) geometry: Record<string, unknown> | undefined;
@@ -67,7 +59,8 @@ export default class FlowGraphComponent extends Vue {
 
   registerComponents() {
     for (const category of getRegisteredComponentCategories()) {
-      category.components.map(c => {
+      category.components.map((c) => {
+        console.log(c);
         this.editor.register(c.component);
         this.engine.register(c.component);
       });
@@ -76,10 +69,8 @@ export default class FlowGraphComponent extends Vue {
 
   makeComponentDataReactive() {
     for (const category of getRegisteredComponentCategories()) {
-      category.components.forEach(c => {
+      category.components.forEach((c) => {
         const data = c.defaultData;
-        Vue.set(data, "progress", 1.0);
-        Vue.set(data, "invalid", false);
 
         // Convert all default values to vue reactive ones
         for (const i in data) {
@@ -92,7 +83,10 @@ export default class FlowGraphComponent extends Vue {
   }
 
   registerEditorEvents() {
-    this.editor.on(["nodecreate"], node => {
+    this.editor.on(["nodecreate"], (node) => {
+      // Add random uuid used to identify model in store related to the new node
+      node.data.uuid = uuidv4();
+
       this.$emit("add-widget", node);
 
       return node;
@@ -122,9 +116,13 @@ export default class FlowGraphComponent extends Vue {
 
       await this.engine.process(this.editor.toJSON());
     });
+
+    this.editor.on(["click"], (e: KeyboardEvent, container: HTMLElement) => {
+      this.editor.selected.list = [];
+    });
   }
 
-  mounted() {
+  async mounted() {
     this.createEditor();
     this.createCustomEditorEvents();
 
@@ -136,7 +134,61 @@ export default class FlowGraphComponent extends Vue {
 
     this.registerEditorEvents();
 
-    // await this.createDefaultNodes()
+    const data = {
+      id: "demo@0.1.0",
+      nodes: {
+        "1": {
+          id: 1,
+          data: {},
+          inputs: {},
+          outputs: {
+            text: {
+              connections: [
+                {
+                  node: 2,
+                  input: "text",
+                  data: {},
+                },
+              ],
+            },
+          },
+          position: [80, 200],
+          name: "text",
+        },
+
+        "2": {
+          id: 2,
+          data: {},
+          inputs: {},
+          outputs: {
+            map: {
+              connections: [
+                {
+                  node: 3,
+                  input: "map",
+                  data: {},
+                },
+              ],
+            },
+          },
+          position: [280, 200],
+          name: "TextFilter",
+        },
+
+        "3": {
+          id: 3,
+          data: {},
+          inputs: {},
+          outputs: {},
+          position: [580, 200],
+          name: "table",
+        },
+      },
+    };
+
+    console.log(this.editor.components);
+
+    await this.editor.fromJSON(data);
 
     this.editor.view.resize();
     this.editor.trigger("process");
@@ -147,7 +199,7 @@ export default class FlowGraphComponent extends Vue {
       e.code === "Delete" &&
       (e.target as HTMLElement).tagName.toUpperCase() !== "INPUT"
     ) {
-      this.editor.selected.each(n => this.editor.removeNode(n));
+      this.editor.selected.each((n) => this.editor.removeNode(n));
     }
   }
 

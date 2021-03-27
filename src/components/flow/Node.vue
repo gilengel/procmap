@@ -107,7 +107,7 @@ export default class Node extends Mixin {
 </script>
 
 <style lang="scss">
-$node-color: rgba(35, 35, 35, 0.7);
+$node-color: #292c34;
 $color-active: darken($node-color, 5%);
 $title-light: rgba(0, 255, 0, 0.5);
 $title-light-transparent: rgba(0, 255, 0, 0);
@@ -123,7 +123,7 @@ $socket-margin: 10px;
   content: " ";
   position: absolute;
   z-index: -1;
-  border: solid 2px orange;
+  border: solid 2px $info;
   border-radius: 2px;
 
   left: -2px;
@@ -173,14 +173,6 @@ $socket-margin: 10px;
 .ouptut {
   padding-left: 6px;
   justify-content: flex-end;
-}
-
-.node:hover {
-  background: $node-color;
-}
-.node:hover.active {
-  background: $color-active;
-  border: 1px solid #ffd252;
 }
 
 .title {

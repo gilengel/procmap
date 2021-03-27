@@ -1,11 +1,10 @@
 <template>
   <Widget title="Test">
     <q-table
-      title="Treats"
-      :data="data"
       :columns="columns"
       row-key="name"
       dark
+      flat
       color="amber"
     />
   </Widget>
@@ -13,8 +12,8 @@
 
 <script lang="ts">
 import Widget from './Widget.vue'
-import Vue from 'vue'
-import Component from 'vue-class-component'
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Getter } from 'vuex-class'
 
 interface TableRow {
   name: string;
@@ -22,6 +21,10 @@ interface TableRow {
   label: string;
   field: string;
   sortable: boolean;
+}
+
+interface TableModel {
+  columns: Array<string>
 }
 
 @Component({
@@ -32,6 +35,21 @@ interface TableRow {
   }
 })
 export default class TableWidget extends Vue {
+  @Prop({ default: 'uuid' }) uuid!: string
+
+  @Getter('model')
+  getModel!: (uuid: string) => Map<string, unknown>
+
+  get columns () {
+    const model = this.getModel(this.uuid) as unknown as TableModel;
+    if(model === undefined || model.columns === undefined) {
+      return []
+    }
+
+    return model.columns.map(element => { return { name: element, label: element } } )
+  }
+
+  /*
   columns = [
     {
       name: 'desc',
@@ -68,7 +86,9 @@ export default class TableWidget extends Vue {
       sort: (a: string, b: string) => parseInt(a, 10) - parseInt(b, 10)
     }
   ];
+  */
 
+  /*
   data = [
     {
       name: 'Frozen Yogurt',
@@ -171,6 +191,7 @@ export default class TableWidget extends Vue {
       iron: '6%'
     }
   ];
+  */
 }
 </script>
 

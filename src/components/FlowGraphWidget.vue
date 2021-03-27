@@ -24,15 +24,12 @@ import {
 
 import FlowGraphNodesList from './FlowGraphNodesList.vue'
 
-import TableView from './TableView.vue'
-
 @Component({
   name: 'FlowGraphWidget',
 
   components: {
     FlowGraphNodesList,
     FlowGraphComponent,
-    TableView
   }
 })
 export default class FlowGraphWidget extends Vue {
@@ -47,7 +44,7 @@ export default class FlowGraphWidget extends Vue {
   verticalSplitter = 50;
 
   // width of left toolbar
-  leftToolbar = 40;
+  leftToolbar = 20;
 
   // width of right toolbar
   rightToolbar = 50;
