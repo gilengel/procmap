@@ -19,7 +19,8 @@ const registeredSockets = new Map([
     ['table_data', new Socket('table_data')],
     ['text', new Socket('text')],
     ['map', new Socket('map')],
-    ['data', new Socket('data')]
+    ['data', new Socket('data')],
+    ['list', new Socket('list')]
 
 ])
 

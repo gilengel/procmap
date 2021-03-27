@@ -185,8 +185,6 @@ export default class FlowGraphComponent extends Vue {
       },
     };
 
-    console.log(this.editor.components);
-
     //await this.editor.fromJSON(data);
 
     this.editor.view.resize();

@@ -74,7 +74,7 @@ export default class MapWidget extends Widget {
   }
 
   onResize(e: HTMLElement) {
-    if (this.width !== e.scrollWidth || this.height !== e.scrollHeight) {
+    if ((this.width !== e.scrollWidth || this.height !== e.scrollHeight) && this.map) {
       this.map.resize()
     }
 

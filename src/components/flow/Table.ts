@@ -8,8 +8,8 @@ export default new FlowComponent({
 
   inputs: [
     {
-      type: 'map',
-      label: 'Map',
+      type: 'list',
+      label: 'Row Descriptions',
       mandatory: true
     },
     {
@@ -28,7 +28,22 @@ export default new FlowComponent({
     store: Store<unknown>
   ): Promise<void> => {
     return new Promise((resolve, reject) => {
-      store.dispatch('updateModel', { uuid: node.data.uuid, model: { columns: inputs.map[0] } })
+      store.dispatch('updateModel', {
+        uuid: node.data.uuid,
+        model: {
+          columns: inputs.list[0],
+          data: [
+            {
+              Ayu: 'Mau',
+              Mia: 'Mia',
+              Maya: 'Miiiiiauuuuo',
+              Elf: 'Schnuuuuur',
+              Mobi: 'Plüsch',
+              Shira: 'Ffffffch'
+            }
+          ]
+        }
+      })
 
       resolve()
     })

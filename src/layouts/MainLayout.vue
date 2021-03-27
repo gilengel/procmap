@@ -60,6 +60,7 @@ import FlowGraphWidget from "components/FlowGraphWidget.vue";
 import MapWidget from "components/MapWidget.vue";
 import IdeWidget from 'components/IdeWidget.vue'
 import TodoWidget from "components/TodoWidget.vue";
+import ListWidget from "components/ListWidget.vue";
 
 import { Node as ReteNode } from "rete";
 
@@ -102,7 +103,8 @@ interface ServerResponse {
     ChartWidget,
     IdeWidget,
     MapWidget,
-    TodoWidget
+    TodoWidget,
+    ListWidget
   }
 })
 export default class MainLayout extends Vue {
@@ -122,8 +124,6 @@ export default class MainLayout extends Vue {
     }).then((response) => {
       this.layout = JSON.parse(response.request.response);
     })
-
-
   }
 
   private saveLayout() {
@@ -151,6 +151,7 @@ export default class MainLayout extends Vue {
       return
     }
 
+    console.log(element.name)
     const layout = (this.layout as View);
     layout.widgets.push({
       i: `${element.data.uuid}`,

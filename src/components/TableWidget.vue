@@ -1,7 +1,9 @@
 <template>
-  <Widget title="Test">
-    <q-table
-      :columns="columns"
+  <Widget title="Table" @remove-widget="removeWidget">
+    {{model}}
+    <q-table v-if="model"
+
+      :data="model.data"
       row-key="name"
       dark
       flat
@@ -11,9 +13,9 @@
 </template>
 
 <script lang="ts">
-import Widget from './Widget.vue'
-import { Vue, Component, Prop } from 'vue-property-decorator'
-import { Getter } from 'vuex-class'
+import Widget from "./Widget.vue";
+import { Component } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 interface TableRow {
   name: string;
@@ -24,30 +26,36 @@ interface TableRow {
 }
 
 interface TableModel {
-  columns: Array<string>
+  columns: Array<string>;
 }
 
 @Component({
-  name: 'TableWidget',
-
-  components: {
-    Widget
-  }
+  name: "TableWidget",
 })
-export default class TableWidget extends Vue {
-  @Prop({ default: 'uuid' }) uuid!: string
+export default class TableWidget extends Widget {
+  @Getter("model")
+  getModel!: (uuid: string) => {};
 
-  @Getter('model')
-  getModel!: (uuid: string) => Map<string, unknown>
+  get model() {
+    return this.getModel(this.uuid);
+  }
+/*
+get columns() {
+    const model = (this.getModel(this.uuid) as unknown) as TableModel;
 
-  get columns () {
-    const model = this.getModel(this.uuid) as unknown as TableModel;
-    if(model === undefined || model.columns === undefined) {
-      return []
+    if (model === undefined || model.columns === undefined) {
+      return [];
     }
 
-    return model.columns.map(element => { return { name: element, label: element } } )
+    const columns = model.rows.map((element: string) => {
+      return { name: element, label: element };
+    });
+
+    console.log(columns);
+
+    return columns;
   }
+  */
 
   /*
   columns = [
