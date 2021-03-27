@@ -39,22 +39,25 @@
 </template>
 
 <script lang='ts'>
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component } from "vue-property-decorator";
 
-import { GridLayout, GridItem } from 'vue-grid-layout'
-import Widget from 'components/Widget.vue'
-import TableWidget from 'components/TableWidget.vue'
-import ImageWidget from 'components/ImageWidget.vue'
-import TextWidget from 'src/components/TextWidget.vue'
-import ChartWidget from 'src/components/ChartWidget.vue'
-import FlowGraphWidget from 'components/FlowGraphWidget.vue'
+import { GridLayout, GridItem } from "vue-grid-layout";
+import Widget from "components/Widget.vue";
+import TableWidget from "components/TableWidget.vue";
+import ImageWidget from "components/ImageWidget.vue";
+import TextWidget from "components/TextWidget.vue";
+import ChartWidget from "src/components/ChartWidget.vue";
+import FlowGraphWidget from "components/FlowGraphWidget.vue";
+import MapWidget from "components/MapWidget.vue";
 import IdeWidget from 'components/IdeWidget.vue'
-import { Node as ReteNode } from 'rete'
+import TodoWidget from "components/TodoWidget.vue";
+
+import { Node as ReteNode } from "rete";
 
 import { v4 as uuidv4 } from 'uuid'
 
 @Component({
-  name: 'MainLayout',
+  name: "MainLayout",
 
   components: {
     GridLayout,
@@ -66,6 +69,8 @@ import { v4 as uuidv4 } from 'uuid'
     FlowGraphWidget,
     ChartWidget,
     IdeWidget
+    MapWidget,
+    TodoWidget
   }
 })
 export default class MainLayout extends Vue {
@@ -85,24 +90,14 @@ export default class MainLayout extends Vue {
       properties: {},
       component: 'FlowGraphWidget'
     },
-    {
-      x: 6,
-      y: 0,
-      w: 6,
-      h: 30,
-      i: uuidv4(),
-      static: true,
-      properties: {},
-      component: 'IdeWidget'
-    }
   ];
 
   mounted () {
     this.index = this.layout.length
   }
 
-  getWidgetName (element: string) {
-    return `${element.charAt(0).toUpperCase()}${element.slice(1)}Widget`
+  getWidgetName(element: string) {
+    return `${element.charAt(0).toUpperCase()}${element.slice(1)}Widget`;
   }
 
   onAddWidget (element: ReteNode) {

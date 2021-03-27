@@ -4,7 +4,8 @@ import Image from './Image'
 import Text from './Text'
 import TextFilter from './TextFilter'
 import Line from './Line'
-
+import Map from './Map'
+import Todo from './Todo'
 export interface MetaFlowComponent {
     readonly id: string;
     readonly label: string;
@@ -58,6 +59,20 @@ const basicCategory: MetaFlowCategory = {
             label: 'Chart',
             icon: 'las la-map-marked',
             component: Line,
+            defaultData: {}
+        },
+        {
+            id: 'map',
+            label: 'Map',
+            icon: 'las la-map-marked',
+            component: Map,
+            defaultData: {}
+        },
+        {
+            id: 'todo',
+            label: 'Todo',
+            icon: 'las la-map-marked',
+            component: Todo,
             defaultData: {}
         }
     ]
