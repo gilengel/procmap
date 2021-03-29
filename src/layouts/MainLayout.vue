@@ -64,8 +64,6 @@ import ListWidget from "components/ListWidget.vue";
 
 import { Node as ReteNode } from "rete";
 
-import { v4 as uuidv4 } from 'uuid'
-
 import axios from 'axios'
 
 interface Widget {

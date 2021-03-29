@@ -41,6 +41,7 @@ export default class Layout extends VuexModule {
 
   @Action
   updateModel (params: IModel) {
+    console.log("NO WAY")
     this.context.commit('_updateModel', params)
   }
 }
