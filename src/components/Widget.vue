@@ -2,17 +2,25 @@
   <div class="widget">
     <q-toolbar class="bg-black text-white vue-draggable-handle">
       <q-toolbar-title>{{ title }}</q-toolbar-title>
-      <q-btn flat round dense v-on:click="removeWidget">
+      <q-btn
+        flat
+        round
+        dense
+        @click="removeWidget"
+      >
         <q-icon name="las la-trash" />
       </q-btn>
     </q-toolbar>
     <div class="widget-content">
-      <slot  />
+      <slot />
     </div>
 
     <q-toolbar class="bg-black text-white vue-draggable-handle">
-      <q-toolbar-title></q-toolbar-title>
-      <q-icon name="las la-ruler-combined" class="vue-resizable-handle custom-handle" />
+      <q-toolbar-title />
+      <q-icon
+        name="las la-ruler-combined"
+        class="vue-resizable-handle custom-handle"
+      />
     </q-toolbar>
   </div>
 </template>
@@ -28,8 +36,8 @@ export default class Widget extends Vue {
 
   @Prop({ default: '' }) readonly uuid!: string;
 
-  removeWidget() {
-    this.$emit("remove-widget", this.$props.uuid);
+  removeWidget () {
+    this.$emit('remove-widget', this.$props.uuid)
   }
 }
 </script>

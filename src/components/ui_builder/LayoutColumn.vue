@@ -1,21 +1,68 @@
 <template>
-  <div v-on:dragover="drag" v-on:drop="drop(row, column, $event)" @mouseover="hover = true" @mouseleave="hover = false">
-    <div :class="{ 'is-active': hover }" class="menububble shadow-3 rounded-borders">
-      <q-btn flat stack color="white" label="Split" icon="las la-columns" v-on:click="splitColumn(row, column)" :disable="width < 2 && width != 'auto'" />
-      <q-btn flat stack color="white" label="Join Left" icon="las la-object-group" v-on:click="joinColumnLeft(row, column)" :disable="column == 0"/>
-      <q-btn flat stack color="white" label="Join Right" icon="las la-object-group" v-on:click="joinColumnRight(row, column)" :disable="column == maxColumn - 1"/>
-      <q-btn flat stack color="white" label="Add Right Column" icon="las la-plus-square" v-on:click="addColumn(row, column)" :disable="column == maxColumn - 1"/>
-      <q-btn flat stack color="white" label="Add Bottom Row" icon="las la-plus-square" v-on:click="addRow(row + 1)" />
+  <div
+    @dragover="drag"
+    @drop="drop(row, column, $event)"
+    @mouseover="hover = true"
+    @mouseleave="hover = false"
+  >
+    <div
+      :class="{ 'is-active': hover }"
+      class="menububble shadow-3 rounded-borders"
+    >
+      <q-btn
+        flat
+        stack
+        color="white"
+        label="Split"
+        icon="las la-columns"
+        @click="splitColumn(row, column)"
+        :disable="width < 2 && width != 'auto'"
+      />
+      <q-btn
+        flat
+        stack
+        color="white"
+        label="Join Left"
+        icon="las la-object-group"
+        @click="joinColumnLeft(row, column)"
+        :disable="column == 0"
+      />
+      <q-btn
+        flat
+        stack
+        color="white"
+        label="Join Right"
+        icon="las la-object-group"
+        @click="joinColumnRight(row, column)"
+        :disable="column == maxColumn - 1"
+      />
+      <q-btn
+        flat
+        stack
+        color="white"
+        label="Add Right Column"
+        icon="las la-plus-square"
+        @click="addColumn(row, column)"
+        :disable="column == maxColumn - 1"
+      />
+      <q-btn
+        flat
+        stack
+        color="white"
+        label="Add Bottom Row"
+        icon="las la-plus-square"
+        @click="addRow(row + 1)"
+      />
     </div>
-    <slot></slot>
+    <slot />
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component({
-  name: "LayoutColumn",
+  name: 'LayoutColumn'
 })
 export default class LayoutColumn extends Vue {
   @Prop() row!: number;
@@ -57,12 +104,10 @@ export default class LayoutColumn extends Vue {
   opacity: 0;
   transition: opacity 0.2s, visibility 0.2s;
 
-
   &.is-active {
     opacity: 1;
     visibility: visible;
   }
-
 
   > button {
     display: inline-flex;

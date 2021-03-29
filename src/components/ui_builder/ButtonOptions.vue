@@ -3,188 +3,169 @@
     <h1 class="text-subtitle1">Button</h1>
 
     <div class="preview">
-      <q-btn dark
-        :flat="!isHighlightedInput"
-        :label="labelInput"
-        :icon="previewIcon"
-      />
+      <q-btn dark :flat="!isHighlightedInput" :label="labelInput" :icon="previewIcon" />
     </div>
 
-    <q-input
-      dark
-      placeholder="Label"
-      v-model="labelInput"
-    />
+    <q-input dark placeholder="Label" v-model="labelInput" />
 
     <label>Display Highlighted</label>
-    <q-toggle
-      v-model="isHighlightedInput"
-      color="accent"
-    />
+    <q-toggle v-model="isHighlightedInput" color="accent" />
 
     <label>Display Icon</label>
-    <q-toggle
-      v-model="hasIconInput"
-      color="accent"
-    />
+    <q-toggle v-model="hasIconInput" color="accent" />
     <div v-if="hasIconInput">
       <div v-for="group in groupedIcons">
-        <h2 class="text-subtitle2">{{group.label}}</h2>
+        <h2 class="text-subtitle2">{{ group.label }}</h2>
 
-        <q-icon :name="icon" v-for="icon in group.icons" v-bind:class="{ selected: selected(icon) }" @click="setIcon(icon)" />
+        <q-icon
+          :name="icon"
+          v-for="icon in group.icons"
+          :class="{ selected: selected(icon) }"
+          @click="setIcon(icon)"
+        />
       </div>
-
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Options from "../ui_builder/Options.vue";
-import { Component, Prop } from 'vue-property-decorator'
+import { Component, Prop } from "vue-property-decorator";
 import { Getter, Action } from "vuex-class";
-import IModel from '../../store/Model'
+import IModel from "../../store/Model";
+import ButtonElement from "./ButtonElement.vue";
+
+import copy from '../Copy'
 
 export interface Button {
-  identifier: string,
-  hasIcon: boolean,
-  isHighlighted: boolean,
-  label: string,
-  icon: string
+  identifier: string;
+  hasIcon: boolean;
+  isHighlighted: boolean;
+  label: string;
+  icon: string;
 }
 
 @Component({
-  name: "ButtonOptions",
+  name: "ButtonOptions"
 })
-export default class ButtonOptions extends Options {
-  @Prop({ default: 'uuid' }) uuid!: string
+export default class ButtonOptions extends ButtonElement {
 
-  get model () {
-    return this.getModel(this.uuid)
-  }
 
-  @Getter('model')
-  getModel!: (uuid: string) => IModel
+  protected setValueOfAttribute(name: String, value: any): any {
+    let deepCopy = copy(this.model);
 
-  @Action('updateModel')
-  updateModel!: (params: IModel) => void
+    const element = (deepCopy as unknown) as Element;
+    const attribute = element.attributes.find(
+      attribute => attribute.name === name
+    );
 
-  set identifierInput(value: string) {
+    attribute.value = value;
+    
     this.updateModel({
       uuid: this.uuid,
-      model: { identifier: value }
-    })
+      model: deepCopy
+    });
+  }
+
+  set identifierInput(value: string) {
+    this.setValueOfAttribute("identifier", value);
   }
 
   get identifierInput() {
-    return this.model.identifier;
+    return this.getValueOfAttribute("identifier");
   }
 
   set hasIconInput(value: boolean) {
-    this.updateModel({
-      uuid: this.uuid,
-      model: { hasIcon: value }
-    })
+    this.setValueOfAttribute("hasIcon", value);
   }
 
   get hasIconInput() {
-    return this.model.hasIcon;
+    return this.getValueOfAttribute("hasIcon");
   }
 
   set isHighlightedInput(value: boolean) {
-    this.updateModel({
-      uuid: this.uuid,
-      model: { isHighlighted: value }
-    })
+    this.setValueOfAttribute("isHighlighted", value);
   }
 
   get isHighlightedInput() {
-    return this.model.isHighlighted;
+    return this.getValueOfAttribute("isHighlighted");
   }
 
   set labelInput(value: string) {
-    this.updateModel({
-      uuid: this.uuid,
-      model: { label: value }
-    })
+    this.setValueOfAttribute("label", value);
   }
 
   get labelInput() {
-    return this.model.label;
+    return this.getValueOfAttribute("label");
   }
 
   set iconInput(value: string) {
-    this.updateModel({
-      uuid: this.uuid,
-      model: { icon: value }
-    })
+    this.setValueOfAttribute("icon", value);
   }
 
   get iconInput() {
-    return this.model.icon;
+    return this.getValueOfAttribute("icon");
   }
 
-  get previewIcon() {
-    let icon = undefined;
-
-    if(this.hasIconInput && this.iconInput !== '') {
-      icon = this.iconInput
-    }
-
-    return icon;
-  }
 
   selected(icon: string) {
-    return (icon === this.iconInput);
+    return icon === this.iconInput;
   }
 
   setIcon(icon: string) {
-    this.iconInput = icon
+    this.iconInput = icon;
   }
 
   groupedIcons = [
-    { label: 'Automotive', icons: [
-      'las la-car',
-      'las la-car-side',
-      'las la-truck',
-      'las la-ambulance',
-      'las la-charging-station',
-      'las la-gas-pump',
-      'las la-shuttle-van',
-      'las la-bus',
-      'las la-car-battery',
-      'las la-tachometer-alt',
-      'las la-truck-pickup',
-      'las la-car-crash',
-      'las la-motorcycle',
-      'las la-taxi'
-    ]
+    {
+      label: "Automotive",
+      icons: [
+        "las la-car",
+        "las la-car-side",
+        "las la-truck",
+        "las la-ambulance",
+        "las la-charging-station",
+        "las la-gas-pump",
+        "las la-shuttle-van",
+        "las la-bus",
+        "las la-car-battery",
+        "las la-tachometer-alt",
+        "las la-truck-pickup",
+        "las la-car-crash",
+        "las la-motorcycle",
+        "las la-taxi"
+      ]
     },
-    { label: 'Chat', icons: [
-      'las la-comment-alt',
-      'las la-comments',
-      'las la-comment-dots',
-      'las la-phone-alt',
-      'las la-phone-slash',
-      'las la-quote-left',
-      'las la-quote-right',
-      'las la-video',
-      'las la-video-slash',
-    ]
+    {
+      label: "Chat",
+      icons: [
+        "las la-comment-alt",
+        "las la-comments",
+        "las la-comment-dots",
+        "las la-phone-alt",
+        "las la-phone-slash",
+        "las la-quote-left",
+        "las la-quote-right",
+        "las la-video",
+        "las la-video-slash"
+      ]
     },
-    { label: 'Code', icons: [
-      'las la-archive',
-      'las la-code',
-      'las la-microchip',
-      'las la-barcode',
-      'las la-code-branch',
-      'las la-project-diagram',
-      'las la-qrcode',
-      'las la-terminal',
-      'las la-bug',
-      'las la-laptop-code',
-    ]
+    {
+      label: "Code",
+      icons: [
+        "las la-archive",
+        "las la-code",
+        "las la-microchip",
+        "las la-barcode",
+        "las la-code-branch",
+        "las la-project-diagram",
+        "las la-qrcode",
+        "las la-terminal",
+        "las la-bug",
+        "las la-laptop-code"
+      ]
     }
-  ]
+  ];
 }
 </script>
 

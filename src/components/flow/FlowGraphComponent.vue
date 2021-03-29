@@ -2,13 +2,23 @@
   <div class="preview">
     <q-toolbar class="bg-black text-white">
       <q-toolbar-title>Flow</q-toolbar-title>
-      <q-btn flat round dense>
+      <q-btn
+        flat
+        round
+        dense
+      >
         <q-icon name="las la-window-minimize" />
       </q-btn>
     </q-toolbar>
 
-    <div v-resize="onResize" class="flow">
-      <div id="rete" ref="rete" />
+    <div
+      v-resize="onResize"
+      class="flow"
+    >
+      <div
+        id="rete"
+        ref="rete"
+      />
     </div>
   </div>
 </template>

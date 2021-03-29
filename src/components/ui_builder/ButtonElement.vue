@@ -1,17 +1,22 @@
 <template>
   <div>
-    <q-btn dark :flat="!model.isHighlighted" :label="model.label" :icon="previewIcon" />
+    <q-btn
+      dark
+      :flat="!isHighlighted"
+      :label="label"
+      :icon="previewIcon"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
-import Options from "../ui_builder/Options.vue";
-import { Getter, Action } from "vuex-class";
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import Options from '../ui_builder/Options.vue'
+import { Getter, Action } from 'vuex-class'
 import IModel from '../../store/Model'
 
 @Component({
-  name: "ButtonElement",
+  name: 'ButtonElement'
 })
 export default class ButtonElement extends Vue {
   @Prop({ default: 'uuid' }) uuid!: string
@@ -20,22 +25,44 @@ export default class ButtonElement extends Vue {
     return this.getModel(this.uuid)
   }
 
+  protected getValueOfAttribute(name: String): any {
+    const element = this.model as unknown as Element;
+    const attribute = element.attributes.find(attribute => attribute.name === name);
+
+    return attribute.value;
+  }
+  get label(): String {
+    return this.getValueOfAttribute('label')
+  }
+  
+  get isHighlighted(): String {
+    return this.getValueOfAttribute('isHighlighted')
+  }
+
+  get icon(){
+    return this.getValueOfAttribute('icon')
+  }
+
+  get hasIcon(){
+    return this.getValueOfAttribute('hasIcon')
+  }
+
   @Getter('model')
   getModel!: (uuid: string) => IModel
 
   @Action('updateModel')
   updateModel!: (params: IModel) => void
 
-  hover: boolean = false;
+  hover = false;
 
-  get previewIcon() {
-    let icon = undefined;
+  get previewIcon () {
+    let icon
 
-    if (this.model.hasIcon && this.model.icon !== "") {
-      icon = this.model.icon;
+    if (this.hasIcon && this.icon !== '') {
+      icon = this.icon
     }
 
-    return icon;
+    return icon
   }
 }
 </script>

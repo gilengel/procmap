@@ -1,21 +1,32 @@
 <template>
-  <Widget title="List" @remove-widget="removeWidget">
+  <Widget
+    title="List"
+    @remove-widget="removeWidget"
+  >
     <div class="q-pa-md q-gutter-md">
-      <q-list dark v-for="item in model.list" :key="item">
+      <q-list
+        dark
+        v-for="item in model.list"
+        :key="item"
+      >
         <q-item>
-            <q-item-label>{{item}}</q-item-label>
+          <q-item-label>{{ item }}</q-item-label>
         </q-item>
       </q-list>
-      <q-input dark outlined v-model="temporaryItem" v-on:keyup.enter="addToList" />
-
+      <q-input
+        dark
+        outlined
+        v-model="temporaryItem"
+        @keyup.enter="addToList"
+      />
     </div>
   </Widget>
 </template>
 
 <script lang="ts">
-import Widget from "./Widget.vue";
-import Vue from "vue";
-import Component from "vue-class-component";
+import Widget from './Widget.vue'
+import Vue from 'vue'
+import Component from 'vue-class-component'
 import {
   Getter,
   Action
@@ -29,7 +40,7 @@ interface Todo {
 }
 
 @Component({
-  name: "ListWidget",
+  name: 'ListWidget'
 })
 export default class ListWidget extends Widget {
   @Getter('model')
@@ -39,25 +50,25 @@ export default class ListWidget extends Widget {
   updateModel!: (params: IModel) => void
 
   get model () {
-    let storeModel = this.getModel(this.uuid);
+    let storeModel = this.getModel(this.uuid)
 
-    if(storeModel === undefined) {
+    if (storeModel === undefined) {
       storeModel = {
-        'list': []
+        list: []
       }
     }
 
-    return storeModel;
+    return storeModel
   }
 
-  temporaryItem: string = 'Foo';
+  temporaryItem = 'Foo';
 
-  addToList() {
-    if(this.temporaryItem === '') {
-      return;
+  addToList () {
+    if (this.temporaryItem === '') {
+      return
     }
 
-    const model = this.model;
+    const model = this.model
     model.list.push(this.temporaryItem)
     this.temporaryItem = ''
 

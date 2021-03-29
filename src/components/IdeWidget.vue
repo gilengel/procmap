@@ -1,6 +1,6 @@
 <template>
   <Widget title="Image">
-    <iframe src="http://localhost:3000/#/home/gil/rust_webassembly/wasm-game-of-life"></iframe>
+    <iframe src="http://localhost:3000/#/home/gil/rust_webassembly/wasm-game-of-life" />
   </Widget>
 </template>
 

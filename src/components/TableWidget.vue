@@ -1,7 +1,11 @@
 <template>
-  <Widget title="Table" @remove-widget="removeWidget">
-    {{model}}
-    <q-table v-if="model"
+  <Widget
+    title="Table"
+    @remove-widget="removeWidget"
+  >
+    {{ model }}
+    <q-table
+      v-if="model"
 
       :data="model.data"
       row-key="name"
@@ -13,9 +17,9 @@
 </template>
 
 <script lang="ts">
-import Widget from "./Widget.vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import Widget from './Widget.vue'
+import { Component } from 'vue-property-decorator'
+import { Getter } from 'vuex-class'
 
 interface TableRow {
   name: string;
@@ -30,14 +34,14 @@ interface TableModel {
 }
 
 @Component({
-  name: "TableWidget",
+  name: 'TableWidget'
 })
 export default class TableWidget extends Widget {
-  @Getter("model")
+  @Getter('model')
   getModel!: (uuid: string) => {};
 
-  get model() {
-    return this.getModel(this.uuid);
+  get model () {
+    return this.getModel(this.uuid)
   }
 /*
 get columns() {

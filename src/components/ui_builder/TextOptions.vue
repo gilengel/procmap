@@ -1,7 +1,12 @@
 <template>
   <div>
-
-    <q-input dark standout v-model="identifier" label="Variable Identifier" stack-label />
+    <q-input
+      dark
+      standout
+      v-model="identifier"
+      label="Variable Identifier"
+      stack-label
+    />
 
     <q-option-group
       v-model="typeGroup"
@@ -27,7 +32,7 @@ export enum TextType {
 }
 
 @Component({
-  name: 'TextOptions',
+  name: 'TextOptions'
 })
 export default class TextOptions extends Options {
   identifier = 'text'
@@ -41,7 +46,7 @@ export default class TextOptions extends Options {
     { label: 'URL', value: TextType.URL },
     { label: 'Time', value: TextType.Time },
     { label: 'Date', value: TextType.Date },
-    { label: 'Text', value: TextType.Text },
+    { label: 'Text', value: TextType.Text }
   ]
 }
 </script>

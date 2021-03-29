@@ -21,15 +21,16 @@ pub enum ElementAttributeType {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ElementAttribute {
+    name: String,
     r#type: ElementAttributeType,
     value: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Element {
+    uuid: String,
     r#type: ElementType,
-
-    attributes: HashMap<String, ElementAttribute>
+    attributes: Vec<ElementAttribute>
 }
 
 #[derive(Serialize, Deserialize, Debug)]

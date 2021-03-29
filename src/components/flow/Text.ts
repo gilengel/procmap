@@ -38,13 +38,13 @@ export default new FlowComponent({
         store: Store<unknown>
     ): Promise<void> => {
         return new Promise((resolve) => {
-          const model = store.getters.model(node.data.uuid);
+          const model = store.getters.model(node.data.uuid)
 
           let text = DEFAULT_TEXT
-          if(model && model.text != text) {
+          if (model && model.text != text) {
             text = model.text
           }
-          outputs.text = text;
+          outputs.text = text
 
           store.dispatch('updateModel', { uuid: node.data.uuid, model: { text: text } })
 

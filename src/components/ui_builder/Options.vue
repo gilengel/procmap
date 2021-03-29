@@ -3,10 +3,15 @@
     <q-toolbar class="bg-black text-white">
       <q-toolbar-title>{{ title }}</q-toolbar-title>
       <q-space />
-      <q-btn flat round dense icon="las la-search" />
+      <q-btn
+        flat
+        round
+        dense
+        icon="las la-search"
+      />
     </q-toolbar>
     <div class="widget-content">
-      <slot  />
+      <slot />
     </div>
   </div>
 </template>

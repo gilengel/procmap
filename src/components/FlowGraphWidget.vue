@@ -1,5 +1,8 @@
 <template>
-  <Widget title="Flow" @remove-widget="removeWidget">
+  <Widget
+    title="Flow"
+    @remove-widget="removeWidget"
+  >
     <q-splitter
       v-model="leftToolbar"
       style="height: 100%"
@@ -31,7 +34,7 @@ import Widget from './Widget.vue'
 
   components: {
     FlowGraphNodesList,
-    FlowGraphComponent,
+    FlowGraphComponent
   }
 })
 export default class FlowGraphWidget extends Widget {

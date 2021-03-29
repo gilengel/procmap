@@ -1,11 +1,15 @@
 <template>
-  <Widget title="Map" @remove-widget="removeWidget" v-resize="onResize">
+  <Widget
+    title="Map"
+    @remove-widget="removeWidget"
+    v-resize="onResize"
+  >
     <MglMap
-      :accessToken="accessToken"
-      :mapStyle="mapStyle"
-      :sourceId="geoJsonSource.data.id"
+      :access-token="accessToken"
+      :map-style="mapStyle"
+      :source-id="geoJsonSource.data.id"
       :source="geoJsonSource"
-      layerId="somethingSomething"
+      layer-id="somethingSomething"
       :layer="geoJsonLayer"
       @load="onMapLoaded"
     />
@@ -13,77 +17,79 @@
 </template>
 
 <script lang="ts">
-import Widget from "./Widget.vue";
-import Vue from "vue";
-import Component from "vue-class-component";
+import Widget from './Widget.vue'
+import Vue from 'vue'
+import Component from 'vue-class-component'
 
-import Mapbox from "mapbox-gl";
-import { MglMap } from "vue-mapbox";
-import resize from "vue-resize-directive";
+import Mapbox from 'mapbox-gl'
+import { MglMap } from 'vue-mapbox'
+import resize from 'vue-resize-directive'
 
-import "mapbox-gl/dist/mapbox-gl.css";
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 @Component({
-  name: "MapWidget",
+  name: 'MapWidget',
 
   directives: {
-    resize,
+    resize
   },
 
   components: {
-    MglMap,
-  },
+    MglMap
+  }
 })
 export default class MapWidget extends Widget {
   accessToken =
-    "pk.eyJ1IjoibmFudHUiLCJhIjoiY2ttcnNreGFuMDRtbDJ3bXdyNm5vcGw5cyJ9.ATcig-n5fak3GqavXn9xXg";
-  mapStyle = "mapbox://styles/nantu/ckmrsykkb2e6e17qtgfhy7whx"; // your map style
+    'pk.eyJ1IjoibmFudHUiLCJhIjoiY2ttcnNreGFuMDRtbDJ3bXdyNm5vcGw5cyJ9.ATcig-n5fak3GqavXn9xXg';
+
+  mapStyle = 'mapbox://styles/nantu/ckmrsykkb2e6e17qtgfhy7whx'; // your map style
   geoJsonSource = {
-    type: "geojson",
+    type: 'geojson',
     data: {
-      id: "thisIsMySource",
-      type: "FeatureCollection",
+      id: 'thisIsMySource',
+      type: 'FeatureCollection',
       features: [
         {
-          type: "Feature",
+          type: 'Feature',
           geometry: {
-            type: "Point",
-            coordinates: [102.0, 0.5],
+            type: 'Point',
+            coordinates: [102.0, 0.5]
           },
           properties: {
-            id: "value0",
-          },
-        },
-      ],
-    },
+            id: 'value0'
+          }
+        }
+      ]
+    }
   };
+
   geoJsonLayer = {
-    type: "circle",
+    type: 'circle',
     paint: {
-      "circle-color": "red",
-    },
+      'circle-color': 'red'
+    }
   };
 
   mapbox = null;
 
-  width: number = 0;
-  height: number = 0;
+  width = 0;
+  height = 0;
 
-  onMapLoaded(event) {
-    this.map = event.map;
+  onMapLoaded (event) {
+    this.map = event.map
   }
 
-  onResize(e: HTMLElement) {
+  onResize (e: HTMLElement) {
     if ((this.width !== e.scrollWidth || this.height !== e.scrollHeight) && this.map) {
       this.map.resize()
     }
 
-    this.width = e.scrollWidth; // - (e.scrollWidth % 50)
-    this.height = e.scrollHeight; // - (e.scrollHeight % 50)
+    this.width = e.scrollWidth // - (e.scrollWidth % 50)
+    this.height = e.scrollHeight // - (e.scrollHeight % 50)
   }
 
-  created() {
-    this.mapbox = Mapbox;
+  created () {
+    this.mapbox = Mapbox
   }
 }
 </script>

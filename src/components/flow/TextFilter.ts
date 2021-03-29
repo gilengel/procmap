@@ -30,10 +30,10 @@ export default new FlowComponent({
     store: Store<unknown>
   ): Promise<void> => {
     return new Promise((resolve) => {
-      const result = new Array();
+      const result = []
 
       if (inputs.text[0]) {
-        const matches = inputs.text[0].matchAll(/<strong>(.*?)<\/strong>/g);
+        const matches = inputs.text[0].matchAll(/<strong>(.*?)<\/strong>/g)
 
         for (const match of matches) {
           result.push(match[1])

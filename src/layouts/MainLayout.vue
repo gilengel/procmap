@@ -4,34 +4,48 @@
       <q-page>
         <q-toolbar class="bg-black text-white vue-draggable-handle">
           <q-toolbar-title>View Builder</q-toolbar-title>
-          <q-btn flat round dense>
-            <q-btn round color="primary" icon="las la-save" v-on:click="saveLayout" />
+          <q-btn
+            flat
+            round
+            dense
+          >
+            <q-btn
+              round
+              color="primary"
+              icon="las la-save"
+              @click="saveLayout"
+            />
           </q-btn>
         </q-toolbar>
 
-        <h1 v-if="!layout">Something went wrong loading the view :(</h1>
+        <h1 v-if="!layout">
+          Something went wrong loading the view :(
+        </h1>
 
-    <grid-layout v-else :layout.sync="layout.widgets"
-                 :col-num="12"
-                 :row-height="30"
-                 :is-draggable="true"
-                 :is-resizable="true"
-                 :vertical-compact="true"
-                 :use-css-transforms="false"
-                 :margin="[0, 0]"
-                 class="noselect"
-    >
-        <grid-item v-for="widget in layout.widgets"
-                    :key="widget.id"
-                   :static="widget.static"
-                   :x="widget.x"
-                   :y="widget.y"
-                   :w="widget.w"
-                   :h="widget.h"
-                   :i="widget.i"
-                               drag-allow-from=".vue-draggable-handle"
-            drag-ignore-from=".no-drag"
+        <grid-layout
+          v-else
+          :layout.sync="layout.widgets"
+          :col-num="12"
+          :row-height="30"
+          :is-draggable="true"
+          :is-resizable="true"
+          :vertical-compact="true"
+          :use-css-transforms="false"
+          :margin="[0, 0]"
+          class="noselect"
         >
+          <grid-item
+            v-for="widget in layout.widgets"
+            :key="widget.id"
+            :static="widget.static"
+            :x="widget.x"
+            :y="widget.y"
+            :w="widget.w"
+            :h="widget.h"
+            :i="widget.i"
+            drag-allow-from=".vue-draggable-handle"
+            drag-ignore-from=".no-drag"
+          >
             <component
               :is="widget.component"
               :uuid="widget.i"
@@ -39,30 +53,29 @@
               @add-widget="onAddWidget"
               @remove-widget="onRemoveWidget"
             />
-        </grid-item>
-    </grid-layout>
-
+          </grid-item>
+        </grid-layout>
       </q-page>
     </q-page-container>
   </q-layout>
 </template>
 
 <script lang='ts'>
-import { Vue, Component } from "vue-property-decorator";
+import { Vue, Component } from 'vue-property-decorator'
 
-import { GridLayout, GridItem } from "vue-grid-layout";
-import Widget from "components/Widget.vue";
-import TableWidget from "components/TableWidget.vue";
-import ImageWidget from "components/ImageWidget.vue";
-import TextWidget from "components/TextWidget.vue";
-import ChartWidget from "src/components/ChartWidget.vue";
-import FlowGraphWidget from "components/FlowGraphWidget.vue";
-import MapWidget from "components/MapWidget.vue";
+import { GridLayout, GridItem } from 'vue-grid-layout'
+import Widget from 'components/Widget.vue'
+import TableWidget from 'components/TableWidget.vue'
+import ImageWidget from 'components/ImageWidget.vue'
+import TextWidget from 'components/TextWidget.vue'
+import ChartWidget from 'src/components/ChartWidget.vue'
+import FlowGraphWidget from 'components/FlowGraphWidget.vue'
+import MapWidget from 'components/MapWidget.vue'
 import IdeWidget from 'components/IdeWidget.vue'
-import TodoWidget from "components/TodoWidget.vue";
-import ListWidget from "components/ListWidget.vue";
+import TodoWidget from 'components/TodoWidget.vue'
+import ListWidget from 'components/ListWidget.vue'
 
-import { Node as ReteNode } from "rete";
+import { Node as ReteNode } from 'rete'
 
 import axios from 'axios'
 
@@ -88,7 +101,7 @@ interface ServerResponse {
 }
 
 @Component({
-  name: "MainLayout",
+  name: 'MainLayout',
 
   components: {
     GridLayout,
@@ -114,33 +127,32 @@ export default class MainLayout extends Vue {
    layout: View | null = null;
 
   /** Calls the server backend to receive the layout json file */
-  private loadLayout() {
-
+  private loadLayout () {
     axios.request<View>({
       url: 'http://localhost:8000/view/load/123',
       transformResponse: (r: ServerResponse) => r.data
     }).then((response) => {
-      this.layout = JSON.parse(response.request.response);
+      this.layout = JSON.parse(response.request.response)
     })
   }
 
-  private saveLayout() {
+  private saveLayout () {
     console.log(this.layout)
     axios.post('http://localhost:8000/view/save', this.layout)
     .then(function (response) {
-      console.log(response);
+      console.log(response)
     })
     .catch(function (error) {
-      console.log(error);
-    });
+      console.log(error)
+    })
   }
 
   async mounted () {
-    await this.loadLayout();
+    await this.loadLayout()
   }
 
-  getWidgetName(element: string) {
-    return `${element.charAt(0).toUpperCase()}${element.slice(1)}Widget`;
+  getWidgetName (element: string) {
+    return `${element.charAt(0).toUpperCase()}${element.slice(1)}Widget`
   }
 
   onAddWidget (element: ReteNode) {
@@ -150,7 +162,7 @@ export default class MainLayout extends Vue {
     }
 
     console.log(element.name)
-    const layout = (this.layout as View);
+    const layout = (this.layout as View)
     layout.widgets.push({
       i: `${element.data.uuid}`,
       x: 6,
@@ -165,11 +177,11 @@ export default class MainLayout extends Vue {
     this.index++
   }
 
-  onRemoveWidget(id: string) {
-    const index = this.layout?.widgets.findIndex((widget : Widget)=> widget.i === id);
+  onRemoveWidget (id: string) {
+    const index = this.layout?.widgets.findIndex((widget : Widget) => widget.i === id)
 
-    if(index !== -1) {
-      this.layout?.widgets.splice(index as number, 1);
+    if (index !== -1) {
+      this.layout?.widgets.splice(index as number, 1)
     }
   }
 }
@@ -191,7 +203,6 @@ body {
 .vue-grid-item .resizing {
     opacity: 0.9;
 }
-
 
 /*
 .vue-grid-layout {

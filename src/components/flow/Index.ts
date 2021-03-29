@@ -88,11 +88,11 @@ const basicCategory: MetaFlowCategory = {
 
 // Unfortunatly vue does not support Maps for v-for which is necessary to display the registered components.
 // Therefore we use an Array, see https://github.com/vuejs/vue/issues/6644
-export function getRegisteredComponentCategories(): Array<MetaFlowCategory> {
+export function getRegisteredComponentCategories (): Array<MetaFlowCategory> {
   return [basicCategory]
 }
 
-export function findRegisteredComponentById(id: string): MetaFlowComponent | undefined {
+export function findRegisteredComponentById (id: string): MetaFlowComponent | undefined {
   for (const category of getRegisteredComponentCategories()) {
     const component = category.components.find(component => component.id === id)
 

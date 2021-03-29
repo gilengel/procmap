@@ -1,5 +1,8 @@
 <template>
-  <Widget title="Text" @remove-widget="removeWidget">
+  <Widget
+    title="Text"
+    @remove-widget="removeWidget"
+  >
     <div class="editor">
       <editor-menu-bubble
         :editor="editor"
@@ -85,7 +88,7 @@ export default class TextWidget extends Widget {
     this.editor?.setContent(`${val}`)
   }
 
-  onEditorContentChange(event: EditorUpdateEvent) {
+  onEditorContentChange (event: EditorUpdateEvent) {
     this.updateModel({
       uuid: this.uuid,
       model: {
@@ -93,13 +96,14 @@ export default class TextWidget extends Widget {
       }
     })
   }
+
   editor: Editor | undefined;
 
   created () {
     this.editor = new Editor({
       content: `<p>${this.model}</p>`,
       extensions: [new Bold(), new Strike()],
-      onUpdate: this.onEditorContentChange,
+      onUpdate: this.onEditorContentChange
     })
   }
 
