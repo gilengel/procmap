@@ -1,56 +1,21 @@
 <template>
   <div>
-    <div
-      class="menububble shadow-3 rounded-borders"
-      v-if="hover"
-    >
-      <q-btn
-        flat
-        stack
-        color="white"
-        label="Password"
-        icon="las la-key"
-      />
-      <q-btn
-        flat
-        stack
-        color="white"
-        label="Email"
-        icon="las la-at"
-      />
-      <q-btn
-        flat
-        stack
-        color="white"
-        label="URL"
-        icon="las la-link"
-      />
-      <q-btn
-        flat
-        stack
-        color="white"
-        label="Date"
-        icon="las la-calendar"
-      />
-      <q-btn
-        flat
-        stack
-        color="white"
-        label="Phone"
-        icon="las la-phone"
-      />
-    </div>
-    <q-input
+    <q-input v-if="editable"
       dark
       placeholder="Label"
       v-model="label"
       @mouseover="hover = true"
       @mouseleave="hover = false"
     />
+    <label v-else>
+      {{label}}
+    </label>
     <q-input
       dark
       placeholder="Text"
-      readonly
+      :type="type"
+      :readonly="editable != false"
+      v-model="valueInput"
       @mouseover="hover = true"
       @mouseleave="hover = false"
     />
@@ -58,14 +23,36 @@
 </template>
 
 <script lang="ts">
-import Component from 'vue-class-component'
-import Options from '../ui_builder/Options.vue'
+import BaseElement from './BaseElement.vue'
+import { Component, Prop } from 'vue-property-decorator'
 
 @Component({
   name: 'TextElement'
 })
-export default class TextElement extends Options {
-  label = ''
+export default class TextElement extends BaseElement {
+  @Prop({default: false}) editable!: boolean;
+
+  @Prop() value!: string;
+
+  get valueInput() {
+    return this.value;
+  }
+
+  set valueInput(val: string) {
+    this.$emit('update:value', val)
+  }
+
+  get label(): string {
+    return this.getValueOfAttribute('label')
+  }
+
+  get type(): String {
+    return this.getValueOfAttribute('type')
+  }
+
+  get variable(): String {
+    return this.getValueOfAttribute('variable')
+  }
 
   hover = false
 }

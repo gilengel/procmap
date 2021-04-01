@@ -74,6 +74,7 @@ import MapWidget from 'components/MapWidget.vue'
 import IdeWidget from 'components/IdeWidget.vue'
 import TodoWidget from 'components/TodoWidget.vue'
 import ListWidget from 'components/ListWidget.vue'
+import FormWidget from 'components/FormWidget.vue'
 
 import { Node as ReteNode } from 'rete'
 
@@ -115,7 +116,8 @@ interface ServerResponse {
     IdeWidget,
     MapWidget,
     TodoWidget,
-    ListWidget
+    ListWidget,
+    FormWidget
   }
 })
 export default class MainLayout extends Vue {
@@ -196,10 +198,7 @@ html,
 body {
   height: 100%;
 }
-.vue-grid-layout {
-}
-.vue-grid-item:not(.vue-grid-placeholder) {
-}
+
 .vue-grid-item .resizing {
     opacity: 0.9;
 }

@@ -7,6 +7,7 @@ import Line from './Line'
 import Map from './Map'
 import Todo from './Todo'
 import List from './data_source/List'
+import Form from './Form'
 export interface MetaFlowComponent {
   readonly id: string;
   readonly label: string;
@@ -81,6 +82,13 @@ const basicCategory: MetaFlowCategory = {
       label: 'List',
       icon: 'las la-list',
       component: List,
+      defaultData: {}
+    },
+    {
+      id: 'form',
+      label: 'Form',
+      icon: 'lab la-wpforms',
+      component: Form,
       defaultData: {}
     }
   ]

@@ -5,36 +5,28 @@
       :flat="!isHighlighted"
       :label="label"
       :icon="previewIcon"
+      :type="type"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
-import Options from '../ui_builder/Options.vue'
-import { Getter, Action } from 'vuex-class'
-import IModel from '../../store/Model'
+import { Component } from 'vue-property-decorator'
+import BaseElement from './BaseElement.vue'
 
 @Component({
   name: 'ButtonElement'
 })
-export default class ButtonElement extends Vue {
-  @Prop({ default: 'uuid' }) uuid!: string
+export default class ButtonElement extends BaseElement {
 
-  get model () {
-    return this.getModel(this.uuid)
+  get type(): String {
+    return this.getValueOfAttribute('type')
   }
 
-  protected getValueOfAttribute(name: String): any {
-    const element = this.model as unknown as Element;
-    const attribute = element.attributes.find(attribute => attribute.name === name);
-
-    return attribute.value;
-  }
   get label(): String {
     return this.getValueOfAttribute('label')
   }
-  
+
   get isHighlighted(): String {
     return this.getValueOfAttribute('isHighlighted')
   }
@@ -46,12 +38,6 @@ export default class ButtonElement extends Vue {
   get hasIcon(){
     return this.getValueOfAttribute('hasIcon')
   }
-
-  @Getter('model')
-  getModel!: (uuid: string) => IModel
-
-  @Action('updateModel')
-  updateModel!: (params: IModel) => void
 
   hover = false;
 

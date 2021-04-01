@@ -4,7 +4,6 @@ use std::error::Error;
 use std::fs::File;
 use std::path::Path;
 use std::io::BufReader;
-use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ElementType {
@@ -62,9 +61,9 @@ pub fn read_form_from_file<P: AsRef<Path>>(path: P) -> Result<Grid, Box<dyn Erro
 }
 
 fn save_form_to_file<P: AsRef<Path>>(path: P, view: Grid) -> Result<bool, Box<dyn Error>> {
-    let u = serde_json::to_writer(File::create(path)?, &view)?;
+    serde_json::to_writer(File::create(path)?, &view)?;
 
-    Ok(true)    
+    Ok(true)
 }
 
 #[get("/form/load/<id>")]

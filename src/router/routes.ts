@@ -17,6 +17,13 @@ const routes: RouteConfig[] = [
     ]
   },
 
+  {
+    path: '/ui_form',
+    component: () => import('layouts/UiFormLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/UiBuilder.vue') }
+    ]
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

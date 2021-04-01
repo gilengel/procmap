@@ -1,9 +1,19 @@
 <template>
-  <div>
+  <div class="column option-column">
+    <h1 class="text-subtitle1">Text</h1>
+
     <q-input
       dark
       standout
-      v-model="identifier"
+      v-model="variableInput"
+      label="Variable Identifier"
+      stack-label
+    />
+
+    <q-input
+      dark
+      standout
+      v-model="labelInput"
       label="Variable Identifier"
       stack-label
     />
@@ -18,8 +28,8 @@
 </template>
 
 <script lang="ts">
-import Component from 'vue-class-component'
-import Options from '../ui_builder/Options.vue'
+import TextElement from './TextElement.vue'
+import { Component, Watch } from 'vue-property-decorator'
 
 export enum TextType {
   Password = 'password',
@@ -34,10 +44,8 @@ export enum TextType {
 @Component({
   name: 'TextOptions'
 })
-export default class TextOptions extends Options {
+export default class TextOptions extends TextElement {
   identifier = 'text'
-
-  typeGroup = 'text'
 
   typeOptions = [
     { label: 'Password', value: TextType.Password },
@@ -48,6 +56,46 @@ export default class TextOptions extends Options {
     { label: 'Date', value: TextType.Date },
     { label: 'Text', value: TextType.Text }
   ]
+
+  typeGroup : String = 'text'
+
+  mounted() {
+    const type = this.typeInput;
+
+    if(type) {
+      this.typeGroup = type;
+    }
+  }
+
+  set typeInput(value: String) {
+    this.setValueOfAttribute("label", value);
+  }
+
+  get typeInput() : String{
+    return this.type;
+  }
+
+  @Watch('typeGroup')
+  onChildChanged(val: String, oldVal: String) {
+    this.setValueOfAttribute("type", val);
+  }
+
+  set labelInput(value: string) {
+    this.setValueOfAttribute("label", value);
+  }
+
+  get labelInput() {
+    return this.getValueOfAttribute("label");
+  }
+
+
+  set variableInput(value: string) {
+    this.setValueOfAttribute("variable", value);
+  }
+
+  get variableInput() {
+    return this.getValueOfAttribute("variable");
+  }
 }
 </script>
 

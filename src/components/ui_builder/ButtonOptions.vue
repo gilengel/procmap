@@ -8,6 +8,19 @@
 
     <q-input dark placeholder="Label" v-model="labelInput" />
 
+    <label>Type</label>
+    <q-btn-toggle
+      flat
+      v-model="typeInput"
+      toggle-color="primary"
+      :options="[
+        {label: 'Link', value: 'a'},
+        {label: 'Button', value: 'button'},
+        {label: 'Submit', value: 'submit'},
+        {label: 'Reset', value: 'reset'},
+      ]"
+    />
+
     <label>Display Highlighted</label>
     <q-toggle v-model="isHighlightedInput" color="accent" />
 
@@ -29,13 +42,10 @@
 </template>
 
 <script lang="ts">
-import Options from "../ui_builder/Options.vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Getter, Action } from "vuex-class";
-import IModel from "../../store/Model";
+import { Component } from "vue-property-decorator";
 import ButtonElement from "./ButtonElement.vue";
 
-import copy from '../Copy'
+
 
 export interface Button {
   identifier: string;
@@ -49,22 +59,12 @@ export interface Button {
   name: "ButtonOptions"
 })
 export default class ButtonOptions extends ButtonElement {
+   set typeInput(value: string) {
+    this.setValueOfAttribute("type", value);
+  }
 
-
-  protected setValueOfAttribute(name: String, value: any): any {
-    let deepCopy = copy(this.model);
-
-    const element = (deepCopy as unknown) as Element;
-    const attribute = element.attributes.find(
-      attribute => attribute.name === name
-    );
-
-    attribute.value = value;
-    
-    this.updateModel({
-      uuid: this.uuid,
-      model: deepCopy
-    });
+  get typeInput() {
+    return this.getValueOfAttribute("type");
   }
 
   set identifierInput(value: string) {
