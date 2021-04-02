@@ -1,5 +1,3 @@
-use diesel::pg::types::sql_types::Json;
-
 table! {
     order_lines (order_line_id) {
         order_line_id -> Int4,
@@ -39,10 +37,10 @@ table! {
 table! {
   layouts (id) {
     id -> Int4,
-    layout_id -> Uuid,
+    layout_id -> Varchar,
     name -> Varchar,
-    //created_at -> Varchar,
-    //data -> Json,
+    created_at -> Timestamp,
+    data -> Jsonb,
   }
 }
 

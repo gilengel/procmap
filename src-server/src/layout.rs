@@ -4,9 +4,12 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use crate::schema::layouts;
 
-extern crate uuid;
-use uuid::Uuid;
+extern crate chrono;
+use chrono::NaiveDateTime;
 
+use serde_json::Value;
+
+/*
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ElementType {
     Button,
@@ -52,6 +55,7 @@ pub struct Row {
 pub struct Grid {
     rows: Vec<Row>
 }
+*/
 
 
 
@@ -59,29 +63,31 @@ pub struct Grid {
 #[primary_key(id)]
 pub struct Layout {
     pub id: i32,
-    pub layout_id: Uuid,
+    pub layout_id: String,
     pub name: String,
-    //pub created_at: String,
-   // pub data: Grid,
+    pub created_at: NaiveDateTime,
+    pub data: Value,
 }
 
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "layouts"]
-pub struct NewLayout<'a> {
-    //pub layout_id: &'a str,
+pub struct NewLayout<'a>
+{
+    pub layout_id: &'a str,
     pub name: &'a str,
-    //pub created_at: &'a str,
-    //pub data: &'a serde_json::Value,
+    pub created_at: NaiveDateTime,
+    pub data: Value,
 }
 
 impl Layout {
+    
     pub fn create(layout: NewLayout, connection: &PgConnection) -> Result<Layout, String> {
         diesel::insert_into(layouts::table)
             .values(&layout)
             .get_result(connection)
             .map_err(|err| err.to_string())
     }
-
+    
     pub fn read_all(connection: &PgConnection) -> Result<Vec<Layout>, String> {
         layouts::table
             .order(layouts::id)
@@ -96,7 +102,6 @@ impl Layout {
             Err(err) => Err(err.to_string()),
         }
     }
-
     /*
     pub fn update(_: i32, user: User, connection: &PgConnection) -> Result<Option<User>, String> {
         let update_result = diesel::update(&user)

@@ -24,7 +24,7 @@
 
         <grid-layout
           v-else
-          :layout.sync="layout.widgets"
+          :layout.sync="layout.data"
           :col-num="12"
           :row-height="30"
           :is-draggable="true"
@@ -35,7 +35,7 @@
           class="noselect"
         >
           <grid-item
-            v-for="widget in layout.widgets"
+            v-for="widget in layout.data"
             :key="widget.id"
             :static="widget.static"
             :x="widget.x"
@@ -57,7 +57,15 @@
         </grid-layout>
       </q-page>
     </q-page-container>
+
+    <q-banner inline-actions class="text-white bg-red">
+      <b>Internal server</b> error while trying to save the layout
+      <template v-slot:action>
+        <q-btn flat color="white" label="Try Again" />
+      </template>
+    </q-banner>
   </q-layout>
+  
 </template>
 
 <script lang='ts'>
@@ -133,21 +141,23 @@ export default class MainLayout extends Vue {
   /** Calls the server backend to receive the layout json file */
   private loadLayout () {
     axios.request<View>({
-      url: 'http://localhost:8000/view/load/123',
+      url: 'http://localhost:8000/layouts/2',
       transformResponse: (r: ServerResponse) => r.data
     }).then((response) => {
-      this.layout = JSON.parse(response.request.response)
+        const result = JSON.parse(response.request.response)
+        console.log(result)
+        this.layout = result
     })
   }
 
   private saveLayout () {
+    const date = new Date().toJSON().slice(0, -1);
     const layoutData = {
       layout_id: uuidv4(),
       name: 'SomeLayout',
-      created_at: ''+new Date().getTime(),
-      data: JSON.stringify(this.layout?.widgets)
+      created_at: date,
+      data: this.layout?.data 
     }
-    console.log(layoutData)
     axios.post('http://localhost:8000/layouts', layoutData)
     .then(function (response) {
       console.log(response)
@@ -206,6 +216,14 @@ body {
 html,
 body {
   height: 100%;
+}
+
+.q-banner {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
 }
 
 .vue-grid-item .resizing {

@@ -140,6 +140,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "chrono"
+version = "0.4.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "670ad68c9088c2a963aaa298cb369688cf3f9465ce5e2d4ca10e6e0098a1ce73"
+dependencies = [
+ "libc",
+ "num-integer",
+ "num-traits",
+ "serde",
+ "time",
+ "winapi 0.3.9",
+]
+
+[[package]]
 name = "cipher"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -236,12 +250,15 @@ dependencies = [
  "bigdecimal",
  "bitflags",
  "byteorder",
+ "chrono",
  "diesel_derives",
  "num-bigint",
  "num-integer",
  "num-traits",
  "pq-sys",
  "r2d2",
+ "serde_json",
+ "uuid",
 ]
 
 [[package]]
@@ -918,13 +935,14 @@ dependencies = [
 name = "rust-server"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "diesel",
  "log 0.4.14",
  "rocket",
  "rocket_contrib",
  "serde",
+ "serde_derive",
  "serde_json",
- "uuid",
 ]
 
 [[package]]
@@ -1170,10 +1188,6 @@ name = "uuid"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
-dependencies = [
- "getrandom",
- "serde",
-]
 
 [[package]]
 name = "vcpkg"

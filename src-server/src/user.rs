@@ -7,7 +7,6 @@ use crate::schema::users;
 
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable, Identifiable)]
 #[primary_key(id)]
-#[serde(rename_all = "camelCase")]
 pub struct User {
     pub id: i32,
     pub name: String,
