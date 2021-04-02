@@ -22,6 +22,8 @@ export default class Layout extends VuexModule {
         return undefined
       }
 
+      console.log(element.model)
+
       return element.model
     }
   }

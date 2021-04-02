@@ -8,6 +8,7 @@ import Map from './Map'
 import Todo from './Todo'
 import List from './data_source/List'
 import Form from './Form'
+import DatabaseTable from './DatabaseTable'
 export interface MetaFlowComponent {
   readonly id: string;
   readonly label: string;
@@ -31,7 +32,7 @@ const basicCategory: MetaFlowCategory = {
     {
       id: 'table',
       label: 'Table',
-      icon: 'las la-map-marked',
+      icon: 'las la-table',
       component: Table,
       defaultData: {}
     },
@@ -89,6 +90,13 @@ const basicCategory: MetaFlowCategory = {
       label: 'Form',
       icon: 'lab la-wpforms',
       component: Form,
+      defaultData: {}
+    },
+    {
+      id: 'database_form',
+      label: 'Database',
+      icon: 'las la-database',
+      component: DatabaseTable,
       defaultData: {}
     }
   ]

@@ -43,6 +43,8 @@ import resize from "vue-resize-directive";
 
 import { store } from "../../store/index";
 
+import EventBus, { ADD_MODEL } from '../../EventBus'
+
 @Component({
   directives: {
     resize,
@@ -131,6 +133,12 @@ export default class FlowGraphComponent extends Vue {
     });
   }
 
+  private registerToEventBus() {
+    EventBus.$on(ADD_MODEL, () => {
+      this.engine.process(this.editor.toJSON());
+    })
+  }
+
   async mounted() {
     this.createEditor();
     this.createCustomEditorEvents();
@@ -142,6 +150,8 @@ export default class FlowGraphComponent extends Vue {
     this.makeComponentDataReactive();
 
     this.registerEditorEvents();
+
+    this.registerToEventBus();
 
     const data = {
       id: "demo@0.1.0",

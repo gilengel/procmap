@@ -20,7 +20,8 @@ const registeredSockets = new Map([
     ['text', new Socket('text')],
     ['map', new Socket('map')],
     ['data', new Socket('data')],
-    ['list', new Socket('list')]
+    ['list', new Socket('list')],
+    ['model', new Socket('model')]
 
 ])
 

@@ -6,11 +6,7 @@ export default new FlowComponent({
     label: 'image',
 
     outputs: [
-        {
-            type: 'table_data',
-            label: 'Data',
-            mandatory: true
-        }
+
     ],
 
     workerFn: (

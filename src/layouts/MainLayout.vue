@@ -159,7 +159,8 @@ export default class MainLayout extends Vue {
 
   onAddWidget (element: ReteNode) {
     const properties = {}
-    if (element.name === 'TextFilter') {
+    if (element.name === 'TextFilter' ||
+        element.name === 'db_table') {
       return
     }
 

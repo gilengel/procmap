@@ -8,15 +8,23 @@ export default new FlowComponent({
 
   inputs: [],
 
-  outputs: [],
+  outputs: [
+    {
+      type: 'model',
+      label: 'Model',
+      mandatory: true
+    },
+  ],
 
   workerFn: (
-    _node: NodeData,
+    node: NodeData,
     _inputs: WorkerInputs,
     _outputs: WorkerOutputs,
-    _store: Store<unknown>
+    store: Store<unknown>
   ): Promise<void> => {
     return new Promise((resolve, reject) => {
+      //const model = store.getters.model(node.data.uuid)
+      //console.log(`Form ${model}`)
       resolve()
     })
   }

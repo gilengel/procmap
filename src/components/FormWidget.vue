@@ -2,7 +2,10 @@
   <Widget title="Form" @remove-widget="removeWidget">
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
       <div v-for="(row, row_index) in model.rows" class="row" :key="row_index">
-        <div v-for="(column, column_index) in row.columns" :class="columnClass(column)">
+        <div
+          v-for="(column, column_index) in row.columns"
+          :class="columnClass(column)"
+        >
           <div v-if="column.element !== null && column.element.type === 'Text'">
             <label>
               {{ getValueOfAttribute(column.element, "label") }}
@@ -18,15 +21,21 @@
           <div
             v-if="column.element !== null && column.element.type === 'Button'"
           >
-            <q-btn v-if="getValueOfAttribute(column.element, 'hasIcon') === 'true'"
+            <q-btn
+              v-if="getValueOfAttribute(column.element, 'hasIcon') === 'true'"
               dark
-              :flat="getValueOfAttribute(column.element, 'isHighlighted') !== 'true'"
+              :flat="
+                getValueOfAttribute(column.element, 'isHighlighted') !== 'true'
+              "
               :label="getValueOfAttribute(column.element, 'label')"
               :icon="getValueOfAttribute(column.element, 'icon')"
               :type="getValueOfAttribute(column.element, 'type')"
             />
-            <q-btn v-else
-              :flat="getValueOfAttribute(column.element, 'isHighlighted') !== 'true'"
+            <q-btn
+              v-else
+              :flat="
+                getValueOfAttribute(column.element, 'isHighlighted') !== 'true'
+              "
               :label="getValueOfAttribute(column.element, 'label')"
               :type="getValueOfAttribute(column.element, 'type')"
             />
@@ -43,6 +52,8 @@ import { Component } from "vue-property-decorator";
 
 import IModel from "../store/Model";
 import { Getter, Action } from "vuex-class";
+
+import EventBus, { ADD_MODEL } from "../EventBus";
 
 import axios from "axios";
 
@@ -81,7 +92,30 @@ export default class FormWidget extends Widget {
       })
       .then((response) => {
         this.model = Object.assign({}, JSON.parse(response.request.response));
+
+        for (const row of this.model.rows) {
+          for (const column of row.columns) {
+            if (column.element !== null) {
+              if(column.element.value === undefined){
+                const type = this.getValueOfAttribute(column.element, 'type') ;
+                if(type=== 'text') {
+                  column.element.value = Math.random().toString().substr(2, 8);
+                } else if(type === 'date'){
+                  column.element.value = "2021-04-05"
+                } else if(type === 'email'){
+                  column.element.value = `${Math.random().toString().substr(2, 4)}@${Math.random().toString().substr(2, 4)}.com`
+                }
+
+                console.log(type)
+                //column.element.value
+
+              }
+            }
+          }
+        }
       });
+
+
   }
 
   private getValueOfAttribute(element: Element, name: String): any {
@@ -92,8 +126,10 @@ export default class FormWidget extends Widget {
     return attribute === undefined ? undefined : attribute.value;
   }
 
-  onSubmit() {
-    const formVariables = new Map<String, String>();
+  private extractFormVariables(): { valid: boolean; variables: {} } {
+    const variablesForm = {};
+    let validForm = true;
+
     for (const row of this.model.rows) {
       for (const column of row.columns) {
         if (column.element !== null) {
@@ -102,12 +138,44 @@ export default class FormWidget extends Widget {
           );
 
           if (attribute) {
-            formVariables.set(attribute.value, column.element.value as String);
+            variablesForm[attribute.value] = column.element.value;
+
+            if (column.element.value === undefined) {
+              validForm = false;
+            }
           }
         }
       }
     }
-    console.log(formVariables);
+
+    return {
+      valid: validForm,
+      variables: variablesForm,
+    };
+  }
+
+  onSubmit() {
+    const formVariables = {}; // = new Map<String, String>();
+
+    const formValidation = this.extractFormVariables();
+
+    if (formValidation.valid) {
+      axios
+        .post("http://localhost:8000/users", formValidation.variables)
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+      this.updateModel({
+        uuid: this.uuid,
+        model: formValidation.variables,
+      });
+
+      EventBus.$emit(ADD_MODEL, formVariables);
+    }
   }
 
   onReset() {
@@ -133,20 +201,20 @@ export default class FormWidget extends Widget {
 </script>
 
 <style lang="scss" scoped>
-  .q-btn {
-    color: salmon;
-  }
+.q-btn {
+  color: salmon;
+}
 
-  label {
-    color: white;
-  }
+label {
+  color: white;
+}
 
-  form {
-    padding: 1em;
-  }
+form {
+  padding: 1em;
+}
 
-  .blueprint-column {
-    padding-left: 1em;
-    padding-right: 1em;
-  }
+.blueprint-column {
+  padding-left: 1em;
+  padding-right: 1em;
+}
 </style>
