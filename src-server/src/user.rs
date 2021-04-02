@@ -10,16 +10,11 @@ use crate::schema::users;
 #[serde(rename_all = "camelCase")]
 pub struct User {
     pub id: i32,
-    //pub created_at: i64,
     pub name: String,
     pub address: String,
     pub email: String,
     pub birth_date: String,
 }
-
-//#[table_name = "users"]
-//#[derive(Serialize, Deserialize, Queryable, Insertable)]
-//#[serde(rename_all = "camelCase")]
 
 //#[derive(Insertable, Deserialize)]
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable)]

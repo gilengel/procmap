@@ -19,6 +19,9 @@ mod db;
 mod user;
 mod user_api;
 
+mod layout;
+mod layout_api;
+
 mod schema;
 
 pub struct CORS();
@@ -59,15 +62,19 @@ fn main() {
                 view::view,
                 view::single_view,
                 view::save_single_view,
-                form::form,
-                form::single_form,
-                form::save_single_form,
+                //form::form,
+                //form::single_form,
+                //form::save_single_form,
                 user_api::users,
                 user_api::create_user,
                 user_api::read_users,
                 user_api::read_user,
                 //user_api::update_user,
                 //user_api::delete_user,
+                layout_api::layouts,
+                layout_api::create_layout,
+                layout_api::read_layouts,
+                layout_api::read_layout
             ],
         )
         .attach(CORS())

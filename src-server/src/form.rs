@@ -1,3 +1,4 @@
+/*
 use serde::{Serialize, Deserialize};
 use rocket_contrib::json::Json;
 use std::error::Error;
@@ -5,50 +6,7 @@ use std::fs::File;
 use std::path::Path;
 use std::io::BufReader;
 
-#[derive(Serialize, Deserialize, Debug)]
-pub enum ElementType {
-    Button,
-    Text
-}
 
-#[derive(Serialize, Deserialize, Debug)]
-pub enum ElementAttributeType {
-    Number,
-    String,
-    Boolean
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ElementAttribute {
-    name: String,
-    r#type: ElementAttributeType,
-    value: String
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Element {
-    uuid: String,
-    r#type: ElementType,
-    attributes: Vec<ElementAttribute>
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Column {
-    width: u16,
-
-    #[serde(default)]
-    element: Option<Element>
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Row {
-    columns: Vec<Column>
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Grid {
-    rows: Vec<Row>
-}
 
 
 pub fn read_form_from_file<P: AsRef<Path>>(path: P) -> Result<Grid, Box<dyn Error>> {
@@ -83,3 +41,4 @@ pub fn form() {}
 pub fn save_single_form(view: Json<Grid>)  {
     save_form_to_file(Path::new("./test_form.json"), view.into_inner());
 }
+*/

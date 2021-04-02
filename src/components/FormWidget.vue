@@ -105,10 +105,6 @@ export default class FormWidget extends Widget {
                 } else if(type === 'email'){
                   column.element.value = `${Math.random().toString().substr(2, 4)}@${Math.random().toString().substr(2, 4)}.com`
                 }
-
-                console.log(type)
-                //column.element.value
-
               }
             }
           }

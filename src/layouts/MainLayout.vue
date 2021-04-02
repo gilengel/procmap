@@ -78,6 +78,8 @@ import FormWidget from 'components/FormWidget.vue'
 
 import { Node as ReteNode } from 'rete'
 
+import { v4 as uuidv4 } from "uuid";
+
 import axios from 'axios'
 
 interface Widget {
@@ -139,8 +141,14 @@ export default class MainLayout extends Vue {
   }
 
   private saveLayout () {
-    console.log(this.layout)
-    axios.post('http://localhost:8000/view/save', this.layout)
+    const layoutData = {
+      layout_id: uuidv4(),
+      name: 'SomeLayout',
+      created_at: ''+new Date().getTime(),
+      data: JSON.stringify(this.layout?.widgets)
+    }
+    console.log(layoutData)
+    axios.post('http://localhost:8000/layouts', layoutData)
     .then(function (response) {
       console.log(response)
     })
