@@ -1,3 +1,4 @@
+use diesel::pg::types::sql_types::Json;
 
 table! {
     order_lines (order_line_id) {
@@ -26,13 +27,23 @@ table! {
 }
 
 table! {
-    users (id) {
-        id -> Int4,
-        name -> Varchar,
-        address -> Varchar,
-        email -> Varchar,
-        birth_date -> Varchar,
-    }
+  users (id) {
+    id -> Int4,
+    name -> Varchar,
+    address -> Varchar,
+    email -> Varchar,
+    birth_date -> Varchar,
+  }
+}
+
+table! {
+  layouts (id) {
+    id -> Int4,
+    layout_id -> Uuid,
+    name -> Varchar,
+    //created_at -> Varchar,
+    //data -> Json,
+  }
 }
 
 /*
