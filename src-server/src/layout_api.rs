@@ -34,7 +34,6 @@ pub fn read_layouts(connection: db::Connection) -> Result<Json<LayoutsResponse>,
 }
 
 #[derive(Serialize)]
-//#[serde(rename_all = "camelCase")]
 pub struct LayoutsResponse {
     content: Vec<Layout>,
 }

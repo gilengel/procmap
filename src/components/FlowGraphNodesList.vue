@@ -4,18 +4,10 @@
       <q-toolbar-title>Notes</q-toolbar-title>
       <div class="q-gutter-sm" />
     </q-toolbar>
-    <q-list
-      dark
-      padding
-    >
-      <template v-for="category in availableComponentCategories">
-        <q-item-label
-          :key="category.label"
-          header
-        >
-          {{
-            category.label
-          }}
+    <q-list dark padding>
+      <template v-for="category in nodes">
+        <q-item-label :key="category.label" header>
+          {{ category.label }}
         </q-item-label>
 
         <q-item
@@ -35,25 +27,18 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Prop } from "vue-property-decorator";
 
-import {
-  getRegisteredComponentCategories,
-  MetaFlowCategory
-} from './flow/Index'
+import { MetaFlowCategory } from "./flow/Index";
 
 @Component
 export default class MapEditorComponent extends Vue {
-  availableComponentCategories: Array<MetaFlowCategory> = [];
+  @Prop() readonly nodes!: Array<MetaFlowCategory>;
 
-  mounted () {
-    this.availableComponentCategories = getRegisteredComponentCategories()
-  }
+  dragstart(id: string, ev: DragEvent) {
+    if (!ev.dataTransfer) return;
 
-  dragstart (id: string, ev: DragEvent) {
-    if (!ev.dataTransfer) return
-
-    ev.dataTransfer.setData('componentId', id)
+    ev.dataTransfer.setData("componentId", id);
   }
 }
 </script>

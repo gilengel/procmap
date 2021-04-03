@@ -108,8 +108,8 @@ export function getRegisteredComponentCategories (): Array<MetaFlowCategory> {
   return [basicCategory]
 }
 
-export function findRegisteredComponentById (id: string): MetaFlowComponent | undefined {
-  for (const category of getRegisteredComponentCategories()) {
+export function findRegisteredComponentById(id: string, nodes: Array<MetaFlowCategory>): MetaFlowComponent | undefined {
+  for (const category of nodes) {
     const component = category.components.find(component => component.id === id)
 
     if (component) {

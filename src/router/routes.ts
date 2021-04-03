@@ -24,6 +24,14 @@ const routes: RouteConfig[] = [
       { path: '', component: () => import('pages/UiBuilder.vue') }
     ]
   },
+
+  {
+    path: '/router',
+    component: () => import('layouts/RouterLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/RouterBuilder.vue') }
+    ]
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

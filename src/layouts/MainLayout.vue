@@ -77,6 +77,8 @@ import TodoWidget from "components/TodoWidget.vue";
 import ListWidget from "components/ListWidget.vue";
 import FormWidget from "components/FormWidget.vue";
 
+import { getRegisteredComponentCategories } from "components/flow/Index"
+
 import { Node as ReteNode } from "rete";
 
 import { v4 as uuidv4 } from "uuid";
@@ -164,6 +166,9 @@ export default class MainLayout extends Vue {
               h: 22,
               movable: false,
               component: "FlowGraphWidget",
+              properties: {
+                nodes: getRegisteredComponentCategories()
+              }
             },
           ],
         };

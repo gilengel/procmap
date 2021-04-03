@@ -1,46 +1,37 @@
 <template>
-  <Widget
-    title="Flow"
-    @remove-widget="removeWidget"
-  >
-    <q-splitter
-      v-model="leftToolbar"
-      style="height: 100%"
-    >
+  <Widget title="Flow" @remove-widget="removeWidget">
+    <q-splitter v-model="leftToolbar" style="height: 100%">
       <template #before>
-        <FlowGraphNodesList />
+        <FlowGraphNodesList :nodes="nodes" />
       </template>
 
       <template #after>
-        <FlowGraphComponent v-on="$listeners" />
+        <FlowGraphComponent :nodes="nodes" v-html="" v-on="$listeners" />
       </template>
     </q-splitter>
   </Widget>
 </template>
 
 <script lang="ts">
-import FlowGraphComponent from './flow/FlowGraphComponent.vue'
-import { Vue, Component } from 'vue-property-decorator'
+import FlowGraphComponent from "./flow/FlowGraphComponent.vue";
+import { Component, Prop } from "vue-property-decorator";
 
-import {
-  getRegisteredComponentCategories,
-  MetaFlowCategory
-} from './flow/Index'
+import { MetaFlowCategory } from "./flow/Index";
 
-import FlowGraphNodesList from './FlowGraphNodesList.vue'
-import Widget from './Widget.vue'
+import FlowGraphNodesList from "./FlowGraphNodesList.vue";
+import Widget from "./Widget.vue";
 @Component({
-  name: 'FlowGraphWidget',
+  name: "FlowGraphWidget",
 
   components: {
     FlowGraphNodesList,
-    FlowGraphComponent
-  }
+    FlowGraphComponent,
+  },
 })
 export default class FlowGraphWidget extends Widget {
-  left = true;
+  @Prop() readonly nodes!: Array<MetaFlowCategory>;
 
-  availableComponentCategories: Array<MetaFlowCategory> = [];
+  left = true;
 
   geometry: Record<string, unknown> = {};
 
@@ -53,10 +44,6 @@ export default class FlowGraphWidget extends Widget {
 
   // width of right toolbar
   rightToolbar = 50;
-
-  mounted () {
-    this.availableComponentCategories = getRegisteredComponentCategories()
-  }
 }
 </script>
 

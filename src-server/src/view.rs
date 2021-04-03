@@ -1,3 +1,4 @@
+/*
 use serde::{Serialize, Deserialize};
 use rocket_contrib::json::Json;
 use std::error::Error;
@@ -35,7 +36,7 @@ pub fn read_view_from_file<P: AsRef<Path>>(path: P) -> Result<View, Box<dyn Erro
 fn save_view_to_file<P: AsRef<Path>>(path: P, view: View) -> Result<bool, Box<dyn Error>> {
     let u = serde_json::to_writer(File::create(path)?, &view)?;
 
-    Ok(true)    
+    Ok(true)
 }
 
 #[get("/view/load/<id>")]
@@ -46,7 +47,7 @@ pub fn single_view(id: usize) -> Option<Json<View>> {
         Err(_) => None
     }
 
-    /*/
+    /
         let uuid = Uuid::new_v4();
 
     Json(View {
@@ -57,7 +58,7 @@ pub fn single_view(id: usize) -> Option<Json<View>> {
             Widget { i: Uuid::new_v4().to_string(), x: 6, y: 0, w: 6, h: 16, movable: true, component: "MapWidget".to_string() }
         ]
     })
-    */
+
 }
 
 #[options("/view/save")]
@@ -68,3 +69,4 @@ pub fn view() {}
 pub fn save_single_view(view: Json<View>)  {
     save_view_to_file(Path::new("./test_view.json"), view.into_inner());
 }
+*/

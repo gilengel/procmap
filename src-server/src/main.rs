@@ -22,6 +22,9 @@ mod user_api;
 mod layout;
 mod layout_api;
 
+mod page;
+mod page_api;
+
 mod schema;
 
 pub struct CORS();
@@ -59,22 +62,28 @@ fn main() {
         .mount(
             "/",
             routes![
-                view::view,
-                view::single_view,
-                view::save_single_view,
+                //view::view,
+                //view::single_view,
+                //view::save_single_view,
                 //form::form,
                 //form::single_form,
                 //form::save_single_form,
-                user_api::users,
-                user_api::create_user,
-                user_api::read_users,
-                user_api::read_user,
+                //user_api::users,
+                //user_api::create_user,
+                //user_api::read_users,
+                //user_api::read_user,
                 //user_api::update_user,
                 //user_api::delete_user,
                 layout_api::layouts,
                 layout_api::create_layout,
                 layout_api::read_layouts,
-                layout_api::read_layout
+                layout_api::read_layout,
+
+                page_api::pages,
+                page_api::create_page,
+                page_api::read_pages,
+                page_api::read_page,
+                page_api::delete_page
             ],
         )
         .attach(CORS())

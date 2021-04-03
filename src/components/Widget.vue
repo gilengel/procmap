@@ -56,10 +56,6 @@ export default class Widget extends Vue {
   flex-grow: 2;
 }
 
-.q-toolbar {
-  background: $dark !important;
-}
-
 .vue-draggable-handle {
   position: relative !important;
   width: auto !important;
@@ -76,3 +72,4 @@ span.vue-resizable-handle  {
   visibility: collapse;
 }
 </style>
+

@@ -2,23 +2,13 @@
   <div class="preview">
     <q-toolbar class="bg-black text-white">
       <q-toolbar-title>Flow</q-toolbar-title>
-      <q-btn
-        flat
-        round
-        dense
-      >
+      <q-btn flat round dense>
         <q-icon name="las la-window-minimize" />
       </q-btn>
     </q-toolbar>
 
-    <div
-      v-resize="onResize"
-      class="flow"
-    >
-      <div
-        id="rete"
-        ref="rete"
-      />
+    <div v-resize="onResize" class="flow">
+      <div id="rete" ref="rete" />
     </div>
   </div>
 </template>
@@ -26,24 +16,17 @@
 <script lang="ts">
 /* eslint-disable */
 
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
+import { Vue, Component, Prop } from "vue-property-decorator";
 import "@babel/polyfill";
-import Rete, { Engine, NodeEditor } from "rete";
-
+import Rete, { Engine, NodeEditor, Node as ReteNode } from "rete";
 import ConnectionPlugin from "rete-connection-plugin";
 import VueRenderPlugin from "../render/Index";
-
 import DockPlugin from "../dock/Index";
-
-import { getRegisteredComponentCategories } from "../flow/Index";
-
 import { v4 as uuidv4 } from "uuid";
-
 import resize from "vue-resize-directive";
-
 import { store } from "../../store/index";
-
-import EventBus, { ADD_MODEL } from '../../EventBus'
+import EventBus, { FLOW_NODE_SELECTED, FLOW_NODE_ADDED, FLOW_NODE_REMOVED } from "../../EventBus";
+import { MetaFlowCategory } from "../flow/Index";
 
 @Component({
   directives: {
@@ -52,6 +35,7 @@ import EventBus, { ADD_MODEL } from '../../EventBus'
 })
 export default class FlowGraphComponent extends Vue {
   @Prop(Object) geometry: Record<string, unknown> | undefined;
+  @Prop() readonly nodes!: Array<MetaFlowCategory>;
 
   editor!: NodeEditor;
   engine!: Engine;
@@ -62,7 +46,7 @@ export default class FlowGraphComponent extends Vue {
 
     this.editor.use(ConnectionPlugin);
     this.editor.use(VueRenderPlugin, { store });
-    this.editor.use(DockPlugin);
+    this.editor.use(DockPlugin, this.nodes);
   }
 
   createCustomEditorEvents() {
@@ -70,7 +54,7 @@ export default class FlowGraphComponent extends Vue {
   }
 
   registerComponents() {
-    for (const category of getRegisteredComponentCategories()) {
+    for (const category of this.nodes) {
       category.components.map((c) => {
         this.editor.register(c.component);
         this.engine.register(c.component);
@@ -79,7 +63,7 @@ export default class FlowGraphComponent extends Vue {
   }
 
   makeComponentDataReactive() {
-    for (const category of getRegisteredComponentCategories()) {
+    for (const category of this.nodes) {
       category.components.forEach((c) => {
         const data = c.defaultData;
 
@@ -99,6 +83,7 @@ export default class FlowGraphComponent extends Vue {
       node.data.uuid = uuidv4();
 
       this.$emit("add-widget", node);
+      EventBus.$emit(FLOW_NODE_ADDED, node);
 
       return node;
     });
@@ -112,12 +97,18 @@ export default class FlowGraphComponent extends Vue {
       }
     );
 
+    this.editor.on(["nodeselect"], async (node: ReteNode) => {
+      EventBus.$emit(FLOW_NODE_SELECTED, node);
+    })
+
     this.editor.on(["import"], async () => {
       await this.engine.abort();
       await this.engine.process(this.editor.toJSON());
     });
 
-    this.editor.on(["noderemoved"], async () => {
+    this.editor.on(["noderemoved"], async (node: ReteNode) => {
+      EventBus.$emit(FLOW_NODE_REMOVED, node);
+
       await this.engine.abort();
       await this.engine.process(this.editor.toJSON());
     });
@@ -134,9 +125,9 @@ export default class FlowGraphComponent extends Vue {
   }
 
   private registerToEventBus() {
-    EventBus.$on(ADD_MODEL, () => {
+    EventBus.$on(FLOW_NODE_SELECTED, () => {
       this.engine.process(this.editor.toJSON());
-    })
+    });
   }
 
   async mounted() {

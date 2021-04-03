@@ -1,3 +1,4 @@
+/*
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
@@ -6,9 +7,9 @@ use serde::{Deserialize, Serialize};
 use crate::schema::users;
 
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable, Identifiable)]
-#[primary_key(id)]
+#[primary_key(pk_id)]
 pub struct User {
-    pub id: i32,
+    pub pk_id: i32,
     pub name: String,
     pub address: String,
     pub email: String,
@@ -66,7 +67,7 @@ impl User {
         }
     }
 
-    /*
+
     pub fn update(_: i32, user: User, connection: &PgConnection) -> Result<Option<User>, String> {
         let update_result = diesel::update(&user)
             .set(&user)
@@ -85,5 +86,7 @@ impl User {
             .map(|aff_rows| aff_rows > 0)
             .map_err(|err| err.to_string())
     }
-    */
+
 }
+
+*/

@@ -1,10 +1,8 @@
-use diesel::{self, sql_types::Json};
+use diesel::{self};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use crate::schema::layouts;
-
-extern crate chrono;
 use chrono::NaiveDateTime;
 
 use serde_json::Value;
@@ -60,9 +58,10 @@ pub struct Grid {
 
 
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable, Identifiable)]
-#[primary_key(id)]
+#[primary_key(pk_id)]
+#[table_name = "layouts"]
 pub struct Layout {
-    pub id: i32,
+    pub pk_id: i32,
     pub layout_id: String,
     pub name: String,
     pub created_at: NaiveDateTime,
@@ -80,23 +79,23 @@ pub struct NewLayout<'a>
 }
 
 impl Layout {
-    
+
     pub fn create(layout: NewLayout, connection: &PgConnection) -> Result<Layout, String> {
         diesel::insert_into(layouts::table)
             .values(&layout)
             .get_result(connection)
             .map_err(|err| err.to_string())
     }
-    
+
     pub fn read_all(connection: &PgConnection) -> Result<Vec<Layout>, String> {
         layouts::table
-            .order(layouts::id)
+            .order(layouts::pk_id)
             .load::<Layout>(connection)
             .map_err(|err| err.to_string())
     }
 
-    pub fn read(id: i32, connection: &PgConnection) -> Result<Option<Layout>, String> {
-        match layouts::table.find(id).first(connection) {
+    pub fn read(pk_id: i32, connection: &PgConnection) -> Result<Option<Layout>, String> {
+        match layouts::table.find(pk_id).first(connection) {
             Ok(layout) => Ok(Some(layout)),
             Err(diesel::result::Error::NotFound) => Ok(None),
             Err(err) => Err(err.to_string()),

@@ -18,6 +18,16 @@
       />
       <!--v-show="node.data.preview == true || node.data.preview == false"-->
     </div>
+    <div class="content" style="margin-left: 8px; margin-right: 8px">
+        <div
+          v-for="(control, index) in controls()"
+          :key="index"
+          v-control="control"
+          class="control"
+        />
+
+    </div>
+
     <div class="content">
       <div
         v-if="node.controls.size > 0 || node.inputs.size > 0"
@@ -52,14 +62,7 @@
           />
         </div>
       </div>
-      <div class="column">
-        <div
-          v-for="(control, index) in controls()"
-          :key="index"
-          v-control="control"
-          class="control"
-        />
-      </div>
+
       <div class="column outputs">
         <div
           v-for="output in outputs()"
@@ -145,9 +148,9 @@ $socket-margin: 10px;
   .content {
     display: flex;
     flex-grow: 2;
-    padding-top: 20px;
-    padding-bottom: 8px;
-    //
+    padding: 8px;
+    justify-content: space-between;
+
 
     .node-column {
       align-items: center;
@@ -163,7 +166,6 @@ $socket-margin: 10px;
 
 .input-container,
 .output-container {
-  padding-right: 6px;
   display: flex;
   align-items: center;
 
@@ -190,19 +192,6 @@ $socket-margin: 10px;
 
 .column:not(:last-child) {
   padding-right: 20px;
-}
-
-.inputs,
-.outputs {
-  text-align: left;
-
-  //display: flex;
-  //flex-direction: column;
-}
-
-.outputs {
-  align-items: flex-end;
-  text-align: right;
 }
 
 .node-warning {
