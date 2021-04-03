@@ -4,11 +4,7 @@
       <q-page>
         <q-toolbar class="bg-black text-white vue-draggable-handle">
           <q-toolbar-title>View Builder</q-toolbar-title>
-          <q-btn
-            flat
-            round
-            dense
-          >
+          <q-btn flat round dense>
             <q-btn
               round
               color="primary"
@@ -18,13 +14,11 @@
           </q-btn>
         </q-toolbar>
 
-        <h1 v-if="!layout">
-          Something went wrong loading the view :(
-        </h1>
+        <h1 v-if="!layout">Something went wrong loading the view :(</h1>
 
         <grid-layout
           v-else
-          :layout.sync="layout.data"
+          :layout.sync="layout.widgets"
           :col-num="12"
           :row-height="30"
           :is-draggable="true"
@@ -35,7 +29,7 @@
           class="noselect"
         >
           <grid-item
-            v-for="widget in layout.data"
+            v-for="widget in layout.widgets"
             :key="widget.id"
             :static="widget.static"
             :x="widget.x"
@@ -58,42 +52,41 @@
       </q-page>
     </q-page-container>
 
-    <q-banner inline-actions class="text-white bg-red">
-      <b>Internal server</b> error while trying to save the layout
+    <q-banner inline-actions class="text-white bg-red" v-if="error">
+      {{ errorMessage }}
       <template v-slot:action>
         <q-btn flat color="white" label="Try Again" />
       </template>
     </q-banner>
   </q-layout>
-  
 </template>
 
 <script lang='ts'>
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component } from "vue-property-decorator";
 
-import { GridLayout, GridItem } from 'vue-grid-layout'
-import Widget from 'components/Widget.vue'
-import TableWidget from 'components/TableWidget.vue'
-import ImageWidget from 'components/ImageWidget.vue'
-import TextWidget from 'components/TextWidget.vue'
-import ChartWidget from 'src/components/ChartWidget.vue'
-import FlowGraphWidget from 'components/FlowGraphWidget.vue'
-import MapWidget from 'components/MapWidget.vue'
-import IdeWidget from 'components/IdeWidget.vue'
-import TodoWidget from 'components/TodoWidget.vue'
-import ListWidget from 'components/ListWidget.vue'
-import FormWidget from 'components/FormWidget.vue'
+import { GridLayout, GridItem } from "vue-grid-layout";
+import Widget from "components/Widget.vue";
+import TableWidget from "components/TableWidget.vue";
+import ImageWidget from "components/ImageWidget.vue";
+import TextWidget from "components/TextWidget.vue";
+import ChartWidget from "src/components/ChartWidget.vue";
+import FlowGraphWidget from "components/FlowGraphWidget.vue";
+import MapWidget from "components/MapWidget.vue";
+import IdeWidget from "components/IdeWidget.vue";
+import TodoWidget from "components/TodoWidget.vue";
+import ListWidget from "components/ListWidget.vue";
+import FormWidget from "components/FormWidget.vue";
 
-import { Node as ReteNode } from 'rete'
+import { Node as ReteNode } from "rete";
 
 import { v4 as uuidv4 } from "uuid";
 
-import axios from 'axios'
+import axios from "axios";
 
 interface Widget {
-  i: string,
-  x: number,
-  y: number,
+  i: string;
+  x: number;
+  y: number;
   w: number;
   h: number;
   movable: boolean;
@@ -102,17 +95,17 @@ interface Widget {
 }
 
 interface View {
-  id: string,
-  name: string,
-  widgets: [Widget]
+  id: string;
+  name: string;
+  widgets: Array<Widget>;
 }
 
 interface ServerResponse {
-  data: View
+  data: View;
 }
 
 @Component({
-  name: 'MainLayout',
+  name: "MainLayout",
 
   components: {
     GridLayout,
@@ -127,8 +120,8 @@ interface ServerResponse {
     MapWidget,
     TodoWidget,
     ListWidget,
-    FormWidget
-  }
+    FormWidget,
+  },
 })
 export default class MainLayout extends Vue {
   draggable = true;
@@ -136,54 +129,81 @@ export default class MainLayout extends Vue {
   colNum = 12;
   index = 0;
 
-   layout: View | null = null;
+  layout: View | null = null;
+
+  error: boolean = false;
+  errorMessage: string = "";
 
   /** Calls the server backend to receive the layout json file */
-  private loadLayout () {
-    axios.request<View>({
-      url: 'http://localhost:8000/layouts/2',
-      transformResponse: (r: ServerResponse) => r.data
-    }).then((response) => {
-        const result = JSON.parse(response.request.response)
-        console.log(result)
-        this.layout = result
-    })
+  private loadLayout() {
+    const self = this;
+    axios
+      .request<View>({
+        url: "http://localhost:8000/layouts/2",
+        transformResponse: (r: ServerResponse) => r.data,
+      })
+      .then((response) => {
+        const result = JSON.parse(response.request.response);
+        //console.log(result)
+        this.layout = result;
+      })
+      .catch(function (error) {
+        self.error = true;
+        self.errorMessage =
+          "Layout couldn't be loaded. Continuing with default session.";
+
+        self.layout = {
+          id: "fc339aab-9355-405a-99b3-0ced2fa2361c",
+          name: "Candy Layout",
+          widgets: [
+            {
+              i: "78b0262e-392e-4164-9f42-53aac79c4646",
+              x: 0,
+              y: 0,
+              w: 4,
+              h: 22,
+              movable: false,
+              component: "FlowGraphWidget",
+            },
+          ],
+        };
+      });
   }
 
-  private saveLayout () {
+  private saveLayout() {
     const date = new Date().toJSON().slice(0, -1);
     const layoutData = {
       layout_id: uuidv4(),
-      name: 'SomeLayout',
+      name: "SomeLayout",
       created_at: date,
-      data: this.layout?.data 
+      data: this.layout?.data,
+    };
+    axios
+      .post("http://localhost:8000/layouts", layoutData)
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        // console.log(error)
+      });
+  }
+
+  async mounted() {
+    await this.loadLayout();
+  }
+
+  getWidgetName(element: string) {
+    return `${element.charAt(0).toUpperCase()}${element.slice(1)}Widget`;
+  }
+
+  onAddWidget(element: ReteNode) {
+    const properties = {};
+    if (element.name === "TextFilter" || element.name === "db_table") {
+      return;
     }
-    axios.post('http://localhost:8000/layouts', layoutData)
-    .then(function (response) {
-      console.log(response)
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
-  }
 
-  async mounted () {
-    await this.loadLayout()
-  }
-
-  getWidgetName (element: string) {
-    return `${element.charAt(0).toUpperCase()}${element.slice(1)}Widget`
-  }
-
-  onAddWidget (element: ReteNode) {
-    const properties = {}
-    if (element.name === 'TextFilter' ||
-        element.name === 'db_table') {
-      return
-    }
-
-    console.log(element.name)
-    const layout = (this.layout as View)
+    console.log(element.name);
+    const layout = this.layout as View;
     layout.widgets.push({
       i: `${element.data.uuid}`,
       x: 6,
@@ -193,16 +213,18 @@ export default class MainLayout extends Vue {
 
       movable: false,
       properties: properties,
-      component: this.getWidgetName(element.name)
-    })
-    this.index++
+      component: this.getWidgetName(element.name),
+    });
+    this.index++;
   }
 
-  onRemoveWidget (id: string) {
-    const index = this.layout?.widgets.findIndex((widget : Widget) => widget.i === id)
+  onRemoveWidget(id: string) {
+    const index = this.layout?.widgets.findIndex(
+      (widget: Widget) => widget.i === id
+    );
 
     if (index !== -1) {
-      this.layout?.widgets.splice(index as number, 1)
+      this.layout?.widgets.splice(index as number, 1);
     }
   }
 }
@@ -219,15 +241,15 @@ body {
 }
 
 .q-banner {
-    position: absolute;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 4px;
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 4px;
 }
 
 .vue-grid-item .resizing {
-    opacity: 0.9;
+  opacity: 0.9;
 }
 
 /*
@@ -279,5 +301,4 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
-
 </style>
