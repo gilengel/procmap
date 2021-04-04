@@ -14,7 +14,7 @@ export interface MetaFlowComponent {
   readonly label: string;
   readonly icon: string;
   readonly component: Component,
-  readonly defaultData: Record<string, unknown>
+  readonly defaultData?: Record<string, unknown>
 }
 
 export interface MetaFlowCategory {

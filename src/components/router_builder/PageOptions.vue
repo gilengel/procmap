@@ -2,11 +2,11 @@
   <div class="widget">
     <q-toolbar class="bg-black text-white vue-draggable-handle">
       <q-toolbar-title>Page Options</q-toolbar-title>
+
     </q-toolbar>
     <div class="widget-content q-pa-md">
       <label>Page</label>
       <q-input v-model="name" label="Name" dark stack-label />
-
 
       <q-select
         dark
@@ -21,7 +21,6 @@
         input-debounce="0"
         :options="availablePages"
       >
-
         <template v-slot:no-option>
           <q-item>
             <q-item-section class="text-grey"> No results </q-item-section>
@@ -33,11 +32,11 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
-
-import BaseElement from "../ui_builder/BaseElement.vue";
 import axios from "axios";
 
+import { Vue, Prop, Component } from "vue-property-decorator";
+import { Getter, Action } from "vuex-class";
+import { NewPage, UpdateNewPage } from '../../models/Page';
 
 interface Page {
   pk_id: number;
@@ -54,21 +53,35 @@ interface ServerResponse {
 @Component({
   name: "PageOptions",
 })
-export default class PageOptions extends BaseElement {
+export default class PageOptions extends Vue {
+  @Prop({ default: "uuid" }) uuid!: string;
+
+  @Getter("newPageById")
+  getNewPageModel!: (uuid: string) => NewPage;
+
+  @Action("updateNewPage")
+  updateNewPage!: (params: {page: NewPage, update: UpdateNewPage}) => void;
+
+  get model() {
+    return this.getNewPageModel(this.uuid);
+  }
+
   // Pages saved on backend side
   private availablePages: Array<String> = [];
 
   private selectedPageName: String = "";
 
   get name() {
-    return ((this.model as unknown) as Page).name;
+    return this.model.name;
   }
 
-  set name(value: String) {
-    this.updateModel({ uuid: this.uuid, model: { name: value } });
+  set name(value: string) {
+    const update = { name: value }
+    this.updateNewPage({ page: this.model, update })
   }
 
   created() {
+    /*
     axios
       .request<Array<Page>>({
         url: "http://localhost:8000/pages",
@@ -87,6 +100,7 @@ export default class PageOptions extends BaseElement {
       .catch((reason) => {
         console.log(reason);
       });
+      */
   }
 }
 </script>

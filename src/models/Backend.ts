@@ -3,6 +3,11 @@ import axios from "axios";
 
 const BACKEND_URL = "http://localhost:8000";
 
+export const LAYOUTS_URL = "layout";
+export const PAGES_URL = "pages";
+export const PAGE_CONNECTIONS_URL = "page_connection";
+export const TEMP_FLOW = "temp_flow";
+
 export function GetOne<Type>(url: String): Promise<Type> {
   return new Promise((resolve, reject) => {
     axios
@@ -33,12 +38,12 @@ export function GetMultiple<Type>(url: String): Promise<ServerMultipleResponse<T
   })
 }
 
-export function PostOne<Type>(url: String, model: Type): Promise<ServerSingleResponse<Type>> {
+export function PostOne<Type, ReturnType>(url: String, model: Type): Promise<ReturnType> {
   return new Promise((resolve, reject) => {
     axios
       .post(`${BACKEND_URL}/${url}`, model)
       .then(function (response) {
-        resolve(response)
+        resolve(response.data)
       })
       .catch(function (error) {
         reject(error)
@@ -46,12 +51,12 @@ export function PostOne<Type>(url: String, model: Type): Promise<ServerSingleRes
   })
 }
 
-export function PostMultiple<Type>(url: String, model: Type): Promise<ServerMultipleResponse<Type>> {
+export function PostMultiple<Type>(url: String, model: Type): Promise<Array<Type>> {
   return new Promise((resolve, reject) => {
     axios
       .post(`${BACKEND_URL}/${url}`, model)
       .then(function (response) {
-        resolve(response)
+        resolve(response.data)
       })
       .catch(function (error) {
         reject(error)

@@ -4,9 +4,16 @@
       <q-page>
         <q-toolbar class="bg-black text-white vue-draggable-handle">
           <q-toolbar-title>View Builder</q-toolbar-title>
-          <q-btn flat round dense>
-            <q-btn round color="primary" icon="las la-save" />
-          </q-btn>
+          <q-btn
+            style="
+              background: salmon;
+              color: white;
+              margin-top: 8px;
+              margin-bottom: 8px;
+            "
+            label="Publish"
+            @click="publishFlow"
+          />
         </q-toolbar>
 
         <div class="row">
@@ -42,11 +49,10 @@
               </grid-item>
             </grid-layout>
           </div>
-          <!--
-          <div class="col-2" v-if="selectedNode.uuid">
-            <PageOptions :uuid="selectedNode.uuid" />
+
+          <div class="col-2" v-if="hasSelectedNode">
+            <PageOptions :uuid="selectedNode" />
           </div>
-          -->
         </div>
       </q-page>
     </q-page-container>
@@ -55,43 +61,34 @@
 
 <script lang='ts'>
 import { Vue, Component, Watch } from "vue-property-decorator";
-
+import { Getter, Action } from "vuex-class";
 import { GridLayout, GridItem } from "vue-grid-layout";
 import FlowGraphWidget from "components/FlowGraphWidget.vue";
-
 import { MetaFlowCategory } from "../components/flow/Index";
 
-import axios from "axios";
-
-import { v4 as uuidv4 } from "uuid";
-
 import PageOptions from "../components/router_builder/PageOptions.vue";
-
-import { ServerSingleResponse } from "../models/ServerResponse";
 import { TempFlow } from "../models/TempFlow";
-
 import { GetOne, UpdateOne } from "../models/Backend";
+import { Node as ReteNode } from "rete";
+import { Data, NodeData } from "rete/types/core/data"
 
-import { Data } from "rete/types/core/data";
+import { convertReteNode2NewPage } from "./FlowGraphConverter"
+
+import { Page, NewPage } from "../models/Page"
 
 import {
   StartFlowComponent,
   PageFlowComponent,
   EndFlowComponent,
   FLOW_ROUTER_START,
-  FLOW_ROUTER_PAGE,
   FLOW_ROUTER_END,
 } from "./RouterFlowModel";
 
-import { Node as ReteNode } from "rete";
-
 import EventBus, {
-  ADD_MODEL,
-  FLOW_NODE_SELECTED,
   FLOW_NODE_ADDED,
-  FLOW_NODE_REMOVED,
   FLOW_GRAPH_UPDATED,
   FLOW_GRAPH_IMPORTED,
+  FLOW_NODE_SELECTED,
 } from "../EventBus";
 
 const routingNodes: Array<MetaFlowCategory> = [
@@ -104,22 +101,19 @@ const routingNodes: Array<MetaFlowCategory> = [
         id: "start",
         label: "Start",
         icon: "las la-play",
-        component: StartFlowComponent,
-        defaultData: {},
+        component: StartFlowComponent
       },
       {
         id: "end",
         label: "End",
         icon: "las la-stop",
-        component: EndFlowComponent,
-        defaultData: {},
+        component: EndFlowComponent
       },
       {
         id: "page",
         label: "Page",
         icon: "las la-file",
-        component: PageFlowComponent,
-        defaultData: {},
+        component: PageFlowComponent
       },
     ],
   },
@@ -142,150 +136,6 @@ interface View {
   widgets: Array<Widget>;
 }
 
-const CharacterNames = [
-  "Homer Simpson",
-  "Marge Simpson",
-  "Bart Simpson",
-  "Lisa Simpson",
-  "Maggie Simpson",
-  "Abraham Simpson",
-  "Santa's Little Helper",
-  "Snowball II/V",
-  "Apu Nahasapeemapetilon",
-  "Barney Gumble",
-  "Bleeding Gums Murphy[B]",
-  "Chief Clancy Wiggum",
-  "Dewey Largo",
-  "Eddie",
-  "Edna Krabappel",
-  "Itchy & Scratchy",
-  "Janey Powell",
-  "Jasper Beardly",
-  "Kent Brockman",
-  "Krusty The Clown",
-  "Lenny Leonard",
-  "Lou",
-  "Martin Prince",
-  "Marvin Monroe[C]",
-  "Milhouse Van Houten",
-  "Moe Szyslak",
-  "Mr. Burns",
-  "Ned Flanders",
-  "Otto Mann",
-  "Patty Bouvier",
-  "Ralph Wiggum",
-  "Reverend Timothy Lovejoy",
-  "Selma Bouvier",
-  "Seymour Skinner",
-  "Sherri & Terri",
-];
-
-function convertNodeFromReteToDB(node: ReteNode) {
-  const date = new Date().toJSON().slice(0, -1);
-
-  return {
-    page_id: node.uuid,
-    name: CharacterNames[Math.floor(Math.random() * CharacterNames.length)],
-    created_at: date,
-  };
-}
-
-function convertConnectionFromReteToDB(incoming: ReteNode, outgoing: ReteNode) {
-  const date = new Date().toJSON().slice(0, -1);
-
-  const incomingPage = incoming.data.db_id;
-  const outgoingPage = outgoing.data.db_id;
-
-  return {
-    connection_id: uuidv4(),
-    created_at: date,
-    incoming_page: incomingPage,
-    outgoing_page: outgoingPage,
-  };
-}
-
-function persistNodeConnection(incoming: ReteNode, outgoing: ReteNode) {
-  const dbConnection = convertConnectionFromReteToDB(incoming, outgoing);
-
-  axios
-    .post("http://localhost:8000/page_connection", dbConnection)
-    .then(function (response) {
-      const result = JSON.parse(response.request.response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-}
-
-function walkNode(node: ReteNode) {
-  if (node.data.walked) {
-    return;
-  }
-
-  node.data.walked = true;
-
-  const output = node.outputs.get("page");
-
-  if (output) {
-    const incoming = node;
-
-    for (const connection of output.connections) {
-      const outgoing = connection.input.node as ReteNode;
-
-      persistNodeConnection(incoming, outgoing);
-      walkNode(connection.input.node as ReteNode);
-    }
-  }
-}
-
-function walkGraph(graph: Array<ReteNode>) {
-  const startNode = graph.find((node) => node.name === FLOW_ROUTER_START);
-  if (!startNode) {
-    throw "Persisting aborted: Flow graph has no start point";
-  }
-
-  const endNode = graph.find((node) => node.name === FLOW_ROUTER_END);
-  if (!endNode) {
-    //throw "Persisting aborted: Flow graph has no end point";
-  }
-
-  const nodes = new Array();
-  for (const node of graph) {
-    node.data.walked = undefined;
-    nodes.push(convertNodeFromReteToDB(node));
-  }
-
-  axios
-    .post("http://localhost:8000/pages", nodes)
-    .then(function (response) {
-      const result = JSON.parse(response.request.response) as [];
-
-      for (const node of graph) {
-        const dbResult = result.find(
-          (element) => element.page_id === node.uuid
-        );
-        node.data.db_id = dbResult.page_pk;
-      }
-
-      walkNode(startNode);
-    })
-    .catch(function (error) {
-      // console.log(error)
-    });
-}
-
-function persistNode(node: ReteNode) {
-  axios
-    .post("http://localhost:8000/pages", pageData)
-    .then(function (response) {
-      const result = JSON.parse(response.request.response);
-      console.log(result);
-    })
-    .catch(function (error) {
-      // console.log(error)
-    });
-}
-
 @Component({
   name: "MainLayout",
 
@@ -304,12 +154,11 @@ export default class RouterLayout extends Vue {
 
   currentRouterGraph: Array<ReteNode> = [];
 
-  @Watch("currentRouterGraph")
-  onRouterGraphChanged(graph: Array<ReteNode>, oldVal: Array<ReteNode>) {
-    walkGraph(graph);
-  }
+  @Action("storeNewPage")
+  storeNewPage!: (page: NewPage) => void;
 
-  selectedNode: Object = {};
+  hasSelectedNode: boolean = false;
+  selectedNode: string = '';
 
   graphModel: TempFlow | null = null;
 
@@ -338,15 +187,32 @@ export default class RouterLayout extends Vue {
       .then((flow) => {
         this.graphModel = flow;
 
+        const data = flow.data as Data;
+        for (const [_, value] of Object.entries(data.nodes)) {
+          const newPage = convertReteNode2NewPage(value as NodeData);
+
+          //this.storeNewPage(newPage)
+        }
         EventBus.$emit(FLOW_GRAPH_IMPORTED, flow.data);
       })
       .catch((error) => {
-        this.triggerError(error)
+        this.triggerError(error);
       });
 
+    EventBus.$on(FLOW_NODE_SELECTED, (node: ReteNode) => {
+      this.hasSelectedNode = true;
+      this.selectedNode = node.data.uuid as string
+    })
     EventBus.$on(FLOW_NODE_ADDED, (node: ReteNode) => {
-      this.selectedNode = node;
-      //console.log(node.data.uuid);
+
+      if(!node.data.page) {
+        node.data = Object.assign({}, node.data, { page: convertReteNode2NewPage(node as unknown as NodeData)})
+      }
+
+      this.storeNewPage(node.data.page as NewPage)
+
+      this.selectedNode = node.data.uuid as string
+
     });
     EventBus.$on(FLOW_GRAPH_UPDATED, (node: JSON) => {
       const model = this.graphModel;
@@ -357,6 +223,14 @@ export default class RouterLayout extends Vue {
         UpdateOne<TempFlow>(`temp_flow/${model.flow_pk}`, model);
       }
     });
+  }
+
+  publishFlow() {
+    const model = this.graphModel;
+
+    if (model && model.data) {
+      console.log(model.data);
+    }
   }
 
   getWidgetName(element: string) {

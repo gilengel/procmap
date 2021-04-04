@@ -23,7 +23,8 @@ function install(editor: NodeEditor, nodes: Array<MetaFlowCategory>) {
     // force update the mouse position
     editor.view.area.pointermove(e as unknown as PointerEvent)
 
-    createNode(component.component, editor.view.area.mouse, component.defaultData).then((node : Node) => {
+    const defaultData = component.defaultData ? component.defaultData : {}
+    createNode(component.component, editor.view.area.mouse, defaultData).then((node : Node) => {
       editor.addNode(node)
     }).catch(e => {
       console.error(e)

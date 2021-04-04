@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Model from './Model'
+import Page from './Page'
 
 /*
  * If not building with SSR mode, you can
@@ -14,7 +15,8 @@ Vue.use(Vuex)
 export default function () {
   const Store = new Vuex.Store({
     modules: {
-      Model
+      Model,
+      Page
     },
 
     // enable strict mode (adds overhead!)

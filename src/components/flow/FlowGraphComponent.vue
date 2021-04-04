@@ -67,6 +67,7 @@ export default class FlowGraphComponent extends Vue {
     }
   }
 
+/*
   makeComponentDataReactive() {
     for (const category of this.nodes) {
       category.components.forEach((c) => {
@@ -81,12 +82,15 @@ export default class FlowGraphComponent extends Vue {
       });
     }
   }
+  */
 
   registerEditorEvents() {
     this.editor.on(["nodecreate"], (node) => {
       // Add random uuid used to identify model in store related to the new node
-      node.uuid = uuidv4();
-      node.data.uuid = node.uuid;
+      if(!node.data.uuid){
+        node.data.uuid = uuidv4();
+      }
+
 
       this.graph.push(node);
 
