@@ -1,4 +1,6 @@
-DROP TABLE Form;
-DROP TABLE Layout;
-DROP TABLE single_page;
-DROP TABLE PageConnection;
+DROP TABLE IF EXISTS forms;
+DROP TABLE IF EXISTS layouts;
+DROP TABLE IF EXISTS pages CASCADE;
+DROP TABLE IF EXISTS temp_flow;
+DROP TABLE IF EXISTS single_page_connection;
+--DROP TABLE PageConnection;

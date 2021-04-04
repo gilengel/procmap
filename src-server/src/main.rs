@@ -25,6 +25,12 @@ mod layout_api;
 mod page;
 mod page_api;
 
+mod page_connection;
+mod page_connection_api;
+
+mod temp_flow;
+mod temp_flow_api;
+
 mod schema;
 
 pub struct CORS();
@@ -83,7 +89,17 @@ fn main() {
                 page_api::create_page,
                 page_api::read_pages,
                 page_api::read_page,
-                page_api::delete_page
+                page_api::delete_page,
+                page_api::get_page_pk_of_connection,
+
+                page_connection_api::connections,
+                page_connection_api::create_page_connection,
+                page_connection_api::read_page_connection,
+
+                temp_flow_api::create_temp_flow,
+                temp_flow_api::read_temp_flows,
+                temp_flow_api::read_temp_flow,
+
             ],
         )
         .attach(CORS())

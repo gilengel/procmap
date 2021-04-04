@@ -1,10 +1,30 @@
 table! {
-  pages(pk_id) {
-    pk_id -> Int4,
+  temp_flow(flow_pk) {
+    flow_pk -> Int4,
+    flow_id -> Text,
+    name -> Text,
+    created_at -> Timestamp,
+    data -> Jsonb,
+  }
+}
+
+table! {
+  pages(page_pk) {
+    page_pk -> Int4,
     page_id -> Text,
     name -> Text,
     created_at -> Timestamp,
-    fk_layout_id -> Int4,
+    //fk_layout_pk -> Int4,
+  }
+}
+
+table! {
+  single_page_connection(connection_pk) {
+    connection_pk -> Int4,
+    connection_id -> Text,
+    created_at -> Timestamp,
+    incoming_page -> Int4,
+    outgoing_page -> Int4,
   }
 }
 

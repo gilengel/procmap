@@ -1,20 +1,35 @@
+
 use log::error;
 use rocket_contrib::json::Json;
 use serde::Serialize;
 
 use crate::api::ApiError;
 use crate::db;
-use crate::page::{Page, NewPage};
+use crate::page::{NewPage, Page};
 
 #[options("/pages")]
 pub fn pages() {}
 
-#[post("/pages", data = "<page>", format = "json")]
+#[post("/pages", data = "<pages>", format = "json")]
 pub fn create_page(
-    page: Json<NewPage>,
+    pages: Json<Vec<NewPage>>,
     connection: db::Connection,
-) -> Result<Json<Page>, ApiError> {
-    Page::create(page.into_inner(), &connection)
+) -> Result<Json<Vec<Page>>, ApiError> {
+    Page::create(&pages.into_inner(), &connection)
+        .map(Json)
+        .map_err(|err| {
+            error!("Unable to create page - {}", err);
+            ApiError::InternalServerError
+        })
+}
+
+#[get("/pages/connection_pks/<previous_uuid>/<next_uuid>")]
+pub fn get_page_pk_of_connection(
+    previous_uuid: String,
+    next_uuid: String,
+    connection: db::Connection,
+) -> Result<Json<Vec<i32>>, ApiError> {
+    Page::extract_pk_for_connection(previous_uuid, next_uuid, &connection)
         .map(Json)
         .map_err(|err| {
             error!("Unable to create page - {}", err);
