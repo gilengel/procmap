@@ -70,11 +70,11 @@ import PageOptions from "../components/router_builder/PageOptions.vue";
 import { TempFlow } from "../models/TempFlow";
 import { GetOne, UpdateOne } from "../models/Backend";
 import { Node as ReteNode } from "rete";
-import { Data, NodeData } from "rete/types/core/data"
+import { Data, NodeData } from "rete/types/core/data";
 
-import { convertReteNode2NewPage } from "./FlowGraphConverter"
+import { walkGraph, convertReteNode2NewPage } from "./FlowGraphConverter";
 
-import { Page, NewPage } from "../models/Page"
+import { Page, NewPage } from "../models/Page";
 
 import {
   StartFlowComponent,
@@ -101,19 +101,19 @@ const routingNodes: Array<MetaFlowCategory> = [
         id: "start",
         label: "Start",
         icon: "las la-play",
-        component: StartFlowComponent
+        component: StartFlowComponent,
       },
       {
         id: "end",
         label: "End",
         icon: "las la-stop",
-        component: EndFlowComponent
+        component: EndFlowComponent,
       },
       {
         id: "page",
         label: "Page",
         icon: "las la-file",
-        component: PageFlowComponent
+        component: PageFlowComponent,
       },
     ],
   },
@@ -158,9 +158,11 @@ export default class RouterLayout extends Vue {
   storeNewPage!: (page: NewPage) => void;
 
   hasSelectedNode: boolean = false;
-  selectedNode: string = '';
+  selectedNode: string = "";
 
   graphModel: TempFlow | null = null;
+
+  reteNodes: Array<ReteNode> = [];
 
   layout: View = {
     id: "fc339aab-9355-405a-99b3-0ced2fa2361c",
@@ -187,12 +189,6 @@ export default class RouterLayout extends Vue {
       .then((flow) => {
         this.graphModel = flow;
 
-        const data = flow.data as Data;
-        for (const [_, value] of Object.entries(data.nodes)) {
-          const newPage = convertReteNode2NewPage(value as NodeData);
-
-          //this.storeNewPage(newPage)
-        }
         EventBus.$emit(FLOW_GRAPH_IMPORTED, flow.data);
       })
       .catch((error) => {
@@ -201,19 +197,22 @@ export default class RouterLayout extends Vue {
 
     EventBus.$on(FLOW_NODE_SELECTED, (node: ReteNode) => {
       this.hasSelectedNode = true;
-      this.selectedNode = node.data.uuid as string
-    })
+      this.selectedNode = node.data.uuid as string;
+    });
     EventBus.$on(FLOW_NODE_ADDED, (node: ReteNode) => {
-
-      if(!node.data.page) {
-        node.data = Object.assign({}, node.data, { page: convertReteNode2NewPage(node as unknown as NodeData)})
+      if (!node.data.page) {
+        node.data = Object.assign({}, node.data, {
+          page: convertReteNode2NewPage((node as unknown) as NodeData),
+        });
       }
 
-      this.storeNewPage(node.data.page as NewPage)
+      this.storeNewPage(node.data.page as NewPage);
 
-      this.selectedNode = node.data.uuid as string
+      this.reteNodes.push(node);
 
+      this.selectedNode = node.data.uuid as string;
     });
+
     EventBus.$on(FLOW_GRAPH_UPDATED, (node: JSON) => {
       const model = this.graphModel;
 
@@ -228,8 +227,12 @@ export default class RouterLayout extends Vue {
   publishFlow() {
     const model = this.graphModel;
 
+    walkGraph(this.reteNodes)
+
     if (model && model.data) {
-      console.log(model.data);
+      for (const [key, value] of Object.entries(model.data.nodes)) {
+
+      }
     }
   }
 

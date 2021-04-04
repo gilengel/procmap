@@ -1,7 +1,7 @@
-export function CreateNowTimestamp(): number {
+export function CreateNowTimestamp(): string {
   return CreateDateTimestamp(new Date());
 }
 
-export function CreateDateTimestamp(date: Date): number {
-  return parseInt(date.toJSON().slice(0, -1));
+export function CreateDateTimestamp(date: Date): string {
+  return date.toJSON().slice(0, -1);
 }
