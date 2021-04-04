@@ -233,7 +233,7 @@ export class FlowComponent extends Rete.Component {
       return
     }
 
-    const pin = new Rete.Input(parameter.id !== undefined ? parameter.id : parameter.type, parameter.label, socket)
+    const pin = new Rete.Input(parameter.id !== undefined ? parameter.id : parameter.type, parameter.label, socket, true)
     if (parameter.control !== undefined) {
       pin.addControl(
         createControl(

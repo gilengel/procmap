@@ -10,6 +10,14 @@ const routes: RouteConfig[] = [
   },
 
   {
+    path: '/page_builder',
+    component: () => import('layouts/PageBuilderLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/PageBuilder.vue') }
+    ]
+  },
+
+  {
     path: '/ui_builder',
     component: () => import('layouts/UiBuilderLayout.vue'),
     children: [
@@ -26,7 +34,7 @@ const routes: RouteConfig[] = [
   },
 
   {
-    path: '/router',
+    path: '/router/:id',
     component: () => import('layouts/RouterLayout.vue'),
     children: [
       { path: '', component: () => import('pages/RouterBuilder.vue') }

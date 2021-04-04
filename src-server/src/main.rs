@@ -47,7 +47,7 @@ impl Fairing for CORS {
         response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
-            "POST, GET, PATCH, OPTIONS",
+            "PUT, POST, GET, PATCH, OPTIONS",
         ));
         response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
@@ -96,7 +96,10 @@ fn main() {
                 page_connection_api::create_page_connection,
                 page_connection_api::read_page_connection,
 
+                temp_flow_api::temp_flow,
                 temp_flow_api::create_temp_flow,
+                temp_flow_api::update_temp_flow,
+                temp_flow_api::temp_flow_put_options,
                 temp_flow_api::read_temp_flows,
                 temp_flow_api::read_temp_flow,
 

@@ -6,7 +6,7 @@
       </template>
 
       <template #after>
-        <FlowGraphComponent :nodes="nodes" v-html="" v-on="$listeners" />
+        <FlowGraphComponent :graph="graph" :nodes="nodes" v-html="" v-on="$listeners" />
       </template>
     </q-splitter>
   </Widget>
@@ -20,6 +20,8 @@ import { MetaFlowCategory } from "./flow/Index";
 
 import FlowGraphNodesList from "./FlowGraphNodesList.vue";
 import Widget from "./Widget.vue";
+import { Node as ReteNode } from 'rete'
+
 @Component({
   name: "FlowGraphWidget",
 
@@ -30,10 +32,9 @@ import Widget from "./Widget.vue";
 })
 export default class FlowGraphWidget extends Widget {
   @Prop() readonly nodes!: Array<MetaFlowCategory>;
+  @Prop() graph!: Array<ReteNode>;
 
   left = true;
-
-  geometry: Record<string, unknown> = {};
 
   horizontalSplitter = 70;
 

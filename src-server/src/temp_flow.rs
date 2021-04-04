@@ -1,11 +1,12 @@
-use diesel::{self};
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
-use serde::{Deserialize, Serialize};
+use serde_json::Value;
+
 use crate::schema::temp_flow;
 use chrono::NaiveDateTime;
-
-use serde_json::Value;
+use diesel::expression_methods::ExpressionMethods;
+use diesel::pg::PgConnection;
+use diesel::RunQueryDsl;
+use diesel::{self, QueryDsl};
+use serde::{Deserialize, Serialize};
 
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable, Identifiable)]
 #[primary_key(flow_pk)]
@@ -20,8 +21,7 @@ pub struct TempFlow {
 
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "temp_flow"]
-pub struct NewTempFlow<'a>
-{
+pub struct NewTempFlow<'a> {
     pub flow_id: &'a str,
     pub name: &'a str,
     pub created_at: NaiveDateTime,
@@ -29,7 +29,6 @@ pub struct NewTempFlow<'a>
 }
 
 impl TempFlow {
-
     pub fn create(tempFlow: NewTempFlow, connection: &PgConnection) -> Result<TempFlow, String> {
         diesel::insert_into(temp_flow::table)
             .values(&tempFlow)
@@ -44,11 +43,28 @@ impl TempFlow {
             .map_err(|err| err.to_string())
     }
 
-    pub fn read(flow_pk: i32, connection: &PgConnection) -> Result<Option<TempFlow>, String> {
-        match temp_flow::table.find(flow_pk).first(connection) {
-            Ok(temp_flow) => Ok(Some(temp_flow)),
+    pub fn read_by_flow_id(
+        flow_id: String,
+        connection: &PgConnection,
+    ) -> Result<Option<TempFlow>, String> {
+        match temp_flow::table
+            .find(temp_flow::flow_pk)
+            .filter(temp_flow::flow_id.eq_any(vec![flow_id]))
+            .first(connection)
+        {
+            Ok(flow) => Ok(Some(flow)),
             Err(diesel::result::Error::NotFound) => Ok(None),
             Err(err) => Err(err.to_string()),
+        }
+    }
+
+    pub fn update(_: i32, temp_flow: TempFlow, connection: &PgConnection) -> Result<Option<TempFlow>, String> {
+        let update_result = diesel::update(&temp_flow).set(&temp_flow).execute(connection);
+
+        match update_result {
+            Err(diesel::result::Error::NotFound) | Ok(0) => Ok(None),
+            Err(err) => Err(err.to_string()),
+            Ok(_) => Ok(Some(temp_flow)),
         }
     }
 }

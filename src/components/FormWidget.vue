@@ -96,22 +96,24 @@ export default class FormWidget extends Widget {
         for (const row of this.model.rows) {
           for (const column of row.columns) {
             if (column.element !== null) {
-              if(column.element.value === undefined){
-                const type = this.getValueOfAttribute(column.element, 'type') ;
-                if(type=== 'text') {
+              if (column.element.value === undefined) {
+                const type = this.getValueOfAttribute(column.element, "type");
+                if (type === "text") {
                   column.element.value = Math.random().toString().substr(2, 8);
-                } else if(type === 'date'){
-                  column.element.value = "2021-04-05"
-                } else if(type === 'email'){
-                  column.element.value = `${Math.random().toString().substr(2, 4)}@${Math.random().toString().substr(2, 4)}.com`
+                } else if (type === "date") {
+                  column.element.value = "2021-04-05";
+                } else if (type === "email") {
+                  column.element.value = `${Math.random()
+                    .toString()
+                    .substr(2, 4)}@${Math.random()
+                    .toString()
+                    .substr(2, 4)}.com`;
                 }
               }
             }
           }
         }
       });
-
-
   }
 
   private getValueOfAttribute(element: Element, name: String): any {
