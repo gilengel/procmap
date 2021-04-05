@@ -1,6 +1,5 @@
 <template>
   <div class="preview">
-
     <q-toolbar class="bg-black text-white">
       <q-toolbar-title>Flow</q-toolbar-title>
       <q-btn flat round dense>
@@ -26,10 +25,17 @@ import DockPlugin from "../dock/Index";
 import { v4 as uuidv4 } from "uuid";
 import resize from "vue-resize-directive";
 import { store } from "../../store/index";
-import EventBus, { FLOW_NODE_SELECTED, FLOW_NODE_ADDED, FLOW_NODE_REMOVED, FLOW_GRAPH_UPDATED, FLOW_GRAPH_IMPORTED } from "../../EventBus";
+import EventBus, {
+  FLOW_NODE_SELECTED,
+  FLOW_NODE_ADDED,
+  FLOW_NODE_REMOVED,
+  FLOW_GRAPH_UPDATED,
+  FLOW_GRAPH_IMPORTED,
+  FLOW_GRAPH_MANUALLY_CHANGED,
+} from "../../EventBus";
 import { MetaFlowCategory } from "../flow/Index";
 
-import { Data } from "rete/types/core/data"
+import { Data } from "rete/types/core/data";
 
 @Component({
   directives: {
@@ -67,7 +73,7 @@ export default class FlowGraphComponent extends Vue {
     }
   }
 
-/*
+  /*
   makeComponentDataReactive() {
     for (const category of this.nodes) {
       category.components.forEach((c) => {
@@ -87,10 +93,9 @@ export default class FlowGraphComponent extends Vue {
   registerEditorEvents() {
     this.editor.on(["nodecreate"], (node) => {
       // Add random uuid used to identify model in store related to the new node
-      if(!node.data.uuid){
+      if (!node.data.uuid) {
         node.data.uuid = uuidv4();
       }
-
 
       this.graph.push(node);
 
@@ -113,7 +118,7 @@ export default class FlowGraphComponent extends Vue {
 
     this.editor.on(["nodeselected"], (node: ReteNode) => {
       EventBus.$emit(FLOW_NODE_SELECTED, node);
-    })
+    });
 
     this.editor.on(["import"], async () => {
       await this.engine.abort();
@@ -124,6 +129,8 @@ export default class FlowGraphComponent extends Vue {
       this.keyUpEvent(e);
 
       await this.engine.process(this.editor.toJSON());
+
+      EventBus.$emit(FLOW_GRAPH_MANUALLY_CHANGED, this.editor.toJSON());
     });
 
     this.editor.on(["click"], (e: KeyboardEvent, container: HTMLElement) => {
@@ -137,8 +144,8 @@ export default class FlowGraphComponent extends Vue {
     });
 
     EventBus.$on(FLOW_GRAPH_IMPORTED, (model: Data) => {
-      this.editor.fromJSON(model)
-    })
+      this.editor.fromJSON(model);
+    });
   }
 
   async mounted() {

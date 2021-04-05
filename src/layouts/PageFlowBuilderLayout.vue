@@ -12,7 +12,7 @@
               margin-bottom: 8px;
             "
             label="Publish"
-            @click="publishFlow"
+            @click="walkGraph(reteNodes)"
           />
         </q-toolbar>
 
@@ -60,8 +60,8 @@
 </template>
 
 <script lang='ts'>
-import { Vue, Component, Watch } from "vue-property-decorator";
-import { Getter, Action } from "vuex-class";
+import { Vue, Component } from "vue-property-decorator";
+import { Action } from "vuex-class";
 import { GridLayout, GridItem } from "vue-grid-layout";
 import FlowGraphWidget from "components/FlowGraphWidget.vue";
 import { MetaFlowCategory } from "../components/flow/Index";
@@ -70,18 +70,16 @@ import PageOptions from "../components/router_builder/PageOptions.vue";
 import { TempFlow } from "../models/TempFlow";
 import { GetOne, UpdateOne } from "../models/Backend";
 import { Node as ReteNode } from "rete";
-import { Data, NodeData } from "rete/types/core/data";
+import { NodeData } from "rete/types/core/data";
 
 import { walkGraph, convertReteNode2NewPage } from "./FlowGraphConverter";
 
-import { Page, NewPage } from "../models/Page";
+import { NewPage } from "../models/Page";
 
 import {
   StartFlowComponent,
   PageFlowComponent,
   EndFlowComponent,
-  FLOW_ROUTER_START,
-  FLOW_ROUTER_END,
 } from "./RouterFlowModel";
 
 import EventBus, {
@@ -90,6 +88,7 @@ import EventBus, {
   FLOW_GRAPH_UPDATED,
   FLOW_GRAPH_IMPORTED,
   FLOW_NODE_SELECTED,
+  FLOW_GRAPH_MANUALLY_CHANGED
 } from "../EventBus";
 
 const routingNodes: Array<MetaFlowCategory> = [
@@ -185,6 +184,21 @@ export default class RouterLayout extends Vue {
     ],
   };
 
+  persistFlowModel(node: JSON) {
+      this.$q.notify({
+        type: "warning",
+        message: "updated",
+      });
+
+      const model = this.graphModel;
+
+      if (model) {
+        model.data = node;
+
+        UpdateOne<TempFlow>(`temp_flow/${model.flow_pk}`, model);
+      }
+  }
+
   mounted() {
     GetOne<TempFlow>(`temp_flow/${this.$route.params.id}`)
       .then((flow) => {
@@ -216,32 +230,9 @@ export default class RouterLayout extends Vue {
     EventBus.$on(FLOW_NODE_REMOVED, (node: JSON) => {
 
     })
-    EventBus.$on(FLOW_GRAPH_UPDATED, (node: JSON) => {
-    this.$q.notify({
-      type: "warning",
-      message: "updated",
+    EventBus.$on(FLOW_GRAPH_MANUALLY_CHANGED, (node: JSON) => {
+      this.persistFlowModel(node);
     });
-
-      const model = this.graphModel;
-
-      if (model) {
-        model.data = node;
-
-        UpdateOne<TempFlow>(`temp_flow/${model.flow_pk}`, model);
-      }
-    });
-  }
-
-  publishFlow() {
-    const model = this.graphModel;
-
-    walkGraph(this.reteNodes)
-
-    if (model && model.data) {
-      for (const [key, value] of Object.entries(model.data.nodes)) {
-
-      }
-    }
   }
 
   getWidgetName(element: string) {

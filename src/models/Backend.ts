@@ -30,7 +30,7 @@ export function GetMultiple<Type>(url: String): Promise<Array<Type>> {
         url: `${BACKEND_URL}/${url}`,
       })
       .then(function (response) {
-        resolve(response.data)
+        resolve(response.data.content)
       })
       .catch(function (error) {
         reject(error)

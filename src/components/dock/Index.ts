@@ -6,7 +6,11 @@ import { findRegisteredComponentById } from '../flow/Index'
 
 import { createNode } from './Utils'
 
-let registeredComponents : Array<MetaFlowCategory> = [];
+import EventBus, {
+  FLOW_GRAPH_MANUALLY_CHANGED,
+} from "../../EventBus";
+
+let registeredComponents: Array<MetaFlowCategory> = [];
 
 function install(editor: NodeEditor, nodes: Array<MetaFlowCategory>) {
   registeredComponents = nodes;
@@ -24,8 +28,10 @@ function install(editor: NodeEditor, nodes: Array<MetaFlowCategory>) {
     editor.view.area.pointermove(e as unknown as PointerEvent)
 
     const defaultData = component.defaultData ? component.defaultData : {}
-    createNode(component.component, editor.view.area.mouse, defaultData).then((node : Node) => {
+    createNode(component.component, editor.view.area.mouse, defaultData).then((node: Node) => {
       editor.addNode(node)
+
+      EventBus.$emit(FLOW_GRAPH_MANUALLY_CHANGED, editor.toJSON());
     }).catch(e => {
       console.error(e)
     })
