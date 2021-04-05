@@ -34,7 +34,7 @@ export function GetMultiple<Type>(url: String): Promise<Array<Type>> {
       })
       .catch(function (error) {
         reject(error)
-      });
+      })
   })
 }
 

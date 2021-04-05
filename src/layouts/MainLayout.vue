@@ -114,7 +114,7 @@ export default class MainLayout extends Vue {
       .catch((err) => {
         this.$q.notify({
           type: "error",
-          message: err,
+          message: "Could not reach backend",
         });
       });
   }
@@ -133,7 +133,10 @@ export default class MainLayout extends Vue {
         this.availablePages = pageNames;
       })
       .catch((reason) => {
-        console.log(reason);
+        this.$q.notify({
+          type: "error",
+          message: "Could not reach backend",
+        });
       });
   }
   createFlow() {

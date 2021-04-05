@@ -40,7 +40,7 @@ export default new FlowComponent({
     node: NodeData,
     _inputs: WorkerInputs,
     outputs: WorkerOutputs,
-    _store: Store<unknown>
+    _store?: Store<unknown>
   ): Promise<void> => {
 
     return new Promise((resolve, reject) => {

@@ -17,10 +17,9 @@ export default new FlowComponent({
   ],
 
   workerFn: (
-    node: NodeData,
+    _node: NodeData,
     _inputs: WorkerInputs,
     _outputs: WorkerOutputs,
-    store: Store<unknown>
   ): Promise<void> => {
     return new Promise((resolve, reject) => {
       //const model = store.getters.model(node.data.uuid)

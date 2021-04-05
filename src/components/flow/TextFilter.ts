@@ -26,8 +26,7 @@ export default new FlowComponent({
   workerFn: (
     node: NodeData,
     inputs: WorkerInputs,
-    outputs: WorkerOutputs,
-    store: Store<unknown>
+    outputs: WorkerOutputs
   ): Promise<void> => {
     return new Promise((resolve) => {
       const result = []

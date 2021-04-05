@@ -22,7 +22,6 @@ export const StartFlowComponent = new FlowComponent({
     node: NodeData,
     _inputs: WorkerInputs,
     _outputs: WorkerOutputs,
-    store: Store<unknown>
   ): Promise<void> => {
     return new Promise((resolve) => {
       // Default do noting
@@ -55,10 +54,10 @@ export const PageFlowComponent = new FlowComponent({
     node: NodeData,
     _inputs: WorkerInputs,
     _outputs: WorkerOutputs,
-    store: Store<unknown>
+    store?: Store<unknown>
   ): Promise<void> => {
     return new Promise((resolve) => {
-      let model = store.getters.model(node.data.uuid);
+      let model = store?.getters.model(node.data.uuid);
 
       // Create default data and add to local cache
       if (model === undefined) {
@@ -70,7 +69,7 @@ export const PageFlowComponent = new FlowComponent({
           fk_layout_id: 1,
         };
 
-        store.dispatch("updateModel", { uuid: node.data.uuid, model: model });
+        store?.dispatch("updateModel", { uuid: node.data.uuid, model: model });
       }
 
       // Default do noting
@@ -91,10 +90,9 @@ export const EndFlowComponent = new FlowComponent({
   ],
 
   workerFn: (
-    node: NodeData,
+    _node: NodeData,
     _inputs: WorkerInputs,
     _outputs: WorkerOutputs,
-    store: Store<unknown>
   ): Promise<void> => {
     return new Promise((resolve) => {
       // Default do noting

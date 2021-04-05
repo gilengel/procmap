@@ -22,12 +22,12 @@ export default new FlowComponent({
     node: NodeData,
     inputs: WorkerInputs,
     _outputs: WorkerOutputs,
-    store: Store<unknown>
+    store?: Store<unknown>
   ): Promise<void> => {
     return new Promise((resolve, reject) => {
 
       const model = inputs.table_data[0]
-      if (model !== undefined) {
+      if (model !== undefined && store) {
         store.dispatch('updateModel', {
           uuid: node.data.uuid,
           model: model

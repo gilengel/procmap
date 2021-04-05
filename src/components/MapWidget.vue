@@ -75,7 +75,9 @@ export default class MapWidget extends Widget {
   width = 0;
   height = 0;
 
-  onMapLoaded (event) {
+  map: any;
+
+  onMapLoaded (event: any) {
     this.map = event.map
   }
 

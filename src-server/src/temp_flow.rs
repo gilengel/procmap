@@ -29,9 +29,9 @@ pub struct NewTempFlow<'a> {
 }
 
 impl TempFlow {
-    pub fn create(tempFlow: NewTempFlow, connection: &PgConnection) -> Result<TempFlow, String> {
+    pub fn create(temp_flow: NewTempFlow, connection: &PgConnection) -> Result<TempFlow, String> {
         diesel::insert_into(temp_flow::table)
-            .values(&tempFlow)
+            .values(&temp_flow)
             .get_result(connection)
             .map_err(|err| err.to_string())
     }

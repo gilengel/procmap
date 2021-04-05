@@ -27,10 +27,10 @@ export default new FlowComponent({
         node: NodeData,
         _inputs: WorkerInputs,
         outputs: WorkerOutputs,
-        store: Store<unknown>
+        store?: Store<unknown>
     ): Promise<void> => {
       return new Promise((resolve) => {
-        const model = store.getters.model(node.data.uuid)
+        const model = store?.getters.model(node.data.uuid)
 
         let list = DEFAULT_LIST
         if (model && model.list != list) {
@@ -38,7 +38,7 @@ export default new FlowComponent({
         }
         outputs.list = list
 
-        store.dispatch('updateModel', { uuid: node.data.uuid, model: { list: list } })
+        store?.dispatch('updateModel', { uuid: node.data.uuid, model: { list: list } })
 
         resolve()
       })

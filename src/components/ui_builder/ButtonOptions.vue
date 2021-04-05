@@ -32,7 +32,8 @@
 
         <q-icon
           :name="icon"
-          v-for="icon in group.icons"
+          v-for="(icon, icon_index) in group.icons"
+          :key="icon_index"
           :class="{ selected: selected(icon) }"
           @click="setIcon(icon)"
         />

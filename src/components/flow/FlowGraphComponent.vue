@@ -56,8 +56,8 @@ export default class FlowGraphComponent extends Vue {
     this.editor = new Rete.NodeEditor("demo@0.1.0", container as HTMLElement);
 
     this.editor.use(ConnectionPlugin);
-    this.editor.use(VueRenderPlugin, { store });
-    this.editor.use(DockPlugin, this.nodes);
+    this.editor.use(VueRenderPlugin, { store } as unknown as void);
+    this.editor.use(DockPlugin, this.nodes as unknown as void);
   }
 
   createCustomEditorEvents() {
@@ -133,7 +133,7 @@ export default class FlowGraphComponent extends Vue {
       EventBus.$emit(FLOW_GRAPH_MANUALLY_CHANGED, this.editor.toJSON());
     });
 
-    this.editor.on(["click"], (e: KeyboardEvent, container: HTMLElement) => {
+    this.editor.on(["click"], (args: {e: Event, container: HTMLElement}) => {
       this.editor.selected.list = [];
     });
   }

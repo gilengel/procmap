@@ -60,26 +60,12 @@ impl Fairing for CORS {
 }
 
 fn main() {
-    //embedded_migrations::run_with_output(&db::connect().get().unwrap(), &mut std::io::stdout())
-    //    .unwrap();
 
     rocket::ignite()
         .manage(db::connect())
         .mount(
             "/",
             routes![
-                //view::view,
-                //view::single_view,
-                //view::save_single_view,
-                //form::form,
-                //form::single_form,
-                //form::save_single_form,
-                //user_api::users,
-                //user_api::create_user,
-                //user_api::read_users,
-                //user_api::read_user,
-                //user_api::update_user,
-                //user_api::delete_user,
                 layout_api::layouts,
                 layout_api::create_layout,
                 layout_api::read_layouts,
@@ -105,9 +91,9 @@ fn main() {
                 temp_flow_api::temp_flow_put_options,
                 temp_flow_api::read_temp_flows,
                 temp_flow_api::read_temp_flow,
-
             ],
         )
         .attach(CORS())
         .launch();
+        
 }

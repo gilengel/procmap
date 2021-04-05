@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use diesel::pg::PgConnection;
 use diesel::RunQueryDsl;
 use diesel::{self, QueryDsl};
-use diesel::{expression_methods::ExpressionMethods, Table};
+use diesel::expression_methods::ExpressionMethods;
 use serde::{Deserialize, Serialize};
 
 use diesel::sql_types::Text;

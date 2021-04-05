@@ -213,7 +213,7 @@ export class FlowComponent extends Rete.Component {
 
     let vueStore: Store<unknown> | undefined
     if (nodeEditor) {
-      const renderPlugin = nodeEditor.plugins.get('vue-render')
+        const renderPlugin = nodeEditor.plugins.get('vue-render') as { store: Store<unknown> }
       vueStore = renderPlugin.store as Store<unknown>
     }
 
