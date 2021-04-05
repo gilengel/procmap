@@ -29,11 +29,6 @@ pub struct NewPageConnection<'a>
 impl PageConnection {
 
     pub fn create(page_connection: NewPageConnection, connection: &PgConnection) -> Result<PageConnection, String> {
-      println!("connection_id {}", page_connection.connection_id);
-      println!("created_at    {}", page_connection.created_at);
-      println!("incoming_page {}", page_connection.incoming_page);
-      println!("outgoing_page {}", page_connection.outgoing_page);
-
       diesel::insert_into(single_page_connection::table)
             .values(&page_connection)
             .get_result(connection)
@@ -54,26 +49,6 @@ impl PageConnection {
             Err(err) => Err(err.to_string()),
         }
     }
-    /*
-    pub fn update(_: i32, user: User, connection: &PgConnection) -> Result<Option<User>, String> {
-        let update_result = diesel::update(&user)
-            .set(&user)
-            .execute(connection);
-
-        match update_result {
-            Err(diesel::result::Error::NotFound) | Ok(0) => Ok(None),
-            Err(err) => Err(err.to_string()),
-            Ok(_) => Ok(Some(user)),
-        }
-    }
-
-    pub fn delete(pk_id: i32, connection: &PgConnection) -> Result<bool, String> {
-        diesel::delete(pages::table.find(pk_id))
-            .execute(connection)
-            .map(|aff_rows| aff_rows > 0)
-            .map_err(|err| err.to_string())
-    }
-*/
 }
 
 /*/

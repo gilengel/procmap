@@ -32,11 +32,10 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
 
 import { Vue, Prop, Component } from "vue-property-decorator";
 import { Getter, Action } from "vuex-class";
-import { NewPage, UpdateNewPage } from '../../models/Page';
+import { GetAllPages, NewPage, UpdateNewPage } from '../../models/Page';
 
 interface Page {
   pk_id: number;
@@ -81,17 +80,11 @@ export default class PageOptions extends Vue {
   }
 
   created() {
-    /*
-    axios
-      .request<Array<Page>>({
-        url: "http://localhost:8000/pages",
-        transformResponse: (r: ServerResponse) => r.data,
-      })
-      .then((response) => {
-        const model = JSON.parse(response.request.response).content as Array<Page>;
-
+    GetAllPages()
+      .then(pages => {
+        console.log(pages)
         const pageNames = new Array<String>();
-        for(const page of model) {
+        for(const page of pages) {
           pageNames.push(page.name);
         }
 
@@ -100,7 +93,6 @@ export default class PageOptions extends Vue {
       .catch((reason) => {
         console.log(reason);
       });
-      */
   }
 }
 </script>

@@ -23,14 +23,14 @@ export function GetOne<Type>(url: String): Promise<Type> {
   })
 }
 
-export function GetMultiple<Type>(url: String): Promise<ServerMultipleResponse<Type>> {
+export function GetMultiple<Type>(url: String): Promise<Array<Type>> {
   return new Promise((resolve, reject) => {
     axios
-      .request<Type>({
+      .request<Array<Type>>({
         url: `${BACKEND_URL}/${url}`,
       })
       .then(function (response) {
-        resolve(response as unknown as ServerMultipleResponse<Type>)
+        resolve(response.data)
       })
       .catch(function (error) {
         reject(error)

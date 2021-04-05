@@ -101,7 +101,7 @@ export default class FlowGraphComponent extends Vue {
     });
 
     this.editor.on(
-      ["process", "nodecreated", "connectioncreated"],
+      ["process", "nodecreated", "connectioncreated", "noderemoved"],
       async () => {
         const data = this.editor.toJSON();
         await this.engine.abort();
@@ -116,13 +116,6 @@ export default class FlowGraphComponent extends Vue {
     })
 
     this.editor.on(["import"], async () => {
-      await this.engine.abort();
-      await this.engine.process(this.editor.toJSON());
-    });
-
-    this.editor.on(["noderemoved"], async (node: ReteNode) => {
-      EventBus.$emit(FLOW_NODE_REMOVED, node);
-
       await this.engine.abort();
       await this.engine.process(this.editor.toJSON());
     });

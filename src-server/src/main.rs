@@ -90,7 +90,10 @@ fn main() {
                 page_api::read_pages,
                 page_api::read_page,
                 page_api::delete_page,
-                page_api::get_page_pk_of_connection,
+                //page_api::get_page_pk_of_connection,
+                page_api::read_previous_pages_for_connection,
+                page_api::read_following_pages_for_connection,
+                page_api::read_current_page_by_id,
 
                 page_connection_api::connections,
                 page_connection_api::create_page_connection,

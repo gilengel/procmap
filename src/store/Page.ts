@@ -151,7 +151,6 @@ export default class PageStore extends VuexModule {
    */
   @Action
   updateNewPage(params: { page: NewPage, update: UpdateNewPage }) {
-
     this.context.commit('_updateNewPage', params)
   }
 

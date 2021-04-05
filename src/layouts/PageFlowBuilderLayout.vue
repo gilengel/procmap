@@ -86,6 +86,7 @@ import {
 
 import EventBus, {
   FLOW_NODE_ADDED,
+  FLOW_NODE_REMOVED,
   FLOW_GRAPH_UPDATED,
   FLOW_GRAPH_IMPORTED,
   FLOW_NODE_SELECTED,
@@ -212,8 +213,15 @@ export default class RouterLayout extends Vue {
 
       this.selectedNode = node.data.uuid as string;
     });
+    EventBus.$on(FLOW_NODE_REMOVED, (node: JSON) => {
 
+    })
     EventBus.$on(FLOW_GRAPH_UPDATED, (node: JSON) => {
+    this.$q.notify({
+      type: "warning",
+      message: "updated",
+    });
+
       const model = this.graphModel;
 
       if (model) {

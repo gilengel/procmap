@@ -8,6 +8,16 @@
 
         <q-btn label="New Flow" color="primary" @click="createNewFlow = true" />
 
+        <span style="color: white">{{selectedPage}}</span>
+        <q-select
+          dark
+          v-model="selectedPage"
+          :options="pages"
+          label="Standard"
+          option-value="page_id"
+          option-label="name"
+        />
+
         <q-dialog v-model="createNewFlow">
           <q-card style="min-width: 350px">
             <q-card-section>
@@ -24,8 +34,13 @@
             </q-card-section>
 
             <q-card-actions align="right" class="text-primary">
-              <q-btn flat label="Cancel" v-close-popup/>
-              <q-btn flat label="Create Flow" v-close-popup  @click="createFlow"/>
+              <q-btn flat label="Cancel" v-close-popup />
+              <q-btn
+                flat
+                label="Create Flow"
+                v-close-popup
+                @click="createFlow"
+              />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -37,55 +52,49 @@
 <script lang='ts'>
 import { Vue, Component, Watch } from "vue-property-decorator";
 
-import { GridLayout, GridItem } from "vue-grid-layout";
-import Widget from "components/Widget.vue";
-import TableWidget from "components/TableWidget.vue";
-import ImageWidget from "components/ImageWidget.vue";
-import TextWidget from "components/TextWidget.vue";
-import ChartWidget from "src/components/ChartWidget.vue";
-import FlowGraphWidget from "components/FlowGraphWidget.vue";
-import MapWidget from "components/MapWidget.vue";
-import IdeWidget from "components/IdeWidget.vue";
-import TodoWidget from "components/TodoWidget.vue";
-import ListWidget from "components/ListWidget.vue";
-import FormWidget from "components/FormWidget.vue";
-
-import { getRegisteredComponentCategories } from "components/flow/Index";
-
-import { Node as ReteNode } from "rete";
-
 import { v4 as uuidv4 } from "uuid";
 
 import axios from "axios";
 
+import { GetAllPages, Page } from "../models/Page";
+
 @Component({
   name: "MainLayout",
 
-  components: {
-    GridLayout,
-    GridItem,
-    Widget,
-    TableWidget,
-    ImageWidget,
-    TextWidget,
-    FlowGraphWidget,
-    ChartWidget,
-    IdeWidget,
-    MapWidget,
-    TodoWidget,
-    ListWidget,
-    FormWidget,
-  },
+  components: {},
 })
 export default class MainLayout extends Vue {
   createNewFlow: boolean = false;
-  newFlowName: String = '';
+  newFlowName: String = "";
 
+  selectedPage = null;
+
+  pages: Array<Page> = [];
+  get availablePageNames() {
+    return this.pages.map((page) => page.name);
+  }
+
+  created() {
+    GetAllPages()
+      .then((pages) => {
+        this.pages = pages;
+        console.log(pages);
+        const pageNames = new Array<String>();
+        for (const page of pages) {
+          pageNames.push(page.name);
+        }
+
+        this.availablePages = pageNames;
+      })
+      .catch((reason) => {
+        console.log(reason);
+      });
+  }
   createFlow() {
-    const hasName = this.newFlowName !== '';
+    const hasName = this.newFlowName !== "";
 
-    if(!hasName) {
-      return
+    if (!hasName) {
+      return;
     }
 
     const date = new Date().toJSON().slice(0, -1);
@@ -93,22 +102,21 @@ export default class MainLayout extends Vue {
       flow_id: uuidv4(),
       name: this.newFlowName,
       created_at: date,
-      data: {}
-    }
+      data: {},
+    };
 
     const self = this;
     axios
       .post("http://localhost:8000/temp_flow", tempFlow)
       .then(function (response) {
-        const result = JSON.parse(response.request.response)
+        const result = JSON.parse(response.request.response);
 
-        self.$router.push(`router/${result.flow_id}`)
+        self.$router.push(`page_flow_builder/${result.flow_id}`);
       })
       .catch(function (error) {
-        console.log(error)
+        console.log(error);
       });
   }
-
 }
 </script>
 
@@ -132,55 +140,5 @@ body {
 
 .vue-grid-item .resizing {
   opacity: 0.9;
-}
-
-/*
-.vue-grid-layout {
-  height: 100vh !important;
-  overflow: hidden;
-}
-.vue-grid-item:not(.vue-grid-placeholder) {
-  background: $dark-page;
-}
-.vue-grid-item .resizing {
-  opacity: 0.9;
-}
-.vue-grid-item .static {
-  background: green;
-}
-.vue-grid-item .no-drag {
-  height: 100%;
-  width: 100%;
-}
-.vue-grid-item .minMax {
-  font-size: 12px;
-}
-.vue-grid-item .add {
-  cursor: pointer;
-}
-.vue-grid-item {
-  transform: none impor !important;
-}
-.vue-draggable-handle {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  top: 0;
-  left: 0;
-  background-position: bottom right;
-  padding: 0 8px 8px 0;
-  background-repeat: no-repeat;
-  background-origin: content-box;
-  box-sizing: border-box;
-  cursor: pointer;
-}
-*/
-.noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 </style>

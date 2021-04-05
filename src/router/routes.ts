@@ -10,13 +10,16 @@ const routes: RouteConfig[] = [
   },
 
   {
-    path: '/page_builder',
+    path: '/page_builder/:id',
     component: () => import('layouts/PageBuilderLayout.vue'),
     children: [
       { path: '', component: () => import('pages/PageBuilder.vue') }
     ]
   },
 
+
+
+  // Route to create forms
   {
     path: '/ui_builder',
     component: () => import('layouts/UiBuilderLayout.vue'),
@@ -25,6 +28,7 @@ const routes: RouteConfig[] = [
     ]
   },
 
+  // TODO: Currently only used for debugging forms
   {
     path: '/ui_form',
     component: () => import('layouts/UiFormLayout.vue'),
@@ -33,13 +37,24 @@ const routes: RouteConfig[] = [
     ]
   },
 
+  // Application flow builder
   {
-    path: '/router/:id',
-    component: () => import('layouts/RouterLayout.vue'),
+    path: '/page_flow_builder/:id',
+    component: () => import('layouts/PageFlowBuilderLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/RouterBuilder.vue') }
+      { path: '', component: () => import('src/pages/PageFlowBuilder.vue') }
     ]
   },
+
+  // Application flow created by an user
+  {
+    path: '/page_flow/:id',
+    component: () => import('layouts/PageFlowLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/PageBuilder.vue') }
+    ]
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {
