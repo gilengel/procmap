@@ -19,7 +19,7 @@ CREATE TABLE pages(
   page_id text NOT NULL,
   name text NOT NULL,
   created_at timestamp NOT NULL,
-  --fk_layout_pk int NULL,
+  data jsonb NULL,
 
   CONSTRAINT page_pk PRIMARY KEY(page_pk)
 );

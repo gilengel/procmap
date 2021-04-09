@@ -2,45 +2,34 @@
   <Widget
     title="Todo"
     @remove-widget="removeWidget"
+    :resizable="resizable"
+    :draggable="draggable"
+    :deletable="deletable"
   >
     <div class="q-pa-md q-gutter-md">
-      <q-list
-        dark
-        v-for="todo in todos"
-        :key="todo.text"
-      >
+      <q-list dark v-for="todo in todos" :key="todo.text">
         <q-item>
           <q-item-section>
             <q-item-label>{{ todo.text }}</q-item-label>
           </q-item-section>
 
-          <q-item-section
-            top
-            side
-          >
-            <q-checkbox
-              dark
-              v-model="todo.checked"
-            />
+          <q-item-section top side>
+            <q-checkbox dark v-model="todo.checked" />
           </q-item-section>
         </q-item>
       </q-list>
 
       <div class="toolbar">
-        <q-btn
-          round
-          color="primary"
-          icon="las la-plus"
-        />
+        <q-btn round color="primary" icon="las la-plus" />
       </div>
     </div>
   </Widget>
 </template>
 
 <script lang="ts">
-import Widget from './Widget.vue'
-import Vue from 'vue'
-import Component from 'vue-class-component'
+import Widget from "./Widget.vue";
+import Vue from "vue";
+import Component from "vue-class-component";
 
 interface Todo {
   checked: boolean;
@@ -48,18 +37,18 @@ interface Todo {
 }
 
 @Component({
-  name: 'TodoWidget',
+  name: "TodoWidget",
 
   components: {
-    Widget
-  }
+    Widget,
+  },
 })
 export default class TodoWidget extends Widget {
   todos: Todo[] = [
-    { text: 'Read a book', checked: false },
-    { text: 'Try not to fall asleep', checked: false },
-    { text: 'Watch a movie', checked: false },
-    { text: 'Go for a walk', checked: false }
+    { text: "Read a book", checked: false },
+    { text: "Try not to fall asleep", checked: false },
+    { text: "Watch a movie", checked: false },
+    { text: "Go for a walk", checked: false },
   ];
 }
 </script>

@@ -1,8 +1,8 @@
 <template>
   <div class="widget">
     <q-toolbar class="bg-black text-white vue-draggable-handle">
-      <q-toolbar-title>{{ title }}</q-toolbar-title>
-      <q-btn
+      <q-toolbar-title>{{ title }} {{deletable}}</q-toolbar-title>
+      <q-btn v-if="deletable"
         flat
         round
         dense
@@ -15,7 +15,7 @@
       <slot />
     </div>
 
-    <q-toolbar class="bg-black text-white vue-draggable-handle">
+    <q-toolbar v-if="resizable" class="bg-black text-white vue-draggable-handle">
       <q-toolbar-title />
       <q-icon
         name="las la-ruler-combined"
@@ -35,6 +35,10 @@ export default class Widget extends Vue {
   @Prop({ default: 'Blank Widget' }) readonly title!: string;
 
   @Prop({ default: '' }) readonly uuid!: string;
+
+  @Prop() readonly resizable!: boolean;
+  @Prop() readonly draggable!: boolean;
+  @Prop() readonly deletable!: boolean;
 
   removeWidget () {
     this.$emit('remove-widget', this.$props.uuid)

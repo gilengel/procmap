@@ -2,6 +2,9 @@
   <Widget
     title="Text"
     @remove-widget="removeWidget"
+    :resizable="resizable"
+    :draggable="draggable"
+    :deletable="deletable"
   >
     <div class="editor">
       <editor-menu-bubble
@@ -39,10 +42,7 @@
         </div>
       </editor-menu-bubble>
 
-      <editor-content
-        class="editor__content"
-        :editor="editor"
-      />
+      <editor-content class="editor__content" :editor="editor" />
     </div>
   </Widget>
 </template>
@@ -50,65 +50,67 @@
 <script lang="ts">
 /* eslint @typescript-eslint/no-unsafe-call: off */
 
-import Widget from './Widget.vue'
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { Editor, EditorContent, EditorMenuBubble, EditorUpdateEvent } from 'tiptap'
-import { Bold, Strike } from 'tiptap-extensions'
+import Widget from "./Widget.vue";
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import {
-  Getter,
-  Action
-} from 'vuex-class'
+  Editor,
+  EditorContent,
+  EditorMenuBubble,
+  EditorUpdateEvent,
+} from "tiptap";
+import { Bold, Strike } from "tiptap-extensions";
+import { Getter, Action } from "vuex-class";
 
-import IModel from '../store/Model'
+import IModel from "../store/Model";
 
 @Component({
-  name: 'TextWidget',
+  name: "TextWidget",
 
   components: {
     Widget,
     EditorContent,
-    EditorMenuBubble
-  }
+    EditorMenuBubble,
+  },
 })
 export default class TextWidget extends Widget {
-  get model () {
-    return this.getModel(this.uuid)
+  get model() {
+    return this.getModel(this.uuid);
   }
 
-  @Prop({ default: 'uuid' }) uuid!: string
+  @Prop({ default: "uuid" }) uuid!: string;
 
-  @Getter('model')
-  getModel!: (uuid: string) => Map<string, unknown>
+  @Getter("model")
+  getModel!: (uuid: string) => Map<string, unknown>;
 
-  @Action('updateModel')
-  updateModel!: (params: IModel) => void
+  @Action("updateModel")
+  updateModel!: (params: IModel) => void;
 
-  @Watch('model.text')
-  onModelChanged (val: string) {
-    this.editor?.setContent(`${val}`)
+  @Watch("model.text")
+  onModelChanged(val: string) {
+    this.editor?.setContent(`${val}`);
   }
 
-  onEditorContentChange (event: EditorUpdateEvent) {
+  onEditorContentChange(event: EditorUpdateEvent) {
     this.updateModel({
       uuid: this.uuid,
       model: {
-        text: event.getHTML()
-      }
-    })
+        text: event.getHTML(),
+      },
+    });
   }
 
   editor: Editor | undefined;
 
-  created () {
+  created() {
     this.editor = new Editor({
       content: `<p>${this.model}</p>`,
       extensions: [new Bold(), new Strike()],
-      onUpdate: this.onEditorContentChange
-    })
+      onUpdate: this.onEditorContentChange,
+    });
   }
 
-  beforeDestroy () {
-    this.editor?.destroy()
+  beforeDestroy() {
+    this.editor?.destroy();
   }
 }
 </script>

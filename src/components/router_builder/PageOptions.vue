@@ -99,7 +99,6 @@ export default class PageOptions extends Vue {
 
 <style lang="scss">
 .widget {
-  border-left: 1px solid white;
   height: 100%;
 }
 .widget-content {

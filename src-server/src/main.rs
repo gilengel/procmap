@@ -47,7 +47,7 @@ impl Fairing for CORS {
         response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
-            "PUT, POST, GET, PATCH, OPTIONS",
+            "DELETE, PUT, POST, GET, PATCH, OPTIONS",
         ));
         response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
@@ -66,15 +66,19 @@ fn main() {
         .mount(
             "/",
             routes![
+                form::single_form,
+
                 layout_api::layouts,
                 layout_api::create_layout,
                 layout_api::read_layouts,
                 layout_api::read_layout,
 
                 page_api::pages,
-                page_api::create_page,
+                page_api::create_pages,
                 page_api::read_pages,
                 page_api::read_page,
+                page_api::update_page,
+                page_api::pages_delete_options,
                 page_api::delete_page,
                 //page_api::get_page_pk_of_connection,
                 page_api::read_previous_pages_for_connection,
@@ -95,5 +99,5 @@ fn main() {
         )
         .attach(CORS())
         .launch();
-        
+
 }

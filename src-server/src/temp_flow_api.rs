@@ -55,8 +55,8 @@ pub fn read_temp_flow(
     }
 }
 
-#[options("/temp_flow/_")]
-pub fn temp_flow_put_options() {}
+#[options("/temp_flow/<_temp_flow_pk>")]
+pub fn temp_flow_put_options(_temp_flow_pk: i32) {}
 
 #[put("/temp_flow/<temp_flow_pk>", data = "<temp_flow>", format = "json")]
 pub fn update_temp_flow(

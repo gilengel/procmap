@@ -19,6 +19,7 @@ body {
 
 .q-toolbar {
   font-size: 0.5em !important;
+  background: $dark !important;
 
   min-height: 36px;
 
@@ -27,5 +28,23 @@ body {
     margin: 0;
     font-size: 2.2em;
   }
+}
+
+body {
+  background: $dark-page;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+
+.q-banner {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 4px;
 }
 </style>

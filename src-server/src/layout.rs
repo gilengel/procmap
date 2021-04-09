@@ -7,56 +7,6 @@ use chrono::NaiveDateTime;
 
 use serde_json::Value;
 
-/*
-#[derive(Serialize, Deserialize, Debug)]
-pub enum ElementType {
-    Button,
-    Text
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub enum ElementAttributeType {
-    Number,
-    String,
-    Boolean
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ElementAttribute {
-    name: String,
-    r#type: ElementAttributeType,
-    value: String
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Element {
-    uuid: String,
-    r#type: ElementType,
-    attributes: Vec<ElementAttribute>
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Column {
-    width: u16,
-
-    #[serde(default)]
-    element: Option<Element>
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Row {
-    columns: Vec<Column>
-}
-
-#[derive(FromSqlRow, AsExpression, Serialize, Deserialize, Debug, Default)]
-#[sql_type = "Json"]
-pub struct Grid {
-    rows: Vec<Row>
-}
-*/
-
-
-
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable, Identifiable)]
 #[primary_key(pk_id)]
 #[table_name = "layouts"]
@@ -68,12 +18,11 @@ pub struct Layout {
     pub data: Value,
 }
 
-#[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable)]
+#[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable, Debug)]
 #[table_name = "layouts"]
-pub struct NewLayout<'a>
+pub struct NewLayout
 {
-    pub layout_id: &'a str,
-    pub name: &'a str,
+    pub name: String,
     pub created_at: NaiveDateTime,
     pub data: Value,
 }
@@ -84,6 +33,13 @@ impl Layout {
         diesel::insert_into(layouts::table)
             .values(&layout)
             .get_result(connection)
+            .map_err(|err| err.to_string())
+    }
+
+    pub fn create_multiple(layouts: &Vec<NewLayout>, connection: &PgConnection) -> Result<Vec<Layout>, String> {
+        diesel::insert_into(layouts::table)
+            .values(layouts)
+            .get_results(connection)
             .map_err(|err| err.to_string())
     }
 

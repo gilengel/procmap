@@ -14,7 +14,7 @@ table! {
     page_id -> Text,
     name -> Text,
     created_at -> Timestamp,
-    //fk_layout_pk -> Int4,
+    data -> Nullable<Jsonb>,
   }
 }
 

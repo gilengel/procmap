@@ -1,5 +1,11 @@
 <template>
-  <Widget title="Table" @remove-widget="removeWidget">
+  <Widget
+    title="Table"
+    @remove-widget="removeWidget"
+    :resizable="resizable"
+    :draggable="draggable"
+    :deletable="deletable"
+  >
     <q-table
       v-if="model"
       :columns="columns"

@@ -8,9 +8,7 @@
 
         <div class="row">
           <div class="col">
-            <h1 class="text-h1">Create & Modify</h1>
-
-            <span class="text-subtitle1 text-white">{{ selectedPage }}</span>
+            <h1 class="text-h1">Workflows</h1>
             <q-select
               dark
               v-model="selectedPage"
@@ -22,10 +20,16 @@
 
             <span class="text-subtitle1 text-white">Change</span>
             <q-list dark bordered separator>
-              <q-item clickable v-ripple v-for="flow in flows" :key="flow.flow_pk" @click="rerouteToFlowBuilder(flow.flow_id)">
+              <q-item
+                clickable
+                v-ripple
+                v-for="flow in flows"
+                :key="flow.flow_pk"
+                @click="rerouteToFlowBuilder(flow.flow_id)"
+              >
                 <q-item-section>
-                  <q-item-label>{{flow.name}}</q-item-label>
-                  <q-item-label caption>{{flow.created_at}}</q-item-label>
+                  <q-item-label>{{ flow.name }}</q-item-label>
+                  <q-item-label caption>{{ flow.created_at }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -33,16 +37,81 @@
             <q-btn
               label="New Flow"
               color="primary"
+              style="
+                background: salmon !important;
+                color: rgb(30, 30, 30) !important;
+                margin-top: 8px;
+                margin-bottom: 8px;
+              "
               @click="createNewFlow = true"
             />
           </div>
           <div class="col">
-            <h1 class="text-h1">Exection</h1>
-          </div>
-          <div class="col">
-            <h1 class="text-h1">Options</h1>
+            <h1 class="text-h1">Pages</h1>
+            <q-list dark bordered separator>
+              <q-item
+                clickable
+                v-ripple
+                v-for="page in pages"
+                :key="page.page_pk"
+              >
+                <q-item-section @click="rerouteToPageBuilder(page.page_id)">
+                  <q-item-label>{{ page.name }}</q-item-label>
+                  <q-item-label caption>{{ page.created_at }}</q-item-label>
+                </q-item-section>
+                <q-item-section top side>
+                  <div class="text-grey-8 q-gutter-xs">
+                    <q-btn
+                      class="gt-xs"
+                      flat
+                      dense
+                      round
+                      icon="delete"
+                      @click="toggleDeletePage(page)"
+                    />
+                  </div>
+                </q-item-section>
+              </q-item>
+            </q-list>
+
+            <q-btn
+              label="New Page"
+              color="primary"
+              style="
+                background: salmon !important;
+                color: rgb(30, 30, 30) !important;
+                margin-top: 8px;
+                margin-bottom: 8px;
+              "
+              @click="createNewPage = true"
+            />
           </div>
         </div>
+
+        <q-dialog v-model="deletePage">
+          <q-card style="min-width: 350px">
+            <q-card-section>
+              <div class="text-h6">Delete Page?</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+              <p>
+                Do you really want to delete the page <b></b>? Be aware that is
+                cannot be undone.
+              </p>
+            </q-card-section>
+
+            <q-card-actions align="right" class="text-primary">
+              <q-btn flat label="Cancel" v-close-popup />
+              <q-btn
+                flat
+                label="Permanently Delete"
+                v-close-popup
+                @click="confirmDeletePage(selectedPage)"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
 
         <q-dialog v-model="createNewFlow">
           <q-card style="min-width: 350px">
@@ -70,22 +139,55 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
+
+        <q-dialog v-model="createNewPage">
+          <q-card style="min-width: 350px">
+            <q-card-section>
+              <div class="text-h6">Create New Page</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+              <q-input
+                dense
+                v-model="newPageName"
+                autofocus
+                @keyup.enter="prompt = false"
+              />
+            </q-card-section>
+
+            <q-card-actions align="right" class="text-primary">
+              <q-btn flat label="Cancel" v-close-popup />
+              <q-btn
+                flat
+                label="Create Page"
+                v-close-popup
+                @click="createPage"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
       </q-page>
     </q-page-container>
   </q-layout>
 </template>
 
 <script lang='ts'>
-import { Vue, Component, Watch } from "vue-property-decorator";
+import { Vue, Component } from "vue-property-decorator";
 
 import { v4 as uuidv4 } from "uuid";
 
 import axios from "axios";
 
-import { GetAllPages, Page } from "../models/Page";
+import { GetAllPages, NewPage, Page } from "../models/Page";
 
 import { TempFlow } from "../models/TempFlow";
-import { GetMultiple, TEMP_FLOW } from "../models/Backend";
+import {
+  GetMultiple,
+  DeleteOne,
+  TEMP_FLOW_URL,
+  PAGES_URL,
+} from "../models/Backend";
+import { CreateNowTimestamp } from "src/models/Date";
 
 @Component({
   name: "MainLayout",
@@ -94,9 +196,12 @@ import { GetMultiple, TEMP_FLOW } from "../models/Backend";
 })
 export default class MainLayout extends Vue {
   createNewFlow: boolean = false;
-  newFlowName: String = "";
+  createNewPage: boolean = false;
+  deletePage: boolean = false;
+  newFlowName: string = "";
+  newPageName: string = "";
 
-  selectedPage = null;
+  selectedPage: Page | null = null;
 
   pages: Array<Page> = [];
   flows: Array<TempFlow> = [];
@@ -106,11 +211,8 @@ export default class MainLayout extends Vue {
   }
 
   private getTempFlows() {
-    GetMultiple<TempFlow>(TEMP_FLOW)
-      .then((flows) => {
-        console.log(flows)
-        this.flows = flows
-      })
+    GetMultiple<TempFlow>(TEMP_FLOW_URL)
+      .then((flows) => (this.flows = flows))
       .catch((err) => {
         this.$q.notify({
           type: "error",
@@ -119,19 +221,9 @@ export default class MainLayout extends Vue {
       });
   }
 
-  created() {
-    this.getTempFlows()
-
+  getAllPages() {
     GetAllPages()
-      .then((pages) => {
-        this.pages = pages;
-        const pageNames = new Array<String>();
-        for (const page of pages) {
-          pageNames.push(page.name);
-        }
-
-        this.availablePages = pageNames;
-      })
+      .then((pages) => (this.pages = pages))
       .catch((reason) => {
         this.$q.notify({
           type: "error",
@@ -139,6 +231,11 @@ export default class MainLayout extends Vue {
         });
       });
   }
+  created() {
+    this.getTempFlows();
+    this.getAllPages();
+  }
+
   createFlow() {
     const hasName = this.newFlowName !== "";
 
@@ -167,8 +264,55 @@ export default class MainLayout extends Vue {
       });
   }
 
+  createPage() {
+    const hasName = this.newPageName !== "";
+
+    if (!hasName) {
+      return;
+    }
+
+    const newPage: NewPage = {
+      page_id: uuidv4(),
+      name: this.newPageName,
+      created_at: CreateNowTimestamp(),
+    };
+
+    const self = this;
+    axios
+      .post("http://localhost:8000/pages", [newPage])
+      .then(function (response) {
+        const result = JSON.parse(response.request.response) as Array<Page>;
+
+        console.assert(result.length > 0);
+        self.rerouteToFlowBuilder(result[0].page_id);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  toggleDeletePage(page: Page) {
+    this.deletePage = true;
+    this.selectedPage = Object.assign({}, this.selectedPage, page);
+  }
+
+  confirmDeletePage(page: Page) {
+    DeleteOne(PAGES_URL, page.page_pk)
+      .then(() => this.getAllPages())
+      .catch((err) => {
+        this.$q.notify({
+          type: "error",
+          message: "Could not reach backend",
+        });
+      });
+  }
+
   private rerouteToFlowBuilder(flowUuid: string) {
     this.$router.push(`page_flow_builder/${flowUuid}`);
+  }
+
+  private rerouteToPageBuilder(pageUuid: string) {
+    this.$router.push(`page_builder/${pageUuid}`);
   }
 }
 </script>

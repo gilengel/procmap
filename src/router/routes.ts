@@ -21,10 +21,10 @@ const routes: RouteConfig[] = [
 
   // Route to create forms
   {
-    path: '/ui_builder',
-    component: () => import('layouts/UiBuilderLayout.vue'),
+    path: '/page_builder',
+    component: () => import('layouts/PageBuilderLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/UiBuilder.vue') }
+      { path: '', component: () => import('pages/PageBuilder.vue') }
     ]
   },
 
@@ -32,6 +32,14 @@ const routes: RouteConfig[] = [
   {
     path: '/ui_form',
     component: () => import('layouts/UiFormLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/UiForm.vue') }
+    ]
+  },
+
+  {
+    path: '/ui_builder',
+    component: () => import('layouts/UiBuilderLayout.vue'),
     children: [
       { path: '', component: () => import('pages/UiBuilder.vue') }
     ]

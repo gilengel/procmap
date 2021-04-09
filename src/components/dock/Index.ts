@@ -28,6 +28,7 @@ function install(editor: NodeEditor, nodes: Array<MetaFlowCategory>) {
     editor.view.area.pointermove(e as unknown as PointerEvent)
 
     const defaultData = component.defaultData ? component.defaultData : {}
+
     createNode(component.component, editor.view.area.mouse, defaultData).then((node: Node) => {
       editor.addNode(node)
 
@@ -35,6 +36,7 @@ function install(editor: NodeEditor, nodes: Array<MetaFlowCategory>) {
     }).catch(e => {
       console.error(e)
     })
+
   })
 }
 

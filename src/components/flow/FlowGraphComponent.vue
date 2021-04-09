@@ -56,8 +56,8 @@ export default class FlowGraphComponent extends Vue {
     this.editor = new Rete.NodeEditor("demo@0.1.0", container as HTMLElement);
 
     this.editor.use(ConnectionPlugin);
-    this.editor.use(VueRenderPlugin, { store } as unknown as void);
-    this.editor.use(DockPlugin, this.nodes as unknown as void);
+    this.editor.use(VueRenderPlugin, ({ store } as unknown) as void);
+    this.editor.use(DockPlugin, (this.nodes as unknown) as void);
   }
 
   createCustomEditorEvents() {
@@ -97,7 +97,7 @@ export default class FlowGraphComponent extends Vue {
         node.data.uuid = uuidv4();
       }
 
-      this.graph.push(node);
+      //this.graph.push(node);
 
       this.$emit("add-widget", node);
       EventBus.$emit(FLOW_NODE_ADDED, node);
@@ -105,16 +105,20 @@ export default class FlowGraphComponent extends Vue {
       return node;
     });
 
-    this.editor.on(
-      ["process", "nodecreated", "connectioncreated", "noderemoved"],
-      async () => {
-        const data = this.editor.toJSON();
-        await this.engine.abort();
-        await this.engine.process(data);
+    this.editor.on(["process", "nodecreated", "noderemoved"], async () => {
+      const data = this.editor.toJSON();
+      await this.engine.abort();
+      await this.engine.process(data);
 
-        EventBus.$emit(FLOW_GRAPH_UPDATED, data);
-      }
-    );
+      EventBus.$emit(FLOW_GRAPH_UPDATED, data);
+    });
+    this.editor.on(["connectioncreated"], async () => {
+      const data = this.editor.toJSON();
+      await this.engine.abort();
+      await this.engine.process(data);
+
+      EventBus.$emit(FLOW_GRAPH_MANUALLY_CHANGED, this.editor.toJSON());
+    });
 
     this.editor.on(["nodeselected"], (node: ReteNode) => {
       EventBus.$emit(FLOW_NODE_SELECTED, node);
@@ -133,7 +137,7 @@ export default class FlowGraphComponent extends Vue {
       EventBus.$emit(FLOW_GRAPH_MANUALLY_CHANGED, this.editor.toJSON());
     });
 
-    this.editor.on(["click"], (args: {e: Event, container: HTMLElement}) => {
+    this.editor.on(["click"], (args: { e: Event; container: HTMLElement }) => {
       this.editor.selected.list = [];
     });
   }

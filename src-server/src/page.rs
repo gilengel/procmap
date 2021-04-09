@@ -5,7 +5,7 @@ use diesel::RunQueryDsl;
 use diesel::{self, QueryDsl};
 use diesel::expression_methods::ExpressionMethods;
 use serde::{Deserialize, Serialize};
-
+use serde_json::Value;
 use diesel::sql_types::Text;
 
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable, Identifiable)]
@@ -16,7 +16,7 @@ pub struct Page {
     pub page_id: String,
     pub name: String,
     pub created_at: NaiveDateTime,
-    //pub fk_layout_pk: i32,
+    pub data: Option<Value>,
 }
 
 #[derive(AsChangeset, Serialize, Deserialize, Queryable, Insertable)]
@@ -26,7 +26,7 @@ pub struct NewPage<'a> {
     pub name: &'a str,
     pub created_at: NaiveDateTime,
 }
-#[derive(QueryableByName, Serialize, Deserialize)]
+#[derive(QueryableByName, Serialize, Deserialize, Debug)]
 pub struct PageConnectionIds {
     #[sql_type = "Text"]
     outgoing_id: String,
@@ -60,6 +60,22 @@ impl Page {
             Err(err) => Err(err.to_string()),
         }
     }
+
+    pub fn read_by_page_id(
+        page_id: String,
+        connection: &PgConnection,
+    ) -> Result<Option<Page>, String> {
+        match pages::table
+            .find(pages::page_pk)
+            .filter(pages::page_id.eq_any(vec![page_id]))
+            .first(connection)
+        {
+            Ok(page) => Ok(Some(page)),
+            Err(diesel::result::Error::NotFound) => Ok(None),
+            Err(err) => Err(err.to_string()),
+        }
+    }
+
 
     pub fn read_latest(page_id: String, connection: &PgConnection) -> Result<Option<Page>, String> {
         match pages::table
@@ -108,59 +124,36 @@ impl Page {
     pub fn read_following_page_ids(
         page_id: String,
         connection: &PgConnection,
-    ) -> Result<Option<Vec<PageConnectionIds>>, String> {
+    ) -> Result<Vec<PageConnectionIds>, String> {
         // TODO: 2021-04-05 Diesel does not currently supports aliases therefore we need to use a raw query for the time being since
         // we combine the same table (pages) twice in the query
 
         let query = format!("SELECT i.page_id AS incoming_id, i.name AS incoming_name, o.page_id AS outgoing_id, o.name AS outgoing_name FROM pages AS i, pages AS o, single_page_connection AS c WHERE i.page_pk = c.incoming_page AND o.page_pk = c.outgoing_page AND i.page_id = '{}'", page_id);
 
-
-        match diesel::sql_query(query).load::<PageConnectionIds>(connection) {
-            Ok(a) => Ok(Some(a)),
-            Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(err) => Err(err.to_string()),
-        }
+        diesel::sql_query(query).load::<PageConnectionIds>(connection)
+        .map_err(|err| err.to_string())
     }
 
     pub fn read_previous_page_ids(
         page_id: String,
         connection: &PgConnection,
-    ) -> Result<Option<Vec<PageConnectionIds>>, String> {
+    ) -> Result<Vec<PageConnectionIds>, String> {
         // TODO: 2021-04-05 Diesel does not currently supports aliases therefore we need to use a raw query for the time being since
         // we combine the same table (pages) twice in the query
 
         let query = format!("SELECT i.page_id AS incoming_id, i.name AS incoming_name, o.page_id AS outgoing_id, o.name AS outgoing_name FROM pages AS i, pages AS o, single_page_connection AS c WHERE i.page_pk = c.incoming_page AND o.page_pk = c.outgoing_page AND o.page_id = '{}'", page_id);
 
-        match diesel::sql_query(query).load::<PageConnectionIds>(connection) {
-            Ok(a) => Ok(Some(a)),
-            Err(diesel::result::Error::NotFound) => Ok(None),
+        diesel::sql_query(query).load::<PageConnectionIds>(connection)
+        .map_err(|err| err.to_string())
+    }
+
+    pub fn update(_: i32, page: Page, connection: &PgConnection) -> Result<Option<Page>, String> {
+        let update_result = diesel::update(&page).set(&page).execute(connection);
+
+        match update_result {
+            Err(diesel::result::Error::NotFound) | Ok(0) => Ok(None),
             Err(err) => Err(err.to_string()),
+            Ok(_) => Ok(Some(page)),
         }
     }
 }
-
-/*/
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  mod db;
-
-  #[test]
-  fn create_valid_page() {
-
-    use crate::page::{NewPage};
-    use chrono::{NaiveDate, NaiveDateTime};
-    let dt: NaiveDateTime = NaiveDate::from_ymd(2016, 7, 8).and_hms(9, 10, 11);
-
-    db::connect();
-
-
-    let page = NewPage {
-     page_id: "",
-     name: "",
-     created_at: dt
-    };
-  }
-}
-*/

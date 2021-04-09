@@ -1,5 +1,11 @@
 <template>
-  <Widget title="Form" @remove-widget="removeWidget">
+  <Widget
+    title="Form"
+    @remove-widget="removeWidget"
+    :resizable="resizable"
+    :draggable="draggable"
+    :deletable="deletable"
+  >
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
       <div v-for="(row, row_index) in model.rows" class="row" :key="row_index">
         <div

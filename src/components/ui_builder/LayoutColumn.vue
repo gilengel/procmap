@@ -1,177 +1,70 @@
 <template>
-    <div v-if="editable == true"
-      @dragover="drag"
-      @drop="drop(row, column, $event)"
-      @mouseover="hover = true"
-      @mouseleave="hover = false"
+  <div class="row">
+    <div class="col" @contextmenu="showMenu($event)">1</div>
+    <div class="col">2</div>
+    <div class="col">3</div>
+
+    <q-menu
+      v-model="menuVisible"
+      anchor="top left"
+      self="top left"
+      :offset="menuOffset"
     >
-      <div
-        :class="{ 'is-active': hover }"
-        class="menububble shadow-3 rounded-borders"
-      >
-        <q-btn
-          flat
-          stack
-          color="white"
-          label="Split"
-          icon="las la-trash"
-          @click="deleteColumn(row, column)"
-        />
-        <q-btn
-          flat
-          stack
-          color="white"
-          label="Split"
-          icon="las la-columns"
-          @click="splitColumn(row, column)"
-          :disable="width < 2 && width != 'auto'"
-        />
-        <q-btn
-          flat
-          stack
-          color="white"
-          label="Join Left"
-          icon="las la-object-group"
-          @click="joinColumnLeft(row, column)"
-          :disable="column == 0"
-        />
-        <q-btn
-          flat
-          stack
-          color="white"
-          label="Join Right"
-          icon="las la-object-group"
-          @click="joinColumnRight(row, column)"
-          :disable="column == maxColumn - 1"
-        />
-        <q-btn
-          flat
-          stack
-          color="white"
-          label="Add Right Column"
-          icon="las la-plus-square"
-          @click="addColumn(row, column)"
-          :disable="column == maxColumn - 1"
-        />
-        <q-btn
-          flat
-          stack
-          color="white"
-          label="Add Bottom Row"
-          icon="las la-plus-square"
-          @click="addRow(row + 1)"
-        />
-      </div>
+      <q-list style="width: 200px">
+        <q-item clickable v-close-popup>
+          <q-item-section avatar>
+            <q-icon color="primary" name="las la-columns" />
+          </q-item-section>
 
-      <slot />
-    </div>
+          <q-item-section>Split</q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup>
+          <q-item-section avatar>
+            <q-icon color="primary" name="las la-trash" />
+          </q-item-section>
 
-    <!-- Static slot -->
-    <div v-else>
-      <slot />
-    </div>
+          <q-item-section>Delete</q-item-section>
+        </q-item>
+      </q-list>
+    </q-menu>
+  </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop } from "vue-property-decorator";
 
 @Component({
-  name: 'LayoutColumn'
+  name: "LayoutColumn",
 })
 export default class LayoutColumn extends Vue {
-  @Prop() editable!: boolean;
-  @Prop() row!: number;
-  @Prop() column!: number;
-  @Prop() width!: number | string;
+  menuVisible = false;
+  value = 0;
 
-  @Prop() maxColumn!: number
-  @Prop() maxRow!: number
+  menuOffset = [0, 0];
 
-  @Prop() drag?: (ev: Event) => void;
-  @Prop() drop?: (rowIndex: number, columIndex: number, ev: DragEvent) => void;
+  showMenu(e: MouseEvent) {
+    e.preventDefault();
 
-  @Prop() splitColumn?: (row: number, column: number) => void;
-  @Prop() joinColumnRight?: (row:number, column: number) => void;
-  @Prop() joinColumnLeft?: (row:number, column: number) => void;
+    const parentBoundingBox = (e.target as HTMLElement).getBoundingClientRect();
+    Vue.set(this.menuOffset, 0, -(e.clientX - parentBoundingBox.x) + 100);
+    Vue.set(this.menuOffset, 1, -(e.clientY - parentBoundingBox.y) + 16);
 
-  @Prop() addColumn?: (column: number) => void;
-  @Prop() addRow?: (row:number) => void;
-
-  @Prop() deleteColumn?: (row:number, column: number) => void;
-
-  hover = false;
+    this.menuVisible = true;
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-  div {
-    position: relative;
+.row {
+  height: 100%;
+
+  .col {
+    border: solid 1px salmon;
+    transition: background 0.3s;
   }
 
-
-.menububble {
-  position: absolute;
-  display: flex;
-  z-index: 20;
-  background: $dark;
-  border-radius: 5px;
-  top: 0;
-  left: 0;
-  transform: translateY(-100%);
-
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s, visibility 0.2s;
-
-  &.is-active {
-    opacity: 1;
-    visibility: visible;
+  .col:hover {
+    background: rgba(salmon, 0.4);
   }
-
-  > button {
-    display: inline-flex;
-    background: transparent;
-    border: 0;
-    color: white;
-
-    border-radius: 3px;
-    cursor: pointer;
-
-    &:hover {
-      color: rgba(white, 0.1);
-    }
-
-    &.is-active {
-      color: $primary;
-    }
-  }
-
-  &__form {
-    display: flex;
-    align-items: center;
-  }
-
-  &__input {
-    font: inherit;
-    border: none;
-    background: transparent;
-    color: white;
-  }
-
-  .block {
-    font-size: 0.8em;
-  }
-}
-
-$indicator: 16px;
-.menububble::after {
-  content: "";
-  width: $indicator;
-  height: $indicator;
-  background: $dark;
-  left: 50%;
-  bottom: -$indicator / 2;
-  position: absolute;
-  transform: translate(-$indicator / 2, 0em) rotate(45deg);
 }
 </style>

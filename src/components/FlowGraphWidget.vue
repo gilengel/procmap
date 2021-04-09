@@ -1,12 +1,23 @@
 <template>
-  <Widget title="Flow" @remove-widget="removeWidget">
+  <Widget
+    title="Flow"
+    @remove-widget="removeWidget"
+    :resizable="resizable"
+    :draggable="draggable"
+    :deletable="deletable"
+  >
     <q-splitter v-model="leftToolbar" style="height: 100%">
       <template #before>
         <FlowGraphNodesList :nodes="nodes" />
       </template>
 
       <template #after>
-        <FlowGraphComponent :graph="graph" :nodes="nodes" v-html="" v-on="$listeners" />
+        <FlowGraphComponent
+          :graph="graph"
+          :nodes="nodes"
+          v-html=""
+          v-on="$listeners"
+        />
       </template>
     </q-splitter>
   </Widget>
@@ -20,7 +31,7 @@ import { MetaFlowCategory } from "./flow/Index";
 
 import FlowGraphNodesList from "./FlowGraphNodesList.vue";
 import Widget from "./Widget.vue";
-import { Node as ReteNode } from 'rete'
+import { Node as ReteNode } from "rete";
 
 @Component({
   name: "FlowGraphWidget",

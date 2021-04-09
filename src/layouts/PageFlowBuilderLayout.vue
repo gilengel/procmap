@@ -68,13 +68,21 @@ import { MetaFlowCategory } from "../components/flow/Index";
 
 import PageOptions from "../components/router_builder/PageOptions.vue";
 import { TempFlow } from "../models/TempFlow";
-import { GetOne, UpdateOne } from "../models/Backend";
+import { GetOne, UpdateOne, PostMultiple, PostOne } from "../models/Backend";
 import { Node as ReteNode } from "rete";
 import { NodeData } from "rete/types/core/data";
+import { FLOW_ROUTER_START, FLOW_ROUTER_END } from './RouterFlowModel';
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+
+import { CreateNowTimestamp } from '../models/Date'
+
+import { Page, NewPage } from '../models/Page'
+
+
 
 import { walkGraph, convertReteNode2NewPage } from "./FlowGraphConverter";
 
-import { NewPage } from "../models/Page";
 
 import {
   StartFlowComponent,
@@ -88,7 +96,7 @@ import EventBus, {
   FLOW_GRAPH_UPDATED,
   FLOW_GRAPH_IMPORTED,
   FLOW_NODE_SELECTED,
-  FLOW_GRAPH_MANUALLY_CHANGED
+  FLOW_GRAPH_MANUALLY_CHANGED,
 } from "../EventBus";
 
 const routingNodes: Array<MetaFlowCategory> = [
@@ -185,18 +193,18 @@ export default class RouterLayout extends Vue {
   };
 
   persistFlowModel(node: JSON) {
-      this.$q.notify({
-        type: "warning",
-        message: "updated",
-      });
+    this.$q.notify({
+      type: "warning",
+      message: "updated",
+    });
 
-      const model = this.graphModel;
+    const model = this.graphModel;
 
-      if (model) {
-        model.data = node;
+    if (model) {
+      model.data = node;
 
-        UpdateOne<TempFlow>(`temp_flow/${model.flow_pk}`, model);
-      }
+      UpdateOne<TempFlow>(`temp_flow/${model.flow_pk}`, model);
+    }
   }
 
   mounted() {
@@ -204,7 +212,9 @@ export default class RouterLayout extends Vue {
       .then((flow) => {
         this.graphModel = flow;
 
-        EventBus.$emit(FLOW_GRAPH_IMPORTED, flow.data);
+        if (flow.data.id && flow.data.nodes) {
+          EventBus.$emit(FLOW_GRAPH_IMPORTED, flow.data);
+        }
       })
       .catch((error) => {
         this.triggerError(error);
@@ -227,9 +237,7 @@ export default class RouterLayout extends Vue {
 
       this.selectedNode = node.data.uuid as string;
     });
-    EventBus.$on(FLOW_NODE_REMOVED, (node: JSON) => {
-
-    })
+    EventBus.$on(FLOW_NODE_REMOVED, (node: JSON) => {});
     EventBus.$on(FLOW_GRAPH_MANUALLY_CHANGED, (node: JSON) => {
       this.persistFlowModel(node);
     });
@@ -245,31 +253,90 @@ export default class RouterLayout extends Vue {
       message: message,
     });
   }
+
+  walkGraph(graph: Array<ReteNode>) {
+    const startNode = graph.find((node) => node.name === FLOW_ROUTER_START);
+    if (!startNode) {
+      throw "Persisting aborted: Flow graph has no start point";
+    }
+
+    const endNode = graph.find((node) => node.name === FLOW_ROUTER_END);
+    if (!endNode) {
+      //throw "Persisting aborted: Flow graph has no end point";
+    }
+
+    const nodes = new Array<NewPage>();
+    for (const node of graph) {
+      node.data.walked = undefined;
+      nodes.push(node.data.page as NewPage);
+    }
+
+    PostMultiple<any>(`pages`, nodes)
+      .then((result: any[]) => {
+        for (const node of graph) {
+          const dbResult = result.find(
+            (element) => element.page_id === node.data.uuid
+          );
+          node.data.db_id = dbResult.page_pk;
+        }
+
+        this.walkNode(startNode);
+
+        console.log(":)");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  walkNode(node: ReteNode) {
+    if (node.data.walked) {
+      return;
+    }
+
+    node.data.walked = true;
+
+    const output = node.outputs.get("page");
+
+    if (output) {
+      const incoming = node;
+
+      for (const connection of output.connections) {
+        const outgoing = connection.input.node as ReteNode;
+
+        this.persistNodeConnection(incoming, outgoing);
+        this.walkNode(connection.input.node as ReteNode);
+      }
+    }
+  }
+
+  persistNodeConnection(incoming: ReteNode, outgoing: ReteNode) {
+    const dbConnection = this.convertConnectionFromReteToDB(incoming, outgoing);
+
+    PostOne<any>(`page_connection`, dbConnection)
+      .then((result: any) => {
+        console.log("yiha");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  convertConnectionFromReteToDB(incoming: ReteNode, outgoing: ReteNode) {
+    const incomingPage = incoming.data.db_id;
+    const outgoingPage = outgoing.data.db_id;
+
+    return {
+      connection_id: uuidv4(),
+      created_at: CreateNowTimestamp(),
+      incoming_page: incomingPage,
+      outgoing_page: outgoingPage,
+    };
+  }
 }
 </script>
 
 <style lang='scss'>
-body {
-  background: $dark-page;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-.q-toolbar {
-  background: $dark !important;
-}
-
-.q-banner {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 4px;
-}
-
 .vue-grid-item .resizing {
   opacity: 0.9;
 }

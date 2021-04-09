@@ -1,7 +1,7 @@
 export interface NewPage {
   page_id: string,
   name: string,
-  created_at: number
+  created_at: string
 }
 
 export interface UpdateNewPage {
@@ -11,6 +11,7 @@ export interface UpdateNewPage {
 
 export interface Page extends NewPage {
   page_pk: number,
+  data: {}
 }
 
 export interface NewPageConnection {
