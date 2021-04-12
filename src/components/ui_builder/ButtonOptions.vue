@@ -2,51 +2,41 @@
   <div class="column option-column">
     <h1 class="text-subtitle1">Button</h1>
 
-    <div class="preview">
-      <q-btn dark :flat="!isHighlightedInput" :label="labelInput" :icon="previewIcon" />
-    </div>
-
+    <Option label="Label">
     <q-input dark placeholder="Label" v-model="labelInput" />
+    </Option>
 
-    <label>Type</label>
-    <q-btn-toggle
-      flat
-      v-model="typeInput"
-      toggle-color="primary"
-      :options="[
-        {label: 'Link', value: 'a'},
-        {label: 'Button', value: 'button'},
-        {label: 'Submit', value: 'submit'},
-        {label: 'Reset', value: 'reset'},
-      ]"
-    />
-
-    <label>Display Highlighted</label>
-    <q-toggle v-model="isHighlightedInput" color="accent" />
-
-    <label>Display Icon</label>
-    <q-toggle v-model="hasIconInput" color="accent" />
-    <div v-if="hasIconInput">
-      <div v-for="group in groupedIcons">
-        <h2 class="text-subtitle2">{{ group.label }}</h2>
-
-        <q-icon
-          :name="icon"
-          v-for="(icon, icon_index) in group.icons"
-          :key="icon_index"
-          :class="{ selected: selected(icon) }"
-          @click="setIcon(icon)"
+    <Option label="Type">
+        <q-option-group
+          dark
+          color="secondary"
+          :options="buttonOptions"
+          label="Notifications"
+          type="radio"
+          v-model="typeInput"
         />
-      </div>
-    </div>
+    </Option>
+
+    <Option label="Highlighted">
+      <q-toggle v-model="isHighlightedInput" color="secondary" label="Highlighed?" />
+    </Option>
+
+    <Option label="With Icon?">
+      <q-toggle v-model="hasIconInput" color="secondary" label="With Icon?" />
+    </Option>
+    
+    <Option label="Icon">
+        {{iconInput}}
+        <IconList v-for="group in groupedIcons" v-if="groupedIcons" :group="group" :icon="iconInput" />
+    </Option>
   </div>
 </template>
 
 <script lang="ts">
 import { Component } from "vue-property-decorator";
 import ButtonElement from "./ButtonElement.vue";
-
-
+import IconList from "./IconList.vue";
+import Option from "./Option.vue";
 
 export interface Button {
   identifier: string;
@@ -57,10 +47,75 @@ export interface Button {
 }
 
 @Component({
-  name: "ButtonOptions"
+  name: "ButtonOptions",
+
+  components: {
+    IconList,
+    Option,
+  },
 })
 export default class ButtonOptions extends ButtonElement {
-   set typeInput(value: string) {
+  buttonOptions = [];
+
+  mounted() {
+    this.buttonOptions.push({ label: "Link", value: "a" });
+    this.buttonOptions.push({ label: "Button", value: "button" });
+    this.buttonOptions.push({ label: "Submit", value: "submit" });
+    this.buttonOptions.push({ label: "Reset", value: "reset" });
+
+    this.groupedIcons.push({
+      label: "Automotive",
+      icons: [
+        "las la-car",
+        "las la-car-side",
+        "las la-truck",
+        "las la-ambulance",
+        "las la-charging-station",
+        "las la-gas-pump",
+        "las la-shuttle-van",
+        "las la-bus",
+        "las la-car-battery",
+        "las la-tachometer-alt",
+        "las la-truck-pickup",
+        "las la-car-crash",
+        "las la-motorcycle",
+        "las la-taxi",
+      ],
+    });
+
+    this.groupedIcons.push({
+      label: "Chat",
+      icons: [
+        "las la-comment-alt",
+        "las la-comments",
+        "las la-comment-dots",
+        "las la-phone-alt",
+        "las la-phone-slash",
+        "las la-quote-left",
+        "las la-quote-right",
+        "las la-video",
+        "las la-video-slash",
+      ],
+    });
+
+    this.groupedIcons.push({
+      label: "Code",
+      icons: [
+        "las la-archive",
+        "las la-code",
+        "las la-microchip",
+        "las la-barcode",
+        "las la-code-branch",
+        "las la-project-diagram",
+        "las la-qrcode",
+        "las la-terminal",
+        "las la-bug",
+        "las la-laptop-code",
+      ],
+    });
+  }
+
+  set typeInput(value: string) {
     this.setValueOfAttribute("type", value);
   }
 
@@ -109,70 +164,15 @@ export default class ButtonOptions extends ButtonElement {
   }
 
 
-  selected(icon: string) {
-    return icon === this.iconInput;
-  }
 
-  setIcon(icon: string) {
-    this.iconInput = icon;
-  }
-
-  groupedIcons = [
-    {
-      label: "Automotive",
-      icons: [
-        "las la-car",
-        "las la-car-side",
-        "las la-truck",
-        "las la-ambulance",
-        "las la-charging-station",
-        "las la-gas-pump",
-        "las la-shuttle-van",
-        "las la-bus",
-        "las la-car-battery",
-        "las la-tachometer-alt",
-        "las la-truck-pickup",
-        "las la-car-crash",
-        "las la-motorcycle",
-        "las la-taxi"
-      ]
-    },
-    {
-      label: "Chat",
-      icons: [
-        "las la-comment-alt",
-        "las la-comments",
-        "las la-comment-dots",
-        "las la-phone-alt",
-        "las la-phone-slash",
-        "las la-quote-left",
-        "las la-quote-right",
-        "las la-video",
-        "las la-video-slash"
-      ]
-    },
-    {
-      label: "Code",
-      icons: [
-        "las la-archive",
-        "las la-code",
-        "las la-microchip",
-        "las la-barcode",
-        "las la-code-branch",
-        "las la-project-diagram",
-        "las la-qrcode",
-        "las la-terminal",
-        "las la-bug",
-        "las la-laptop-code"
-      ]
-    }
-  ];
+  groupedIcons = [];
 }
 </script>
 
 <style lang="scss">
 .option-column {
   padding-left: 1em;
+  color: white;
 
   .preview {
     display: flex;
@@ -187,7 +187,5 @@ export default class ButtonOptions extends ButtonElement {
   margin: 0.3rem;
 }
 
-.selected {
-  color: $accent;
-}
+
 </style>

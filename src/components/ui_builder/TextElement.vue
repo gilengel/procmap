@@ -26,19 +26,15 @@
 
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component';
-import { Drag } from '../../mixins/Drag'
-import { Drop } from '../../mixins/Drop'
+import BaseElement from './BaseElement.vue';
 
 @Component({
   name: 'TextElement'
 })
-export default class TextElement extends mixins(Drag, Drop) {
+export default class TextElement extends BaseElement {
   @Prop({default: false}) editable!: boolean;
 
   @Prop() value!: string;
-
-  @Prop({default: false}) withLabel!: boolean;
 
   get valueInput() {
     return this.value;
@@ -48,18 +44,24 @@ export default class TextElement extends mixins(Drag, Drop) {
     this.$emit('update:value', val)
   }
 
+  get withLabel(): boolean {
+      return this.getValueOfAttribute('withLabel')
+  }
+
+  set withLabel(value: boolean) {
+      this.setValueOfAttribute('withLabel', value)
+  }    
+
   get label(): string {
-    return "LABEL"
-    //return this.getValueOfAttribute('label')
+    return this.getValueOfAttribute('label')
   }
 
   get type(): String {
-    return "text";
-    //return this.getValueOfAttribute('type')
+    return this.getValueOfAttribute('type')
   }
 
   get variable(): String {
-    //return this.getValueOfAttribute('variable')
+    return this.getValueOfAttribute('variable')
   }
 
   hover = false

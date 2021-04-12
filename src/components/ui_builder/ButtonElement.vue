@@ -13,38 +13,31 @@
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component';
-import { Drag } from '../../mixins/Drag'
-import { Drop } from '../../mixins/Drop'
+import BaseElement from './BaseElement.vue';
 
 @Component({
   name: 'ButtonElement'
 })
-export default class ButtonElement extends mixins(Drag, Drop) {
+export default class ButtonElement extends BaseElement {
 
   get type(): String {
-    return "button"
-    //return this.getValueOfAttribute('type')
+    return this.getValueOfAttribute('type')
   }
 
   get label(): String {
-    return "LABEL"
-    //return this.getValueOfAttribute('label')
+    return this.getValueOfAttribute('label')
   }
 
   get isHighlighted(): boolean {
-    return true
-    //return this.getValueOfAttribute('isHighlighted')
+    return this.getValueOfAttribute('isHighlighted')
   }
 
   get icon(){
-    return 'las la-paperclip';
-    //return this.getValueOfAttribute('icon')
+    return this.getValueOfAttribute('icon')
   }
 
   get hasIcon(){
-    return true;
-    //return this.getValueOfAttribute('hasIcon')
+    return this.getValueOfAttribute('hasIcon')
   }
 
   hover = false;
@@ -61,5 +54,10 @@ export default class ButtonElement extends mixins(Drag, Drop) {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>

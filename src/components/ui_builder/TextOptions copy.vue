@@ -1,11 +1,6 @@
 <template>
   <div class="column option-column">
     <h1 class="text-subtitle1">Text</h1>
-      <q-toggle
-        v-model="withLabel"
-        label="With Label"
-        color="secondary"
-      />
 
     <q-input
       dark
@@ -27,7 +22,7 @@
       v-model="typeGroup"
       :options="typeOptions"
       dark
-      color="secondary"
+      color="yellow"
     />
   </div>
 </template>
@@ -84,7 +79,6 @@ export default class TextOptions extends TextElement {
   onChildChanged(val: String, oldVal: String) {
     this.setValueOfAttribute("type", val);
   }
-
 
   set labelInput(value: string) {
     this.setValueOfAttribute("label", value);

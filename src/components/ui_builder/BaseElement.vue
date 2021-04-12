@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ElementAttribute, ElementAttributeType } from 'src/layouts/FormModel'
+import { Element, ElementAttribute, ElementAttributeType } from 'src/layouts/FormModel'
 import { Vue, Prop } from 'vue-property-decorator'
 import { Getter, Action } from 'vuex-class'
 import IModel from '../../store/Model'
@@ -14,9 +14,13 @@ export default class BaseElement extends Vue {
   @Action('updateModel')
   updateModel!: (params: IModel) => void
 
+/*
   get model () {
     return this.getModel(this.uuid)
   }
+  */
+
+  @Prop() model!: Element;
 
   protected getValueOfAttribute(name: String): any {
     const element = this.model as unknown as Element;
@@ -30,6 +34,12 @@ export default class BaseElement extends Vue {
   }
 
   protected setValueOfAttribute(name: String, value: any): any {
+      const attribute = this.model.attributes.find(attribute => attribute.name === name);
+
+      if(attribute) {
+        attribute.value = value;
+      }
+      /*
     let deepCopy = copy(this.model);
 
     const element = (deepCopy as unknown) as Element;
@@ -43,6 +53,7 @@ export default class BaseElement extends Vue {
       uuid: this.uuid,
       model: deepCopy
     });
+    */
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="layout-col">
     <div class="actions">
-      <q-btn dark flat round color="secondary" icon="las la-plus">
+      <q-btn dark flat round color="white" icon="las la-plus">
       <q-menu dark>
         <q-list style="min-width: 100px">
           <q-item clickable v-close-popup @click="addElement('Text')">
@@ -15,23 +15,27 @@
         </q-list>
       </q-menu>
       </q-btn>
-      <q-btn dark flat round color="secondary" icon="las la-columns" @click="splitColumn(columnIndex)" />
-      <q-btn dark flat round color="secondary" icon="las la-trash-alt" @click="deleteColumn(columnIndex)" />
+      <q-btn dark flat round color="white" icon="las la-columns" @click="splitColumn(columnIndex)" />
+      <q-btn dark flat round color="white" icon="las la-trash-alt" @click="deleteColumn(columnIndex)" />
 
 
     </div>
 
     <TextElement
+      @click.native="click(model.element)"
       draggable
       dataKey="itemId"
+      :model="model.element"
       :dataValue="model.element.type"
       editable="true"
       v-if="model && model.element && model.element.type === 'Text'"
     />
 
     <ButtonElement
+      @click.native="click(model.element)"
       draggable
       dataKey="itemId"
+      :model="model.element"
       :dataValue="model.element.type"
       editable="true"
       v-if="model && model.element && model.element.type === 'Button'"
@@ -74,6 +78,8 @@ export default class LayoutColumn extends Vue {
 
   @Prop() model!: Column;
 
+  @Prop() click!: (element: Element) => void;
+
   private addElement(widgetType: ElementType): Element {
     const widgetAttributes = new Array<ElementAttribute>();
     const uuid = uuidv4();
@@ -106,7 +112,6 @@ export default class LayoutColumn extends Vue {
     }
 
     if (widgetType === ElementType.Text) {
-      console.log("TEXT")
       widgetAttributes.push({
         name: "variable",
         type: ElementAttributeType.String,
@@ -120,8 +125,13 @@ export default class LayoutColumn extends Vue {
       widgetAttributes.push({
         name: "type",
         type: ElementAttributeType.String,
-        value: "text",
+        value: "date",
       });
+      widgetAttributes.push({
+          name: "withLabel",
+          type: ElementAttributeType.Boolean,
+          value: true
+      })
     }
 
     this.model.element = {
@@ -155,15 +165,17 @@ export default class LayoutColumn extends Vue {
   }
 
   > .actions {
-    /*
+    
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    top: 0;    
+    left: 50%;
     z-index: 1;
     width: auto;
-    */
 
+    transform: translate(-50%, -2px);
+
+    padding: 0;    
+    background: $secondary;
     visibility: collapse;
 
     display: flex;
@@ -174,9 +186,21 @@ export default class LayoutColumn extends Vue {
 }
 
 .layout-col:hover {
-
+    outline: solid 2px $secondary;
 }
+/*
+.layout-col:hover::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
+    content: ' ';
+    filter: blur(4px);
+    background: salmon;
+}
+*/
 .layout-col:hover > .actions {
   visibility: visible;
 }

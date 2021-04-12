@@ -19,6 +19,7 @@
     </div>
     <div class="row" ref="container">
       <LayoutColumn
+        :click="click"
         dataKey="itemId"
         :columnIndex="col_index"
         :rowIndex="rowIndex"
@@ -43,8 +44,6 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
-import { mixins } from "vue-class-component";
-import { Drag } from "../../mixins/Drag";
 
 import LayoutColumn from "./LayoutColumn.vue";
 
@@ -86,6 +85,8 @@ export default class LayoutRow extends Vue {
   @Prop() model!: Row;
 
   @Prop() deleteRow!: (i: number) => void
+
+  @Prop() click!: (element: Element) => void;
 
   // Individual column sized
   colSizes = new Array<number>();

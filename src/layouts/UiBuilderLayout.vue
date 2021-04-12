@@ -6,31 +6,7 @@
           <q-toolbar-title>Page Builder</q-toolbar-title>
         </q-toolbar>
         <div class="row">
-          <!--
-          <div class="col-2">
-            <draggable
-              class="q-list q-list--bordered q-list--separator q-list--dark"
-              :list="pageElements"
-              :group="{ name: 'people', pull: 'clone', put: false }"
-              ghost-class="ghost"
-              @change="log"
-            >
-              <q-item
-                clickable
-                v-ripple
-                v-for="element in pageElements"
-                :key="element.label"
-              >
-                <q-item-section avatar>
-                  <q-icon color="white" :name="element.icon" />
-                </q-item-section>
-
-                <q-item-section>{{ element.label }}</q-item-section>
-              </q-item>
-            </draggable>
-          </div>
-          -->
-          <div class="col-12">
+          <div class="col-10">
             <draggable
               class="dragArea list-group"
               @change="log"
@@ -46,6 +22,7 @@
                   draggable
                   dataKey="itemId"
                   dataValue="Row"
+                  :click="clickOnElement"
                   :deleteRow="deleteRow"
                   :dropTargetClass="['drop-zone', 'layout-row-divider']"
                   :model="row"
@@ -56,8 +33,21 @@
               </transition-group>
             </draggable>
           </div>
-        </div>
+          <div class="col-2 options-container" ref="options_container">
+            <ButtonOptions
+              :uuid="selectedElement.uuid"
+              :model="selectedElement"
+              v-if="selectedElement && selectedElement.type === 'Button'"
+            />
 
+            <TextOptions
+              :uuid="selectedElement.uuid"
+              :model="selectedElement"
+              v-if="selectedElement && selectedElement.type === 'Text'"
+            />
+          </div>
+        </div>          
+        </div>
         <q-page-sticky position="bottom-right" :offset="[18, 18]">
           <q-btn fab icon="add" color="secondary" @click="addRow" />
         </q-page-sticky>
@@ -68,24 +58,15 @@
 
 <script lang='ts'>
 import { Vue, Component } from "vue-property-decorator";
-import { mixins } from "vue-class-component";
-import { GridLayout, GridItem } from "vue-grid-layout";
-import Layout from "components/ui_builder/Layout.vue";
 import LayoutRow from "components/ui_builder/LayoutRow.vue";
-import LayoutRowDivider from "components/ui_builder/LayoutRowDivider.vue";
-import LayoutColumn from "components/ui_builder/LayoutColumn.vue";
-import DraggableListItem from "components/ui_builder/DraggableListItem.vue";
-import { Action } from "vuex-class";
+import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
+import TextOptions from "components/ui_builder/TextOptions.vue";
+
 import {
   Grid,
   Element,
   ElementType,
-  ElementAttributeType,
 } from "../models/Grid";
-
-import IModel from "../store/Model";
-
-import { Drop } from "../mixins/Drop";
 
 import draggable from "vuedraggable";
 
@@ -95,6 +76,8 @@ import draggable from "vuedraggable";
   components: {
     draggable,
     LayoutRow,
+    ButtonOptions,
+    TextOptions
   },
 })
 export default class UiBuilderLayout extends Vue {
@@ -152,12 +135,19 @@ export default class UiBuilderLayout extends Vue {
 
   drag = false;
 
+  selectedElement: Element | null = null;
+
   dragOptions = {
     animation: 200,
     group: "description",
     disabled: false,
     ghostClass: "ghost",
   };
+
+  clickOnElement(element: Element) {
+      this.selectedElement = element;
+      console.log(element)
+  }
 
   deleteRow(index: number) {
     this.model.rows.splice(index, 1);
@@ -202,5 +192,9 @@ $size: 24px;
   //height: $size;
 
   overflow: collapse;
+}
+
+.options-container {
+    border: solid 2px $secondary;
 }
 </style>
