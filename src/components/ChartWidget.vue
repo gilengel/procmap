@@ -1,7 +1,23 @@
 <template>
-  <Widget title="Line Chart">
+  <Widget
+    title="Image"
+    @remove-widget="removeWidget"
+    :resizable="resizable"
+    :draggable="draggable"
+    :deletable="deletable"
+  >
+    <q-img src="https://placeimg.com/500/300/nature" :ratio="1" />
+  </Widget>
+<!--
+  <Widget
+    title="Chart"
+    :resizable="resizable"
+    :draggable="draggable"
+    :deletable="deletable"
+  >
     <component :is="chartType" />
   </Widget>
+  -->
 </template>
 
 <script lang='ts'>

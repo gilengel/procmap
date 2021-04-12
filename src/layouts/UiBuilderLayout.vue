@@ -6,26 +6,61 @@
           <q-toolbar-title>Page Builder</q-toolbar-title>
         </q-toolbar>
         <div class="row">
+          <!--
           <div class="col-2">
-            <q-list dark bordered separator draggable>
+            <draggable
+              class="q-list q-list--bordered q-list--separator q-list--dark"
+              :list="pageElements"
+              :group="{ name: 'people', pull: 'clone', put: false }"
+              ghost-class="ghost"
+              @change="log"
+            >
               <q-item
-                draggable
-                @dragstart="startDrag($event, element)"
-                :key="element.id"
+                clickable
+                v-ripple
                 v-for="element in pageElements"
+                :key="element.label"
               >
                 <q-item-section avatar>
                   <q-icon color="white" :name="element.icon" />
                 </q-item-section>
 
-                <q-item-section>{{element.label}}</q-item-section>
+                <q-item-section>{{ element.label }}</q-item-section>
               </q-item>
-            </q-list>
+            </draggable>
           </div>
-          <div class="col-10 drop-zone" @drop="onDrop($event)" @dragover.prevent @dragenter.prevent>
-              <LayoutColumn v-for="i in rows + 1" />
+          -->
+          <div class="col-12">
+            <draggable
+              class="dragArea list-group"
+              @change="log"
+              v-bind="dragOptions"
+              @start="drag = true"
+              @end="drag = false"
+            >
+              <transition-group
+                type="transition"
+                :name="!drag ? 'flip-list' : null"
+              >
+                <LayoutRow
+                  draggable
+                  dataKey="itemId"
+                  dataValue="Row"
+                  :deleteRow="deleteRow"
+                  :dropTargetClass="['drop-zone', 'layout-row-divider']"
+                  :model="row"
+                  :rowIndex="row_index"
+                  :key="row_index"
+                  v-for="(row, row_index) in model.rows"
+                />
+              </transition-group>
+            </draggable>
           </div>
         </div>
+
+        <q-page-sticky position="bottom-right" :offset="[18, 18]">
+          <q-btn fab icon="add" color="secondary" @click="addRow" />
+        </q-page-sticky>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -33,54 +68,139 @@
 
 <script lang='ts'>
 import { Vue, Component } from "vue-property-decorator";
+import { mixins } from "vue-class-component";
 import { GridLayout, GridItem } from "vue-grid-layout";
+import Layout from "components/ui_builder/Layout.vue";
+import LayoutRow from "components/ui_builder/LayoutRow.vue";
+import LayoutRowDivider from "components/ui_builder/LayoutRowDivider.vue";
 import LayoutColumn from "components/ui_builder/LayoutColumn.vue";
+import DraggableListItem from "components/ui_builder/DraggableListItem.vue";
+import { Action } from "vuex-class";
+import {
+  Grid,
+  Element,
+  ElementType,
+  ElementAttributeType,
+} from "../models/Grid";
+
+import IModel from "../store/Model";
+
+import { Drop } from "../mixins/Drop";
+
+import draggable from "vuedraggable";
 
 @Component({
   name: "MainLayout",
 
   components: {
-    GridLayout,
-    GridItem,
-    LayoutColumn,
+    draggable,
+    LayoutRow,
   },
 })
 export default class UiBuilderLayout extends Vue {
-    rows: number = 0;
   pageElements = [
     {
-      id: "column",
-      label: "Column",
+      id: "row",
+      label: "Row",
       icon: "las la-table",
+      type: ElementType.Row,
+      defaultData: {},
+    },
+
+    {
+      id: "text",
+      label: "Text",
+      icon: "las la-keyboard",
+      type: ElementType.Text,
+      defaultData: {},
+    },
+
+    {
+      id: "button",
+      label: "Button",
+      icon: "las la-paper-plane",
+      type: ElementType.Button,
       defaultData: {},
     },
   ];
 
-  startDrag(evt: DragEvent, item: MetaFlowComponent) {
-    console.log(evt);
-    if (evt.dataTransfer === null) {
-      return;
-    }
+  model: Grid = {
+    rows: [
+      {
+        columns: [
+          { width: 4, element: null },
+          { width: 8, element: null },
+        ],
+      },
 
-    evt.dataTransfer.dropEffect = "move";
-    evt.dataTransfer.effectAllowed = "move";
-    evt.dataTransfer.setData("itemId", item.id);
+      {
+        columns: [
+          { width: 4, element: null },
+          { width: 4, element: null },
+          { width: 4, element: null },
+        ],
+      },
 
-    //console.log(item);
+      {
+        columns: [
+          { width: 6, element: null },
+          { width: 6, element: null },
+        ],
+      },
+    ],
+  };
+
+  drag = false;
+
+  dragOptions = {
+    animation: 200,
+    group: "description",
+    disabled: false,
+    ghostClass: "ghost",
+  };
+
+  deleteRow(index: number) {
+    this.model.rows.splice(index, 1);
   }
 
-  onDrop(evt: DragEvent) {
-    if (evt.dataTransfer === null) {
-      return;
+  addRow() {
+    this.model.rows.push({
+      columns: [
+        { width: 6, element: null },
+        { width: 6, element: null },
+      ],
+    });
+  }
+
+  log(evt) {
+    if (evt.added) {
+      const index = evt.added.newIndex;
+
+      this.model.rows.splice(index, 0, {
+        columns: [
+          { width: 6, element: null },
+          { width: 6, element: null },
+        ],
+      });
     }
-    const itemId = evt.dataTransfer.getData("itemId");
 
-    console.log(itemId);
-
-    this.rows += 1;
+    if (evt.moved) {
+      const temp = this.model.rows.splice(evt.moved.oldIndex, 1)[0];
+      this.model.rows.splice(evt.moved.newIndex, 0, temp);
+    }
   }
 }
 </script>
 
-<style lang='scss' scoped>
+<style lang='scss'>
+$size: 24px;
+.ghost {
+  //border: solid 2px salmon;
+  border-radius: 4px;
+
+  color: $secondary;
+  //height: $size;
+
+  overflow: collapse;
+}
 </style>

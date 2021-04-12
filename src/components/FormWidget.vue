@@ -206,7 +206,7 @@ export default class FormWidget extends Widget {
 
 <style lang="scss" scoped>
 .q-btn {
-  color: salmon;
+  color: $secondary;
 }
 
 label {

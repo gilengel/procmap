@@ -14,7 +14,14 @@
             "sourceMapPathOverrides": {
                 "webpack:///./src/*": "${webRoot}/*",
               "webpack:///src/*": "${webRoot}/*"
-            }
+            },
+            "runtimeExecutable": "/usr/bin/chromium-browser",
+            "runtimeArgs": [
+              "--new-window",
+              "-user-data-dir=\"/${workspaceFolder}/DevProfile\"",
+              "--remote-debugging-port=9222",
+              "--disable-background-networking"
+            ]
         }
     ]
 }

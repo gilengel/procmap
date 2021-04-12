@@ -12,7 +12,6 @@
 
 <script lang="ts">
 import Widget from "./Widget.vue";
-import Vue from "vue";
 import Component from "vue-class-component";
 
 @Component({

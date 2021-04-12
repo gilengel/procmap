@@ -58,6 +58,9 @@ export default class Widget extends Vue {
 
 .widget-content {
   flex-grow: 2;
+
+  height: 100%;
+  overflow: hidden;
 }
 
 .vue-draggable-handle {

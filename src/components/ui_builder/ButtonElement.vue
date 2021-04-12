@@ -2,6 +2,7 @@
   <div>
     <q-btn
       dark
+      text-color="white"
       :flat="!isHighlighted"
       :label="label"
       :icon="previewIcon"
@@ -12,31 +13,38 @@
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
-import BaseElement from './BaseElement.vue'
+import { mixins } from 'vue-class-component';
+import { Drag } from '../../mixins/Drag'
+import { Drop } from '../../mixins/Drop'
 
 @Component({
   name: 'ButtonElement'
 })
-export default class ButtonElement extends BaseElement {
+export default class ButtonElement extends mixins(Drag, Drop) {
 
   get type(): String {
-    return this.getValueOfAttribute('type')
+    return "button"
+    //return this.getValueOfAttribute('type')
   }
 
   get label(): String {
-    return this.getValueOfAttribute('label')
+    return "LABEL"
+    //return this.getValueOfAttribute('label')
   }
 
-  get isHighlighted(): String {
-    return this.getValueOfAttribute('isHighlighted')
+  get isHighlighted(): boolean {
+    return true
+    //return this.getValueOfAttribute('isHighlighted')
   }
 
   get icon(){
-    return this.getValueOfAttribute('icon')
+    return 'las la-paperclip';
+    //return this.getValueOfAttribute('icon')
   }
 
   get hasIcon(){
-    return this.getValueOfAttribute('hasIcon')
+    return true;
+    //return this.getValueOfAttribute('hasIcon')
   }
 
   hover = false;

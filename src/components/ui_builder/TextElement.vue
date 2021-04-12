@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="el-text">
+    <template v-if="withLabel">
     <q-input v-if="editable"
       dark
       placeholder="Label"
@@ -10,6 +11,7 @@
     <label v-else>
       {{label}}
     </label>
+    </template>
     <q-input
       dark
       placeholder="Text"
@@ -23,16 +25,20 @@
 </template>
 
 <script lang="ts">
-import BaseElement from './BaseElement.vue'
 import { Component, Prop } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component';
+import { Drag } from '../../mixins/Drag'
+import { Drop } from '../../mixins/Drop'
 
 @Component({
   name: 'TextElement'
 })
-export default class TextElement extends BaseElement {
+export default class TextElement extends mixins(Drag, Drop) {
   @Prop({default: false}) editable!: boolean;
 
   @Prop() value!: string;
+
+  @Prop({default: false}) withLabel!: boolean;
 
   get valueInput() {
     return this.value;
@@ -43,15 +49,17 @@ export default class TextElement extends BaseElement {
   }
 
   get label(): string {
-    return this.getValueOfAttribute('label')
+    return "LABEL"
+    //return this.getValueOfAttribute('label')
   }
 
   get type(): String {
-    return this.getValueOfAttribute('type')
+    return "text";
+    //return this.getValueOfAttribute('type')
   }
 
   get variable(): String {
-    return this.getValueOfAttribute('variable')
+    //return this.getValueOfAttribute('variable')
   }
 
   hover = false
@@ -59,4 +67,6 @@ export default class TextElement extends BaseElement {
 </script>
 
 <style lang="scss">
+.el-text {
+}
 </style>

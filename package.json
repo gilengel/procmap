@@ -65,6 +65,7 @@
         "vue-resize-directive": "^1.2.0",
         "vue-router": "^3.4.9",
         "vue2-leaflet": "^2.7.0",
+        "vuedraggable": "^2.24.3",
         "vuex-class": "^0.3.2",
         "vuex-module-decorators": "^1.0.1"
     },
