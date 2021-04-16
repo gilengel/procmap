@@ -1,11 +1,13 @@
 <script lang="ts">
-import { Element, ElementAttribute, ElementAttributeType } from 'src/layouts/FormModel'
-import { Vue, Prop } from 'vue-property-decorator'
+import { Element, ElementAttribute } from 'src/layouts/FormModel'
+import { Prop } from 'vue-property-decorator'
 import { Getter, Action } from 'vuex-class'
 import IModel from '../../store/Model'
-import copy from '../Copy'
+import { mixins } from "vue-class-component";
 
-export default class BaseElement extends Vue {
+import { Selectable } from '../../mixins/Selectable'
+
+export default class BaseElement extends mixins(Selectable) {
   @Prop({ default: 'uuid' }) uuid!: string
 
   @Getter('model')

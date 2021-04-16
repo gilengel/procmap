@@ -3,7 +3,6 @@
     <h2 class="text-subtitle2">{{ group.label }}</h2>
 
     <div class="row">
-        <span style="salmon">{{icon}}</span>
       <q-icon
         :name="icon"
         v-for="(icon, icon_index) in group.icons"
@@ -29,18 +28,20 @@ export default class IconList extends Vue {
   })
   icon!: string;
 
-  iconInput!: string;
+  iconInput: string = "";
 
   mounted() {
     this.iconInput = this.icon;
   }
 
   selected(icon: string) {
-    return icon === this.icon;
+    return icon === this.iconInput;
   }
 
   setIcon(icon: string) {
-    this.$emit("update:icon", icon);
+    this.iconInput = icon;
+
+    this.$emit("setIcon", icon);
   }
 }
 </script>

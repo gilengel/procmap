@@ -24,10 +24,9 @@
     <Option label="With Icon?">
       <q-toggle v-model="hasIconInput" color="secondary" label="With Icon?" />
     </Option>
-    
+
     <Option label="Icon">
-        {{iconInput}}
-        <IconList v-for="group in groupedIcons" v-if="groupedIcons" :group="group" :icon="iconInput" />
+        <IconList v-for="group in groupedIcons" v-if="groupedIcons" :group="group" @setIcon="updateIcon" />
     </Option>
   </div>
 </template>
@@ -155,14 +154,13 @@ export default class ButtonOptions extends ButtonElement {
     return this.getValueOfAttribute("label");
   }
 
-  set iconInput(value: string) {
-    this.setValueOfAttribute("icon", value);
+  updateIcon(icon: string) {
+    this.setValueOfAttribute("icon", icon);
   }
 
   get iconInput() {
     return this.getValueOfAttribute("icon");
   }
-
 
 
   groupedIcons = [];

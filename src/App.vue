@@ -47,4 +47,10 @@ body {
   transform: translateX(-50%);
   border-radius: 4px;
 }
+
+.selected {
+  outline: solid $secondary 2px;
+  transition: outline 0.3s;
+
+}
 </style>

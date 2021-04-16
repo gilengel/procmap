@@ -92,7 +92,7 @@ export default class LayoutColumn extends Vue {
       widgetAttributes.push({
         name: "icon",
         type: ElementAttributeType.String,
-        value: "",
+        value: "lab la-accessible-icon",
       });
       widgetAttributes.push({
         name: "hasIcon",
@@ -165,16 +165,16 @@ export default class LayoutColumn extends Vue {
   }
 
   > .actions {
-    
+
     position: absolute;
-    top: 0;    
+    top: 0;
     left: 50%;
     z-index: 1;
     width: auto;
 
     transform: translate(-50%, -2px);
 
-    padding: 0;    
+    padding: 0;
     background: $secondary;
     visibility: collapse;
 

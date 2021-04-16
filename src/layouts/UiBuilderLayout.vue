@@ -46,7 +46,7 @@
               v-if="selectedElement && selectedElement.type === 'Text'"
             />
           </div>
-        </div>          
+        </div>
         </div>
         <q-page-sticky position="bottom-right" :offset="[18, 18]">
           <q-btn fab icon="add" color="secondary" @click="addRow" />
@@ -146,7 +146,6 @@ export default class UiBuilderLayout extends Vue {
 
   clickOnElement(element: Element) {
       this.selectedElement = element;
-      console.log(element)
   }
 
   deleteRow(index: number) {
