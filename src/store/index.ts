@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import Model from './Model'
 import Page from './Page'
 import SelectedElements from './SelectedElements'
+import Model from './Model'
 import GridModule from './GridModule'
 
 /*

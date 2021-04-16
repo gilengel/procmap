@@ -10,19 +10,11 @@ import { Selectable } from '../../mixins/Selectable'
 export default class BaseElement extends mixins(Selectable) {
   @Prop({ default: 'uuid' }) uuid!: string
 
-  @Getter('model')
-  getModel!: (uuid: string) => IModel
+  @Getter('element')
+  getElement!: (uuid: string) => Element
 
-  @Action('updateModel')
-  updateModel!: (params: IModel) => void
-
-/*
-  get model () {
-    return this.getModel(this.uuid)
-  }
-  */
-
-  @Prop() model!: Element;
+  @Action('updateElementAttributes')
+  updateElementAttribute!: (param: { element: Element, name: string, value: any}) => void
 
   protected getValueOfAttribute(name: String): any {
     const element = this.model as unknown as Element;
@@ -35,27 +27,8 @@ export default class BaseElement extends mixins(Selectable) {
     return (attribute === undefined) ? undefined : attribute.value
   }
 
-  protected setValueOfAttribute(name: String, value: any): any {
-      const attribute = this.model.attributes.find(attribute => attribute.name === name);
-
-      if(attribute) {
-        attribute.value = value;
-      }
-      /*
-    let deepCopy = copy(this.model);
-
-    const element = (deepCopy as unknown) as Element;
-    const attribute = element.attributes.find(
-      attribute => attribute.name === name
-    );
-
-    attribute.value = value;
-
-    this.updateModel({
-      uuid: this.uuid,
-      model: deepCopy
-    });
-    */
+  protected setValueOfAttribute(name: string, value: any): any {
+      this.updateElementAttribute({ element: this.model, name: name, value: value })
   }
 }
 </script>

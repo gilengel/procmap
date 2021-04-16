@@ -14,7 +14,7 @@
     </template>
     <q-input
       dark
-      placeholder="Text"
+      placeholder="Heading"
       :type="type"
       :readonly="editable != false"
       v-model="valueInput"
@@ -29,9 +29,9 @@ import { Component, Prop } from 'vue-property-decorator'
 import BaseElement from './BaseElement.vue';
 
 @Component({
-  name: 'TextElement'
+  name: 'HeadingElement'
 })
-export default class TextElement extends BaseElement {
+export default class HeadingElement extends BaseElement {
   @Prop({default: false}) editable!: boolean;
 
   @Prop() value!: string;
@@ -69,6 +69,4 @@ export default class TextElement extends BaseElement {
 </script>
 
 <style lang="scss">
-.el-text {
-}
 </style>

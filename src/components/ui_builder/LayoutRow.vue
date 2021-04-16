@@ -26,7 +26,7 @@
         :model="column"
         :class="colClass(col_index)"
         :splitColumn="_splitColumn"
-        :splitDisabled="splitDisabled"
+        :splitDisabled="column.width <= 2"
         :deleteColumn="_deleteColumn"
         v-for="(column, col_index) in model.columns"
       >
@@ -76,7 +76,7 @@ export default class LayoutRow extends Vue {
   }
 
   @Action("updateColumnWidth")
-  updateColumnWidth(params: { column: Column, newWidth: number });
+  updateColumnWidth!: (params: { column: Column, newWidth: number }) => void;
 /*
   private _updateColumnWidth(width: number) {
     this.updateColumnWidth({ column: this.model, newWidth: width })
@@ -129,6 +129,7 @@ export default class LayoutRow extends Vue {
   };
 
   private splitDisabled(columnIndex: number) {
+      console.log(this.model.columns[columnIndex].width)
     return this.colSizes[columnIndex] < this.minColSize * 2;
   }
 
@@ -153,6 +154,7 @@ export default class LayoutRow extends Vue {
   }
 
   mounted() {
+      console.log(this.model)
     for (let column of this.model.columns) {
       column;
     }
@@ -252,11 +254,8 @@ export default class LayoutRow extends Vue {
         previousColSizes;
 
       const newColumnSizes = this.restrictNewColumnSizes(flexSize);
-
-      this.model.columns[this.selectedSplitterIndex].width =
-        newColumnSizes.left;
-      this.model.columns[this.selectedSplitterIndex + 1].width =
-        newColumnSizes.right;
+      this.updateColumnWidth({ column: this.model.columns[this.selectedSplitterIndex], newWidth: newColumnSizes.left })
+      this.updateColumnWidth({ column: this.model.columns[this.selectedSplitterIndex+1], newWidth: newColumnSizes.right })
     }
   }
 

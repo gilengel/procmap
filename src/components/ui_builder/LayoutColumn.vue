@@ -4,17 +4,16 @@
       <q-btn dark flat round color="white" icon="las la-plus">
         <q-menu dark>
           <q-list style="min-width: 100px">
-            <q-item clickable v-close-popup @click="addElement('Text')">
-              <q-item-section>Text</q-item-section>
-            </q-item>
-            <q-separator />
-            <q-item clickable v-close-popup @click="addElement('Button')">
-              <q-item-section>Button</q-item-section>
-            </q-item>
+            <template v-for="element in allowedElements">
+              <q-item clickable v-close-popup @click="addElement(element)" :key="element">
+                <q-item-section>{{element}}</q-item-section>
+              </q-item>
+            </template>
           </q-list>
         </q-menu>
       </q-btn>
       <q-btn
+        :disable="splitDisabled"
         dark
         flat
         round
@@ -33,8 +32,7 @@
     </div>
 
     <TextElement
-      draggable
-      dataKey="itemId"
+      data-key="itemId"
       :model="model.element"
       :dataValue="model.element.type"
       editable="true"
@@ -42,13 +40,20 @@
     />
 
     <ButtonElement
-      draggable
-      dataKey="itemId"
+      data-key="itemId"
       :model="model.element"
       :dataValue="model.element.type"
       editable="true"
       v-if="model && model.element && model.element.type === 'Button'"
       @keyup.native="removeElementFromColumn(model)"
+    />
+
+    <HeadingElement
+      data-key="itemId"
+      :model="model.element"
+      :dataValue="model.element.type"
+      editable="true"
+      v-if="model && model.element && model.element.type === 'Heading'"
     />
   </div>
 </template>
@@ -58,6 +63,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 
 import ButtonElement from "./ButtonElement.vue";
 import TextElement from "./TextElement.vue";
+import HeadingElement from "./HeadingElement.vue";
 import {
   Row,
   Column,
@@ -66,7 +72,7 @@ import {
   ElementAttribute,
   ElementAttributeType,
 } from "../../models/Grid";
-import { Action } from 'vuex-class';
+import { Action } from "vuex-class";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -76,6 +82,7 @@ import { v4 as uuidv4 } from "uuid";
   components: {
     ButtonElement,
     TextElement,
+    HeadingElement,
   },
 })
 export default class LayoutColumn extends Vue {
@@ -96,6 +103,14 @@ export default class LayoutColumn extends Vue {
   @Prop() model!: Column;
 
   @Prop() click!: (element: Element) => void;
+
+  @Action("addElementToColumn")
+  addElementToColumn!: (param: { column: Column; element: Element }) => void;
+
+  @Action("removeElementFromColumn")
+  removeElementFromColumn!: (column: Column) => void;
+
+  allowedElements = ["Button", "Text", "Heading"];
 
   private addElement(widgetType: ElementType) {
     const widgetAttributes = new Array<ElementAttribute>();
@@ -151,12 +166,17 @@ export default class LayoutColumn extends Vue {
       });
     }
 
-    this.model.element = {
-      uuid: uuid,
-      type: widgetType,
-      attributes: widgetAttributes,
+    if (widgetType === ElementType.Heading) {
+    }
+
+    this.addElementToColumn({
       column: this.model,
-    };
+      element: {
+        uuid: uuid,
+        type: widgetType,
+        attributes: widgetAttributes,
+      },
+    });
   }
 }
 </script>

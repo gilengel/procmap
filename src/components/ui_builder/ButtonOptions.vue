@@ -169,6 +169,7 @@ export default class ButtonOptions extends ButtonElement {
 <style lang="scss">
 .option-column {
   padding-left: 1em;
+  padding-right: 1em;
   color: white;
 
   .preview {

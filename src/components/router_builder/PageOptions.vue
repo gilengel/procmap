@@ -106,6 +106,7 @@ export default class PageOptions extends Vue {
 }
 .option-column {
   padding-left: 1em;
+  padding-right: 1em;
   height: 100%;
 
   .preview {

@@ -42,6 +42,12 @@
               :model="selectedElement"
               v-if="selectedElement && selectedElement.type === 'Text'"
             />
+
+            <HeadingOptions
+            :uuid="selectedElement.uuid"
+            :model="selectedElement"
+            v-if="selectedElement && selectedElement.type === 'Heading'"
+            />
           </div>
         </div>
         </div>
@@ -63,6 +69,7 @@ import { Vue, Component } from "vue-property-decorator";
 import LayoutRow from "components/ui_builder/LayoutRow.vue";
 import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
 import TextOptions from "components/ui_builder/TextOptions.vue";
+import HeadingOptions from "components/ui_builder/HeadingOptions.vue";
 import { Action, Getter } from "vuex-class";
 
 import { Grid, Element, ElementType, Row } from "../models/Grid";
@@ -77,6 +84,7 @@ import draggable from "vuedraggable";
     LayoutRow,
     ButtonOptions,
     TextOptions,
+    HeadingOptions
   },
 })
 export default class UiBuilderLayout extends Vue {
@@ -157,7 +165,7 @@ export default class UiBuilderLayout extends Vue {
       if (e.key === "Delete") {
         ((this.getSelectedElements as unknown) as Set<Element>).forEach(
           (element: Element) => {
-            element.column.element = null;
+            //element.column.element = null;
           }
         );
       }

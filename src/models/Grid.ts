@@ -1,7 +1,8 @@
 export enum ElementType {
   Button = "Button",
   Text = "Text",
-  Row = "Row"
+    Row = "Row",
+  Heading = "Heading"
 }
 
 export interface Element {

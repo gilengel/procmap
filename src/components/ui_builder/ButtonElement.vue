@@ -40,8 +40,6 @@ export default class ButtonElement extends BaseElement {
     return this.getValueOfAttribute('hasIcon')
   }
 
-  hover = false;
-
   get previewIcon () {
     let icon
 
