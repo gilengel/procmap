@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import Model from './Model'
 import Page from './Page'
+import SelectedElements from './SelectedElements'
+import GridModule from './GridModule'
 
 /*
  * If not building with SSR mode, you can
@@ -15,8 +17,10 @@ Vue.use(Vuex)
 export default function () {
   const Store = new Vuex.Store({
     modules: {
+      GridModule,
       Model,
-      Page
+      Page,
+      SelectedElements
     },
 
     // enable strict mode (adds overhead!)

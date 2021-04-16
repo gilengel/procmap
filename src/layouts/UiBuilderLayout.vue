@@ -8,8 +8,8 @@
         <div class="row">
           <div class="col-10">
             <draggable
+              handle=".drag-handle"
               class="dragArea list-group"
-              @change="log"
               v-bind="dragOptions"
               @start="drag = true"
               @end="drag = false"
@@ -19,16 +19,13 @@
                 :name="!drag ? 'flip-list' : null"
               >
                 <LayoutRow
-                  draggable
                   dataKey="itemId"
                   dataValue="Row"
-                  :click="clickOnElement"
                   :deleteRow="deleteRow"
-                  :dropTargetClass="['drop-zone', 'layout-row-divider']"
                   :model="row"
                   :rowIndex="row_index"
                   :key="row_index"
-                  v-for="(row, row_index) in model.rows"
+                  v-for="(row, row_index) in grid.rows"
                 />
               </transition-group>
             </draggable>
@@ -49,7 +46,12 @@
         </div>
         </div>
         <q-page-sticky position="bottom-right" :offset="[18, 18]">
-          <q-btn fab icon="add" color="secondary" @click="addRow" />
+          <q-btn fab icon="add" color="secondary" @click="addRow({
+            columns: [
+              { width: 6, element: null },
+              { width: 6, element: null },
+            ]})"
+          />
         </q-page-sticky>
       </q-page>
     </q-page-container>
@@ -61,12 +63,9 @@ import { Vue, Component } from "vue-property-decorator";
 import LayoutRow from "components/ui_builder/LayoutRow.vue";
 import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
 import TextOptions from "components/ui_builder/TextOptions.vue";
+import { Action, Getter } from "vuex-class";
 
-import {
-  Grid,
-  Element,
-  ElementType,
-} from "../models/Grid";
+import { Grid, Element, ElementType, Row } from "../models/Grid";
 
 import draggable from "vuedraggable";
 
@@ -77,10 +76,47 @@ import draggable from "vuedraggable";
     draggable,
     LayoutRow,
     ButtonOptions,
-    TextOptions
+    TextOptions,
   },
 })
 export default class UiBuilderLayout extends Vue {
+  @Getter("selectedModels")
+  getSelectedElements!: () => Array<any>;
+
+  @Getter("grid")
+  grid!: () => Grid;
+
+  @Action("addRow")
+  addRow!: (row: Row) => void;
+
+  @Action("deleteRow")
+  deleteRow!: (rowIndex: number) => void;
+
+  @Action("removeAllSelectedElementsAndModels")
+  clearSelectedElements!: () => void;
+
+  @Action("addSelectedElementAndModel")
+  addSelectedElement!: (param: {
+    element: string;
+    model: any;
+    clearPreviousSelected: boolean;
+  }) => void;
+
+  get selectedElement(): Element | {} {
+    const elements = this.getSelectedElements;
+
+    if (elements.length !== 1) {
+      return {};
+    }
+
+    let element = null;
+    for (let item of elements) {
+      element = item;
+    }
+
+    return element;
+  }
+
   pageElements = [
     {
       id: "row",
@@ -107,35 +143,7 @@ export default class UiBuilderLayout extends Vue {
     },
   ];
 
-  model: Grid = {
-    rows: [
-      {
-        columns: [
-          { width: 4, element: null },
-          { width: 8, element: null },
-        ],
-      },
-
-      {
-        columns: [
-          { width: 4, element: null },
-          { width: 4, element: null },
-          { width: 4, element: null },
-        ],
-      },
-
-      {
-        columns: [
-          { width: 6, element: null },
-          { width: 6, element: null },
-        ],
-      },
-    ],
-  };
-
   drag = false;
-
-  selectedElement: Element | null = null;
 
   dragOptions = {
     animation: 200,
@@ -144,39 +152,16 @@ export default class UiBuilderLayout extends Vue {
     ghostClass: "ghost",
   };
 
-  clickOnElement(element: Element) {
-      this.selectedElement = element;
-  }
-
-  deleteRow(index: number) {
-    this.model.rows.splice(index, 1);
-  }
-
-  addRow() {
-    this.model.rows.push({
-      columns: [
-        { width: 6, element: null },
-        { width: 6, element: null },
-      ],
+  mounted() {
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Delete") {
+        ((this.getSelectedElements as unknown) as Set<Element>).forEach(
+          (element: Element) => {
+            element.column.element = null;
+          }
+        );
+      }
     });
-  }
-
-  log(evt) {
-    if (evt.added) {
-      const index = evt.added.newIndex;
-
-      this.model.rows.splice(index, 0, {
-        columns: [
-          { width: 6, element: null },
-          { width: 6, element: null },
-        ],
-      });
-    }
-
-    if (evt.moved) {
-      const temp = this.model.rows.splice(evt.moved.oldIndex, 1)[0];
-      this.model.rows.splice(evt.moved.newIndex, 0, temp);
-    }
   }
 }
 </script>
@@ -194,6 +179,6 @@ $size: 24px;
 }
 
 .options-container {
-    border: solid 2px $secondary;
+  border: solid 2px $secondary;
 }
 </style>

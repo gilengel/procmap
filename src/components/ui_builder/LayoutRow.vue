@@ -2,6 +2,7 @@
   <div class="layout-row">
     <div class="actions">
       <q-btn
+        class="drag-handle"
         dark
         flat
         round
@@ -19,15 +20,14 @@
     </div>
     <div class="row" ref="container">
       <LayoutColumn
-        :click="click"
         dataKey="itemId"
         :columnIndex="col_index"
         :rowIndex="rowIndex"
         :model="column"
         :class="colClass(col_index)"
-        :splitColumn="splitColumn"
+        :splitColumn="_splitColumn"
         :splitDisabled="splitDisabled"
-        :deleteColumn="deleteColumn"
+        :deleteColumn="_deleteColumn"
         v-for="(column, col_index) in model.columns"
       >
       </LayoutColumn>
@@ -44,10 +44,10 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
-
+import { Action } from 'vuex-class';
 import LayoutColumn from "./LayoutColumn.vue";
 
-import { Row } from "../../models/Grid";
+import { Row, Column } from "../../models/Grid";
 
 @Component({
   name: "LayoutRow",
@@ -57,6 +57,32 @@ import { Row } from "../../models/Grid";
   },
 })
 export default class LayoutRow extends Vue {
+
+  @Action("deleteRow")
+  deleteRow!: (rowIndex: number) => void;
+
+  @Action("splitColumn")
+  splitColumn!: (param: { row: Row, columnIndex: number }) => void;
+
+  private _splitColumn(columnIndex: number) {
+    this.splitColumn({ row: this.model, columnIndex: columnIndex })
+  }
+
+  @Action("deleteColumn")
+  deleteColumn!: (param: { row: Row, columnIndex: number }) => void;
+
+  private _deleteColumn(columnIndex: number) {
+    this.deleteColumn({ row: this.model, columnIndex: columnIndex })
+  }
+
+  @Action("updateColumnWidth")
+  updateColumnWidth(params: { column: Column, newWidth: number });
+/*
+  private _updateColumnWidth(width: number) {
+    this.updateColumnWidth({ column: this.model, newWidth: width })
+  }
+*/
+
   // Minimal size for one column
   @Prop({
     default: 2,
@@ -84,10 +110,6 @@ export default class LayoutRow extends Vue {
 
   @Prop() model!: Row;
 
-  @Prop() deleteRow!: (i: number) => void
-
-  @Prop() click!: (element: Element) => void;
-
   // Individual column sized
   colSizes = new Array<number>();
 
@@ -110,48 +132,11 @@ export default class LayoutRow extends Vue {
     return this.colSizes[columnIndex] < this.minColSize * 2;
   }
 
-  private splitColumn(columnIndex: number) {
-    const colSize = this.model.columns[columnIndex].width / 2;
-    const leftSize = Math.floor(colSize);
-    const rightSize = Math.ceil(colSize);
-
-    this.model.columns[columnIndex].width = leftSize;
-
-    this.model.columns.splice(columnIndex, 0, {
-      width: rightSize,
-      element: null,
-    });
-
-    const splitterPosLeft = this.previosColSize(columnIndex) + leftSize;
-    this.splitterPositions.splice(
-      columnIndex,
-      0,
-      (splitterPosLeft / this.flexColumns) * 100
-    );
-  }
-
-  private deleteColumn(columnIndex: number) {
-    const colSize = this.model.columns[columnIndex].width;
-
-    const isLastColumn = columnIndex == this.model.columns.length - 1;
-
-    this.model.columns.splice(columnIndex, 1);
-    this.model.columns[
-      isLastColumn ? columnIndex - 1 : columnIndex
-    ].width += colSize;
-
-    this.splitterPositions.splice(columnIndex, 1);
-  }
-
   previosColSize(index: number): number {
     let result = 0;
     for (let i = 0; i < index; i++) {
-      //console.log(`${i} === ${this.model.columns[i].width}`)
       result += this.model.columns[i].width;
     }
-
-    //console.log("-->")
-    //console.log(result)
 
     return result;
   }
@@ -176,15 +161,6 @@ export default class LayoutRow extends Vue {
     for (let i = 0; i < numColumns - 1; i++) {
       this.splitterPositions.push(((i + 1) / numColumns) * 100);
     }
-    /*
-    for (let i = 0; i < this.model; i++) {
-      this.colSizes.push(this.flexColumns / this.columns);
-    }
-
-    for (let i = 0; i < this.columns - 1; i++) {
-      this.splitterPositions.push(((i + 1) / this.columns) * 100);
-    }
-    */
   }
 
   dragMouseDown(event: MouseEvent, index: number) {
@@ -213,7 +189,6 @@ export default class LayoutRow extends Vue {
   private calculateExpectedFlexSize(relativeLeft: number): number {
     const containerWidth = this.containerWidth();
 
-    console.log(relativeLeft / containerWidth);
     return Math.ceil((relativeLeft / containerWidth) * this.flexColumns);
   }
 
@@ -245,8 +220,6 @@ export default class LayoutRow extends Vue {
     }
 
     let rightColumnSize = completeColumnSize - newColumnSize;
-    //console.log(this.affectedColumnSizes);
-
     if (rightColumnSize < this.minColSize) {
       const difference = this.minColSize - rightColumnSize;
       rightColumnSize = this.minColSize;

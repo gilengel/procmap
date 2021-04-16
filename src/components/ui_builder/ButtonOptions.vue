@@ -54,7 +54,9 @@ export interface Button {
   },
 })
 export default class ButtonOptions extends ButtonElement {
-  buttonOptions = [];
+  buttonOptions : Array<{ label: string, value: string }> = [];
+
+  groupedIcons : Array<{ label: string, icons: Array<string> }>= [];
 
   mounted() {
     this.buttonOptions.push({ label: "Link", value: "a" });
@@ -161,9 +163,6 @@ export default class ButtonOptions extends ButtonElement {
   get iconInput() {
     return this.getValueOfAttribute("icon");
   }
-
-
-  groupedIcons = [];
 }
 </script>
 

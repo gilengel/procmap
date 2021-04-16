@@ -8,6 +8,7 @@ export interface Element {
   uuid: String;
   type: ElementType;
   attributes: Array<ElementAttribute>;
+  column: Column;
 }
 
 export enum ElementAttributeType {
@@ -25,6 +26,7 @@ export interface ElementAttribute {
 export interface Column {
   width: number;
   element: Element | null;
+  row?: Row;
 }
 
 export interface Row {

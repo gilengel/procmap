@@ -2,27 +2,37 @@
   <div class="layout-col">
     <div class="actions">
       <q-btn dark flat round color="white" icon="las la-plus">
-      <q-menu dark>
-        <q-list style="min-width: 100px">
-          <q-item clickable v-close-popup @click="addElement('Text')">
-            <q-item-section>Text</q-item-section>
-          </q-item>
-                    <q-separator />
-          <q-item clickable v-close-popup @click="addElement('Button')">
-            <q-item-section>Button</q-item-section>
-          </q-item>
-
-        </q-list>
-      </q-menu>
+        <q-menu dark>
+          <q-list style="min-width: 100px">
+            <q-item clickable v-close-popup @click="addElement('Text')">
+              <q-item-section>Text</q-item-section>
+            </q-item>
+            <q-separator />
+            <q-item clickable v-close-popup @click="addElement('Button')">
+              <q-item-section>Button</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
       </q-btn>
-      <q-btn dark flat round color="white" icon="las la-columns" @click="splitColumn(columnIndex)" />
-      <q-btn dark flat round color="white" icon="las la-trash-alt" @click="deleteColumn(columnIndex)" />
-
-
+      <q-btn
+        dark
+        flat
+        round
+        color="white"
+        icon="las la-columns"
+        @click="splitColumn(columnIndex)"
+      />
+      <q-btn
+        dark
+        flat
+        round
+        color="white"
+        icon="las la-trash-alt"
+        @click="deleteColumn(columnIndex)"
+      />
     </div>
 
     <TextElement
-      @click.native="click(model.element)"
       draggable
       dataKey="itemId"
       :model="model.element"
@@ -32,7 +42,6 @@
     />
 
     <ButtonElement
-      @click.native="click(model.element)"
       draggable
       dataKey="itemId"
       :model="model.element"
@@ -49,7 +58,15 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 
 import ButtonElement from "./ButtonElement.vue";
 import TextElement from "./TextElement.vue";
-import { Column, ElementType, ElementAttribute, ElementAttributeType } from "../../models/Grid";
+import {
+  Row,
+  Column,
+  Element,
+  ElementType,
+  ElementAttribute,
+  ElementAttributeType,
+} from "../../models/Grid";
+import { Action } from 'vuex-class';
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -72,7 +89,7 @@ export default class LayoutColumn extends Vue {
 
   @Prop() splitDisabled!: (colIndex: number) => void;
 
-  @Prop() splitColumn!: (colIndex: number) => void;
+  @Prop() splitColumn!: (columnIndex: number) => void;
 
   @Prop() deleteColumn!: (colIndex: number) => void;
 
@@ -80,7 +97,7 @@ export default class LayoutColumn extends Vue {
 
   @Prop() click!: (element: Element) => void;
 
-  private addElement(widgetType: ElementType): Element {
+  private addElement(widgetType: ElementType) {
     const widgetAttributes = new Array<ElementAttribute>();
     const uuid = uuidv4();
     if (widgetType === ElementType.Button) {
@@ -128,16 +145,17 @@ export default class LayoutColumn extends Vue {
         value: "date",
       });
       widgetAttributes.push({
-          name: "withLabel",
-          type: ElementAttributeType.Boolean,
-          value: true
-      })
+        name: "withLabel",
+        type: ElementAttributeType.Boolean,
+        value: true,
+      });
     }
 
     this.model.element = {
       uuid: uuid,
       type: widgetType,
       attributes: widgetAttributes,
+      column: this.model,
     };
   }
 }
@@ -165,7 +183,6 @@ export default class LayoutColumn extends Vue {
   }
 
   > .actions {
-
     position: absolute;
     top: 0;
     left: 50%;
@@ -186,7 +203,7 @@ export default class LayoutColumn extends Vue {
 }
 
 .layout-col:hover {
-    outline: solid 2px $secondary;
+  outline: solid 2px $secondary;
 }
 /*
 .layout-col:hover::after {
