@@ -3,7 +3,18 @@
     <q-page-container>
       <q-page>
         <q-toolbar class="bg-black text-white vue-draggable-handle">
-          <q-toolbar-title>Page Builder</q-toolbar-title>
+          <q-toolbar-title shrink style="margin-right: 2em">Page Builder</q-toolbar-title>
+          <ToggleButton color="white" selected-color="secondary" icon="las la-link" label="Link to elements together" v-model="linkModeActive" />
+          <q-space />
+          <q-btn
+            style="
+              background: salmon;
+              color: white;
+              margin-top: 8px;
+              margin-bottom: 8px;
+            "
+            label="Save Layout"
+          />
         </q-toolbar>
         <div class="row">
           <div class="col-10">
@@ -54,8 +65,7 @@
         <q-page-sticky position="bottom-right" :offset="[18, 18]">
           <q-btn fab icon="add" color="secondary" @click="addRow({
             columns: [
-              { width: 6, element: null },
-              { width: 6, element: null },
+              { width: 12, element: null },
             ]})"
           />
         </q-page-sticky>
@@ -70,6 +80,7 @@ import LayoutRow from "components/ui_builder/LayoutRow.vue";
 import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
 import TextOptions from "components/ui_builder/TextOptions.vue";
 import HeadingOptions from "components/ui_builder/HeadingOptions.vue";
+import ToggleButton from "components/ToggleButton.vue";
 import { Action, Getter } from "vuex-class";
 
 import { Grid, Element, ElementType, Row } from "../models/Grid";
@@ -84,7 +95,8 @@ import draggable from "vuedraggable";
     LayoutRow,
     ButtonOptions,
     TextOptions,
-    HeadingOptions
+    HeadingOptions,
+    ToggleButton
   },
 })
 export default class UiBuilderLayout extends Vue {
@@ -109,6 +121,8 @@ export default class UiBuilderLayout extends Vue {
     model: any;
     clearPreviousSelected: boolean;
   }) => void;
+
+  linkModeActive: boolean = false;
 
   get selectedElement(): Element | {} {
     const elements = this.getSelectedElements;
@@ -187,6 +201,7 @@ $size: 24px;
 }
 
 .options-container {
-  border: solid 2px $secondary;
+  //border: solid 2px $secondary;
+  border: 1px solid rgb(100, 100, 100);
 }
 </style>

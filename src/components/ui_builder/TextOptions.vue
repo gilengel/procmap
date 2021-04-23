@@ -13,6 +13,7 @@
       v-model="variableInput"
       label="Variable Identifier"
       stack-label
+      style="margin-bottom: 1em"
     />
 
     <q-input
@@ -21,6 +22,7 @@
       v-model="labelInput"
       label="Variable Identifier"
       stack-label
+      style="margin-bottom: 1em"
     />
 
     <q-option-group

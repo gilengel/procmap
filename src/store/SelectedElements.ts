@@ -1,6 +1,6 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 
-const SELECTED_CLASS = "selected";
+export const SELECTED_CLASS = "selected";
 
 @Module
 export default class SelectedElements extends VuexModule {

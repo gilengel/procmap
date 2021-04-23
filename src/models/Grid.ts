@@ -1,3 +1,4 @@
+import { ElementAttribute } from './Grid';
 export enum ElementType {
   Button = "Button",
   Text = "Text",
@@ -5,11 +6,16 @@ export enum ElementType {
   Heading = "Heading"
 }
 
+
+
 export interface Element {
   uuid: String;
   type: ElementType;
   attributes: Array<ElementAttribute>;
   column: Column;
+
+  inputs?: Array<ElementAttribute>;
+  outputs?: Array<ElementAttribute>;
 }
 
 export enum ElementAttributeType {
