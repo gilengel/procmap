@@ -1,21 +1,57 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-import { Grid, Row, Column, Element, ElementAttribute } from '../models/Grid'
+import { Grid, Row, Column, Element, ElementAttribute, ElementConnection, Point } from '../models/Grid'
 import { v4 as uuidv4 } from "uuid";
+import { ElementType, ElementAttributeType } from 'src/layouts/FormModel';
+import { start } from 'repl';
+
+function text () : Element {
+    const widgetAttributes = new Array<ElementAttribute>();
+
+    widgetAttributes.push({
+        name: "variable",
+        type: ElementAttributeType.String,
+        value: "Some_text",
+    });
+    widgetAttributes.push({
+        name: "label",
+        type: ElementAttributeType.String,
+        value: "Some text",
+    });
+    widgetAttributes.push({
+        name: "type",
+        type: ElementAttributeType.String,
+        value: "date",
+    });
+    widgetAttributes.push({
+        name: "withLabel",
+        type: ElementAttributeType.Boolean,
+        value: true,
+    });
+
+    return  {
+            uuid: uuidv4(),
+            type: ElementType.Text,
+        attributes: widgetAttributes,
+        classList: [],
+        inputs: [],
+            outputs: []
+    }
+}
 
 const DefaultGrid = {
     rows: [
         {
             columns: [
-                { width: 4, element: null },
-                { width: 8, element: null },
+                { width: 4, element: text() },
+                { width: 8, element: text() },
             ],
         },
 
         {
             columns: [
+                { width: 4, element: text() },
                 { width: 4, element: null },
-                { width: 4, element: null },
-                { width: 4, element: null },
+                { width: 4, element: text() },
             ],
         },
 
@@ -32,8 +68,15 @@ const DefaultGrid = {
 export default class GridModulue extends VuexModule {
     private _grid: Grid | null = DefaultGrid;
 
+    private _connections: Array<ElementConnection> = [];
+
     get grid (): Grid | null {
         return this._grid;
+    }
+
+    get connections (): Array<ElementConnection> {
+        console.log(this._connections)
+        return this._connections;
     }
 
     @Mutation
@@ -115,6 +158,59 @@ export default class GridModulue extends VuexModule {
 
     @Action({ commit: '_updateElementAttributes', rawError: true })
     updateElementAttributes (param: { element: Element, name: string, value: any }) {
+        return param
+    }
+
+    @Mutation
+    _addToClassList (param: { element: Element, class: string }) {
+        param.element.classList.push(param.class);
+    }
+
+    @Action({ commit: '_addToClassList' })
+    addToClassList (param: { element: Element, class: string }) {
+        return param
+    }
+
+    @Mutation
+    _removeFromClassList (param: { element: Element, class: string }) {
+        const index = param.element.classList.findIndex((e: string) => e === param.class)
+
+        
+        if (index !== -1) {
+            param.element.classList.splice(index, 1)
+        }
+    }
+
+    @Action({ commit: '_removeFromClassList' })
+    removeFromClassList (param: { element: Element, class: string }) {
+        return param
+    }
+
+    @Mutation
+    _linkTwoElements (param: { start: Element, startPosition: Point, end: Element, endPosition: Point }) {
+        const connection: ElementConnection = {
+            uuid: uuidv4(),
+            input: param.start.uuid,
+            output: param.end.uuid,
+            start: param.startPosition,
+            end: param.endPosition
+        }
+
+        const startIndex = param.start.outputs?.findIndex((c: ElementConnection) => c.input === param.start.uuid)
+        const endIndex = param.end.inputs?.findIndex((c: ElementConnection) => c.output === param.end.uuid)
+
+        if (startIndex !== -1 && endIndex !== -1) {
+            return
+        }
+
+        param.start.outputs?.push(connection);
+        param.end.inputs?.push(connection);
+
+        this._connections.push(connection)
+    }
+
+    @Action({ commit: '_linkTwoElements'})
+    linkTwoElements (param: { start: Element, startPosition: Point, end: Element, endPosition: Point }) {
         return param
     }
 

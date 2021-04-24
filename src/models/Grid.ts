@@ -9,13 +9,27 @@ export enum ElementType {
 
 
 export interface Element {
-  uuid: String;
+  uuid: string;
   type: ElementType;
   attributes: Array<ElementAttribute>;
-  column: Column;
+    column?: Column;
+    classList: Array<string>;
 
-  inputs?: Array<ElementAttribute>;
-  outputs?: Array<ElementAttribute>;
+  inputs?: Array<ElementConnection>;
+  outputs?: Array<ElementConnection>;
+}
+
+export interface Point {
+    x: number;
+    y: number;
+}
+export interface ElementConnection {
+    uuid: string;
+    input: string;
+    output: string;
+
+    start?: Point;
+    end?: Point;
 }
 
 export enum ElementAttributeType {

@@ -32,6 +32,7 @@
                 <LayoutRow
                   dataKey="itemId"
                   dataValue="Row"
+                  :linkModeActive="linkModeActive"
                   :deleteRow="deleteRow"
                   :model="row"
                   :rowIndex="row_index"

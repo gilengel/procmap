@@ -51,7 +51,11 @@ body {
 .selected {
   outline: solid $secondary 2px;
   transition: outline 0.3s;
+}
 
+.linked {
+    outline: solid $accent 4px;
+    transition: outline 0.3s;
 }
 
 canvas {
@@ -60,7 +64,8 @@ canvas {
   left: 0;
   right: 0;
   bottom: 0;
-  border: solid 2px $secondary;
   box-sizing: border-box;
+
+  z-index: 0;
 }
 </style>

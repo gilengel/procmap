@@ -1,6 +1,6 @@
 <template>
-  <div class="layout-col">
-    <div class="actions">
+  <div class="layout-col" v-bind:class="{ active: !linkModeActive }">
+    <div class="actions" v-if="!linkModeActive">
       <q-btn dark flat round color="white" icon="las la-plus">
         <q-menu dark>
           <q-list style="min-width: 100px">
@@ -35,6 +35,7 @@
       data-key="itemId"
       :model="model.element"
       :dataValue="model.element.type"
+      :active="linkModeActive"
       editable="true"
       v-if="model && model.element && model.element.type === 'Text'"
     />
@@ -93,6 +94,11 @@ export default class LayoutColumn extends Vue {
     },
   })
   columnIndex!: number;
+
+  @Prop({
+      validator(x) { return typeof x === "boolean" }
+  })
+  linkModeActive!: boolean;
 
   @Prop() splitDisabled!: (colIndex: number) => void;
 
@@ -206,7 +212,7 @@ export default class LayoutColumn extends Vue {
     position: absolute;
     top: 0;
     left: 50%;
-    z-index: 1;
+    z-index: 3;
     width: auto;
 
     transform: translate(-50%, -2px);
@@ -222,7 +228,7 @@ export default class LayoutColumn extends Vue {
   }
 }
 
-.layout-col:hover {
+.active:hover {
   outline: solid 2px $secondary;
 }
 /*

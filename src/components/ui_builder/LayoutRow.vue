@@ -1,6 +1,6 @@
 <template>
-  <div class="layout-row">
-    <div class="actions">
+  <div class="layout-row" v-bind:class="{ active: !linkModeActive }">
+    <div class="actions" v-if="!linkModeActive">
       <q-btn
         class="drag-handle"
         dark
@@ -21,6 +21,7 @@
     <div class="row" ref="container">
       <LayoutColumn
         dataKey="itemId"
+        :linkModeActive="linkModeActive"
         :columnIndex="col_index"
         :rowIndex="rowIndex"
         :model="column"
@@ -107,6 +108,11 @@ export default class LayoutRow extends Vue {
     },
   })
   rowIndex!: number;
+
+  @Prop({
+      validator(x) { return typeof x === "boolean" }
+  })
+  linkModeActive!: boolean;
 
   @Prop() model!: Row;
 
@@ -296,7 +302,8 @@ export default class LayoutRow extends Vue {
     border: solid 2px transparent;
   }
 }
-.layout-row:hover {
+
+.active:hover {
   > .actions {
     background: $secondary;
     visibility: visible;
@@ -305,6 +312,7 @@ export default class LayoutRow extends Vue {
     border: solid 2px $secondary;
   }
 }
+
 .row {
   height: 100%;
   position: relative;
