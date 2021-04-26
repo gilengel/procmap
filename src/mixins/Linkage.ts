@@ -1,3 +1,4 @@
+import { Point, Element } from './../models/Grid';
 import { Vue, Component, Prop } from "vue-property-decorator";
 import { v4 as uuidv4 } from "uuid";
 import { colors } from 'quasar'
@@ -10,6 +11,7 @@ let GLOBAL_CANVAS: HTMLCanvasElement | null = null;
 let start: { x: number, y: number } | null = null;
 
 let startElement: Element | null = null;
+let endElement: Element | null = null;
 let startRect: DOMRect | null = null;
 
 import { Action, Getter } from 'vuex-class'
@@ -17,7 +19,9 @@ import { ElementConnection } from "src/models/Grid";
 
 @Component
 export class Linkage extends Vue {
-    @Prop({ default: true }) active!: boolean;
+  _linkageStarted: boolean = false;
+
+    @Prop({ default: false }) active!: boolean;
 
     @Action('addToClassList')
     addToClassList!: (param: { element: Element, class: string }) => void
@@ -42,7 +46,9 @@ export class Linkage extends Vue {
     mouseover (event: MouseEvent) {
         if (!this.active) return;
 
-        this.addToClassList({ element: this.model, class: LINKED })
+      this.addToClassList({ element: this.model, class: LINKED })
+
+      endElement = this.model;
     }
 
     mouseout (event: MouseEvent) {
@@ -50,12 +56,15 @@ export class Linkage extends Vue {
 
         event.preventDefault();
 
-        this.removeFromClassList({ element: this.model, class: LINKED })
+      this.removeFromClassList({ element: this.model, class: LINKED })
+
+      endElement = null;
     }
 
     mousedown (event: MouseEvent) {
-        
-        if (!this.active) return;
+      if (!this.active) return;
+      this._linkageStarted = true;
+
 
         this.addToClassList({ element: this.model, class: LINKED })
 
@@ -68,7 +77,7 @@ export class Linkage extends Vue {
 
         startElement = this.model;
         startRect = this.$el.getBoundingClientRect()
-        
+
     }
 
     mousemove (event: MouseEvent) {
@@ -96,6 +105,7 @@ export class Linkage extends Vue {
         ctx.lineWidth = lineWidth;
         ctx.stroke();
 
+
         for (const connection of this.connections) {
             ctx.beginPath();
             ctx.moveTo(connection.start.x, connection.start.y);
@@ -109,15 +119,32 @@ export class Linkage extends Vue {
         this.createConnectionEndpoint({ x: event.clientX, y: event.clientY }, ctx, lineWidth);
     }
 
-    mouseup (event: MouseEvent) {
-        if (!this.active) return;
+  mouseup(event: MouseEvent) {
+      if (!this.active) return;
 
-        if (startElement && startElement.uuid !== this.model.uuid) {
-            this.removeFromClassList({ element: startElement, class: LINKED })
+      if (!startElement || !endElement) {
+        return
+      }
 
-            const end = { x: event.clientX, y: event.clientY };
-            this.linkTwoElements({ start: startElement, startPosition: start, end: this.model, endPosition: end })
-        }
+    const svg = document.getElementsByTagName("svg")[0];
+    const bb = svg.getBoundingClientRect();
+    var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    newLine.setAttribute('id', 'line2');
+    newLine.setAttribute('x1', `${start.x}`);
+    newLine.setAttribute('y1', `${start.y - bb.top}`);
+    newLine.setAttribute('x2', `${event.clientX}`);
+    newLine.setAttribute('y2', `${event.clientY - bb.top}`);
+    svg.appendChild(newLine)
+
+      if (startElement && startElement.uuid !== this.model.uuid) {
+        this.removeFromClassList({ element: startElement, class: LINKED })
+
+        const end = { x: event.clientX, y: event.clientY };
+        this.linkTwoElements({ start: startElement, startPosition: start, end: endElement, endPosition: end })
+
+        startElement = null;
+        endElement = null;
+      }
 
         document.removeEventListener('mousemove', this.mousemove)
 
@@ -136,7 +163,6 @@ export class Linkage extends Vue {
 
         ctx.clearRect(0, 0, GLOBAL_CANVAS.width, GLOBAL_CANVAS.height);
     }
-
 
     private createConnectionEndpoint (position: { x: number, y: number }, ctx: CanvasRenderingContext2D, lineWidth: number) {
         ctx.beginPath();

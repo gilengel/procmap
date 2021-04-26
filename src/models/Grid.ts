@@ -1,3 +1,4 @@
+import { StringTransform } from './String';
 import { ElementAttribute } from './Grid';
 export enum ElementType {
   Button = "Button",
@@ -27,6 +28,9 @@ export interface ElementConnection {
     uuid: string;
     input: string;
     output: string;
+
+  value?: any;
+  transform?: Array<StringTransform>;
 
     start?: Point;
     end?: Point;

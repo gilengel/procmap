@@ -7,6 +7,7 @@ import { mixins } from "vue-class-component";
 
 import { Selectable } from '../../mixins/Selectable'
 import { Linkage } from '../../mixins/Linkage'
+import { ElementConnection } from 'src/models/Grid';
 
 export default class BaseElement extends mixins(Selectable, Linkage) {
   @Prop({ default: 'uuid' }) uuid!: string
@@ -16,6 +17,9 @@ export default class BaseElement extends mixins(Selectable, Linkage) {
 
   @Action('updateElementAttributes')
   updateElementAttribute!: (param: { element: Element, name: string, value: any}) => void
+
+  @Action('setConnectionValue')
+  setConnectionValue!: (param: { connection: ElementConnection, value: any}) => void
 
   protected getValueOfAttribute(name: String): any {
     const element = this.model as unknown as Element;

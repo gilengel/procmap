@@ -44,6 +44,7 @@
       data-key="itemId"
       :model="model.element"
       :dataValue="model.element.type"
+      :active="linkModeActive"
       editable="true"
       v-if="model && model.element && model.element.type === 'Button'"
       @keyup.native="removeElementFromColumn(model)"
@@ -53,6 +54,7 @@
       data-key="itemId"
       :model="model.element"
       :dataValue="model.element.type"
+      :active="linkModeActive"
       editable="true"
       v-if="model && model.element && model.element.type === 'Heading'"
     />

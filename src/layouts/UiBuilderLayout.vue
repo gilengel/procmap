@@ -17,6 +17,11 @@
           />
         </q-toolbar>
         <div class="row">
+          <svg>
+          </svg>
+
+
+
           <div class="col-10">
             <draggable
               handle=".drag-handle"
@@ -204,5 +209,17 @@ $size: 24px;
 .options-container {
   //border: solid 2px $secondary;
   border: 1px solid rgb(100, 100, 100);
+}
+
+svg {
+  position: absolute;
+  border: solid 2px white;
+  height: 100%;
+  width: 100%;
+}
+
+line {
+  stroke: $accent;
+  stroke-width: 4px;
 }
 </style>

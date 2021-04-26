@@ -1,8 +1,5 @@
 <template>
   <div class="el-text" :class="classlist">
-      <span style="color: white">{{isConnected}}</span>
-      <span style="color: white">inputs = {{model.inputs.length}}</span>
-      <span style="color: white">outputs = {{model.outputs.length}}</span>
     <template v-if="withLabel">
     <q-input v-if="editable"
       dark
@@ -19,7 +16,7 @@
       dark
       placeholder="Heading"
       :type="type"
-      :readonly="editable != false"
+      :readonly="!editable"
       v-model="valueInput"
       @mouseover="hover = true"
       @mouseleave="hover = false"
@@ -28,17 +25,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator'
+import { Component, Prop, Watch } from 'vue-property-decorator'
 import BaseElement from './BaseElement.vue';
 import { LINKED } from '../../mixins/Linkage';
+import { Element } from '../../models/Grid';
+import { applyTransformations } from '../../models/String'
 
 @Component({
-  name: 'HeadingElement'
+  name: 'TextElement'
 })
-export default class HeadingElement extends BaseElement {
+export default class TextElement extends BaseElement {
   @Prop({default: false}) editable!: boolean;
-
-  @Prop() value!: string;
 
   get classlist() {
       let a = [];
@@ -51,11 +48,35 @@ export default class HeadingElement extends BaseElement {
   }
 
   get valueInput() {
-    return this.value;
+    let result = '';
+    // use always connected value first
+    const element = this.model as Element;
+    if(element.inputs && element.inputs.length > 0 && element.inputs[0].value) {
+      result = applyTransformations(element.inputs[0].value, element.inputs[0].transform)
+    }
+
+    return result;
+  }
+
+  @Watch('valueInput')
+  onValueInputChanged(val: string, oldVal: string) {
+    this.setOutputConnectionValue(val);
   }
 
   set valueInput(val: string) {
-    this.$emit('update:value', val)
+    this.setOutputConnectionValue(val);
+  }
+
+  setOutputConnectionValue(value: string) {
+    // next inform all connected elements via reactive connection value
+    const element = this.model as Element;
+    if(!element.outputs) {
+      return
+    }
+
+    for(const connection of element.outputs) {
+      this.setConnectionValue({ connection : connection, value: value })
+    }
   }
 
   get withLabel(): boolean {
@@ -64,7 +85,7 @@ export default class HeadingElement extends BaseElement {
 
   set withLabel(value: boolean) {
       this.setValueOfAttribute('withLabel', value)
-  }    
+  }
 
   get label(): string {
     return this.getValueOfAttribute('label')
@@ -78,11 +99,11 @@ export default class HeadingElement extends BaseElement {
     return this.getValueOfAttribute('variable')
   }
 
-  get isConnected(): boolean { 
+  get isConnected(): boolean {
       return this.model.outputs.length > 0 || this.model.inputs.length > 0;
   }
 
-  get classList(): Array<string> { 
+  get classList(): Array<string> {
     return this.getValueOfAttribute('classList')
   }
 
