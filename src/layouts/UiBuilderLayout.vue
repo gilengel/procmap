@@ -18,9 +18,8 @@
         </q-toolbar>
         <div class="row">
           <svg>
+            <Connection v-for="connection in connections" :model="connection" />
           </svg>
-
-
 
           <div class="col-10">
             <draggable
@@ -86,10 +85,11 @@ import LayoutRow from "components/ui_builder/LayoutRow.vue";
 import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
 import TextOptions from "components/ui_builder/TextOptions.vue";
 import HeadingOptions from "components/ui_builder/HeadingOptions.vue";
+import Connection from "components/ui_builder/ElementConnection.vue";
 import ToggleButton from "components/ToggleButton.vue";
 import { Action, Getter } from "vuex-class";
 
-import { Grid, Element, ElementType, Row } from "../models/Grid";
+import { Grid, Element, ElementType, Row, ElementConnection } from "../models/Grid";
 
 import draggable from "vuedraggable";
 
@@ -102,7 +102,8 @@ import draggable from "vuedraggable";
     ButtonOptions,
     TextOptions,
     HeadingOptions,
-    ToggleButton
+    ToggleButton,
+    Connection
   },
 })
 export default class UiBuilderLayout extends Vue {
@@ -111,6 +112,9 @@ export default class UiBuilderLayout extends Vue {
 
   @Getter("grid")
   grid!: () => Grid;
+
+  @Getter("connections")
+  connections!: () => Array<ElementConnection>;
 
   @Action("addRow")
   addRow!: (row: Row) => void;
@@ -221,5 +225,20 @@ svg {
 line {
   stroke: $accent;
   stroke-width: 4px;
+}
+
+.foofoobarbar {
+  stroke: limegreen;
+  stroke-width: 10px;
+}
+
+.linkage-triangle-preview {
+  position: absolute;
+  //fill: $accent;
+  fill: $accent;
+  stroke: $accent;
+  stroke-width: 6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 </style>
