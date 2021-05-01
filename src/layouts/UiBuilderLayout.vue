@@ -17,11 +17,12 @@
           />
         </q-toolbar>
         <div class="row">
-          <svg>
-            <Connection v-for="connection in connections" :model="connection" />
-          </svg>
-
           <div class="col-10">
+            
+            <svg></svg>
+            
+            <Connection v-for="connection in connections" :model="connection" />
+            
             <draggable
               handle=".drag-handle"
               class="dragArea list-group"
@@ -56,14 +57,20 @@
             <TextOptions
               :uuid="selectedElement.uuid"
               :model="selectedElement"
-              v-if="selectedElement && selectedElement.type === 'Text'"
+              v-else-if="selectedElement && selectedElement.type === 'Text'"
             />
 
             <HeadingOptions
             :uuid="selectedElement.uuid"
             :model="selectedElement"
-            v-if="selectedElement && selectedElement.type === 'Heading'"
+            v-else-if="selectedElement && selectedElement.type === 'Heading'"
             />
+
+            <ConnectionOptions
+            :uuid="selectedElement.uuid"
+            :model="selectedElement"
+            
+            />            
           </div>
         </div>
         </div>
@@ -86,6 +93,7 @@ import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
 import TextOptions from "components/ui_builder/TextOptions.vue";
 import HeadingOptions from "components/ui_builder/HeadingOptions.vue";
 import Connection from "components/ui_builder/ElementConnection.vue";
+import ConnectionOptions from "components/ui_builder/ConnectionOptions.vue"
 import ToggleButton from "components/ToggleButton.vue";
 import { Action, Getter } from "vuex-class";
 
@@ -103,7 +111,8 @@ import draggable from "vuedraggable";
     TextOptions,
     HeadingOptions,
     ToggleButton,
-    Connection
+    Connection,
+    ConnectionOptions
   },
 })
 export default class UiBuilderLayout extends Vue {
@@ -217,9 +226,8 @@ $size: 24px;
 
 svg {
   position: absolute;
-  border: solid 2px white;
   height: 100%;
-  width: 100%;
+  width: 80%;
 }
 
 line {
@@ -241,4 +249,5 @@ line {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
 </style>

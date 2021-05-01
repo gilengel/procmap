@@ -36,7 +36,7 @@ export class Selectable extends Vue {
   }
 
   clickEvent(event: MouseEvent) {
-    event.stopPropagation()
+      event.stopPropagation()
 
     this.addSelectedElement({ element: (this.$el as HTMLElement).id, model: this.model, clearPreviousSelected: !event.ctrlKey })
   }

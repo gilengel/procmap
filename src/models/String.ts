@@ -1,9 +1,9 @@
 export enum StringTransform {
-  ToUppercase,
-  ToLowercase,
-  ToSnakecase,
-  ToCamelcase,
-  ToKebabcase,
+  ToUppercase = '2uppercase',
+  ToLowercase = '2lowercase',
+  ToSnakecase = '2snakecase',
+  ToCamelcase = '2camelcase',
+  ToKebabcase = '2kebabcase',
 }
 
 function applySingleTransformation(value: string, transformation: StringTransform): string {
