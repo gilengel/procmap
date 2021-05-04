@@ -6,8 +6,8 @@ export function createTrianglePoints(lineStartX: number, lineStartY: number, lin
   const vecNorm = math.divide(vec, norm)
 
   const size = 12
-  const vecStart = math.multiply(vecNorm, norm * 0.5)
-  const vecEnd = math.multiply(vecNorm, norm * 0.5 - size)
+  const vecStart = math.multiply(vecNorm, norm)
+  const vecEnd = math.multiply(vecNorm, norm - size)
   const vecFinalTop = math.add(math.multiply([-vecNorm[1], vecNorm[0]], size / 2), vecEnd)
   const vecFinalBottom = math.add(math.multiply([-vecNorm[1], vecNorm[0]], -size / 2), vecEnd)
 

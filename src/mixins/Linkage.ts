@@ -1,17 +1,13 @@
 import { Point, Element } from './../models/Grid';
-import { Vue, Component, Prop } from "vue-property-decorator";
-import { v4 as uuidv4 } from "uuid";
-import { colors } from 'quasar'
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import * as math from 'mathjs'
 import { Action, Getter } from 'vuex-class'
 import { ElementConnection } from "src/models/Grid";
 import { createTrianglePoints } from 'src/helpers/svg';
-//import { SELECTED_CLASS } from '../store/SelectedElements';
 export const LINKED = "linked";
 
 const LINKAGE_PREVIEW = "linkage-preview";
 const LINKAGE_TRIANGLE_PREVIEW = "linkage-triangle-preview";
-const FOO = "foofoobarbar";
 
 let GLOBAL_CANVAS: SVGElement | null = null;
 
@@ -48,6 +44,15 @@ export class Linkage extends Vue {
 
   @Prop({ default: false }) active!: boolean;
 
+  @Watch('active')
+  onActiveChange(val: boolean) {
+    if (val) {
+      this.registerEventListeners();
+    } else {
+      this.unregisterEventListeners();
+    }
+  }
+
   @Action('addToClassList')
   addToClassList!: (param: { element: Element, class: string }) => void
 
@@ -55,19 +60,16 @@ export class Linkage extends Vue {
   removeFromClassList!: (param: { element: Element, class: string }) => void
 
   @Action('linkTwoElements')
-  linkTwoElements!: (param: { start: Element, startPosition: Point, end: Element, endPosition: Point }) => void
+  linkTwoElements!: (param: { identifier: string, start: Element, startPosition: Point, end: Element, endPosition: Point }) => void
 
   @Getter('connections')
   connections!: () => Array<ElementConnection>
 
   mounted() {
-    this.registerEventListeners();
+    //this.registerEventListeners();
 
     GLOBAL_CANVAS = document.getElementsByTagName("svg")[0]
 
-
-
-    this.createLine(0, 0, 0, 0, FOO)
 
     this.createTriangle(100, 100, 20, LINKAGE_TRIANGLE_PREVIEW)
   }
@@ -144,44 +146,165 @@ export class Linkage extends Vue {
       return
     }
 
+    /*
+    const startBottomLeft = [startRect.left, startRect.bottom]
+    const startBottomRight = [startRect.right, startRect.bottom]
+    const startTopLeft = [startRect.left, startRect.top]
+    const startTopRight = [startRect.right, startRect.top]
 
-    const startBottomInt = math.intersect(start, lineEnd, [startRect.left, startRect.bottom], [startRect.right, startRect.bottom])
-    const startRightInt = math.intersect(start, lineEnd, [startRect.right, startRect.top], [startRect.right, startRect.bottom])
+    const distBottom = math.distance(lineEnd, startBottomLeft, startBottomRight)
+    const distRight = math.distance(lineEnd, startTopRight, startBottomRight)
 
-    lineStartX = startBottomInt[0] as number;
-    lineStartY = startBottomInt[1] as number + 10;
+    //console.log(`${distBottom}    ${distRight}`)
 
-    if (startBottomInt[0] > startRect.right) {
+    const startBottomInt = math.intersect(start, lineEnd, startBottomLeft, startBottomRight)
+    const startTopInt = math.intersect(start, lineEnd, startTopLeft, startTopRight)
+    const startLeftInt = math.intersect(start, lineEnd, startTopLeft, startBottomLeft)
+    const startRightInt = math.intersect(start, lineEnd, startTopRight, startBottomRight)
+
+    console.log(startBottomInt)
+    console.log(startTopInt)
+    console.log(startLeftInt)
+    console.log(startRightInt)
+*
+
+
+
+    // Right
+    if (startRightInt !== null && start[0] < lineEndX) {
+      console.log("right")
       lineStartX = startRightInt[0] as number + 10;
       lineStartY = startRightInt[1] as number;
-
     }
+
+    // Left
+    if (startLeftInt !== null && start[0] >= lineEndX) {
+      console.log("left")
+      lineStartX = startLeftInt[0] as number - 10;
+      lineStartY = startLeftInt[1] as number;
+    }
+
+    // Down
+    if (startBottomInt !== null && start[1] < lineEndY) {
+      console.log("bottom")
+      lineStartX = startBottomInt[0] as number;
+      lineStartY = startBottomInt[1] as number + 10 - top;
+    }
+
+    // Up
+    if (startTopInt !== null && start[1] >= lineEndY) {
+      console.log("top")
+      lineStartX = startTopInt[0] as number;
+      lineStartY = startTopInt[1] as number - 10;
+    }
+    */
+
 
 
     if (endRect && !equal(startRect, endRect)) {
+      const endBottomInt = math.intersect(start, lineEnd, [endRect.left, endRect.bottom], [endRect.right, endRect.bottom])
       const endTopInt = math.intersect(start, lineEnd, [endRect.left, endRect.top], [endRect.right, endRect.top])
       const endLeftInt = math.intersect(start, lineEnd, [endRect.left, endRect.top], [endRect.left, endRect.bottom])
+      const endRightInt = math.intersect(start, lineEnd, [endRect.right, endRect.top], [endRect.right, endRect.bottom])
 
-      lineEndX = endTopInt[0] as number;
-      lineEndY = endTopInt[1] as number - 10;
+/*
+      // Right
+      if (startRightInt !== null && endLeftInt !== null) {
 
-      if (endTopInt[0] < endRect.left) {
-        lineEndX = endLeftInt[0] as number - 10;
-        lineEndY = endLeftInt[1] as number;
       }
+
+      // Left
+      if (startLeftInt !== null && endRightInt !== null) {
+
+      }
+
+      // Up
+      if (startTopInt !== null && endBottomInt !== null) {
+
+      }
+
+      // Down
+      if (startBottomInt !== null && endTopInt !== null) {
+
+      }
+      */
     }
 
-    end[0] = lineEndX
+    //if (startLeftInt !== null && )
+      /*
+
+
+      if (startBottomInt[0] > startRect.right) {
+        lineStartX = startRightInt[0] as number + 10;
+        lineStartY = startRightInt[1] as number;
+
+      }
+
+      if (endRect && !equal(startRect, endRect)) {
+        const endBottomInt = math.intersect(start, lineEnd, [endRect.left, endRect.bottom], [endRect.right, endRect.bottom])
+        const endTopInt = math.intersect(start, lineEnd, [endRect.left, endRect.top], [endRect.right, endRect.top])
+        const endLeftInt = math.intersect(start, lineEnd, [endRect.left, endRect.top], [endRect.left, endRect.bottom])
+        const endRightInt = math.intersect(start, lineEnd, [endRect.right, endRect.top], [endRect.right, endRect.bottom])
+
+
+        lineEndX = endTopInt[0] as number;
+        lineEndY = endTopInt[1] as number - 10;
+
+        if (endTopInt[0] < endRect.left) {
+          lineEndX = endLeftInt[0] as number - 10;
+          lineEndY = endLeftInt[1] as number;
+        }
+      }
+      */
+
+      end[0] = lineEndX
     end[1] = lineEndY
 
     previewLine.setAttribute('x1', `${lineStartX}`)
-    previewLine.setAttribute('y1', `${lineStartY - top + 30}`)
+    previewLine.setAttribute('y1', `${lineStartY}`)
     previewLine.setAttribute('x2', `${lineEndX}`)
-    previewLine.setAttribute('y2', `${lineEndY - top + 30}`)
+    previewLine.setAttribute('y2', `${lineEndY}`)
 
     const previewTriangle = this.getPreviewTriangle();
     if (previewTriangle) {
       previewTriangle.setAttribute('points', createTrianglePoints(lineStartX, lineStartY, lineEndX, lineEndY))
+    }
+  }
+
+  mouseup(event: MouseEvent) {
+    if (!this.active) return;
+
+
+    if (!startElement || !endElement || !start) {
+      return
+    }
+
+    if (!GLOBAL_CANVAS) {
+      return;
+    }
+
+    const previewLine = this.getPreviewLine();
+
+    if (!previewLine) {
+      return;
+    }
+
+    const startX = parseFloat(previewLine.getAttribute('x1') as string)
+    const startY = parseFloat(previewLine.getAttribute('y1') as string)
+    const endX = parseFloat(previewLine.getAttribute('x2') as string)
+    const endY = parseFloat(previewLine.getAttribute('y2') as string)
+
+    GLOBAL_CANVAS?.removeChild(previewLine)
+
+
+
+    if (startElement && startElement.uuid !== this.model.uuid && startElement.outputs && startElement.outputs.length > 0) {
+      this.removeFromClassList({ element: startElement, class: LINKED })
+
+      this.linkTwoElements({ identifier: startElement.outputs[0].identifier, start: startElement, startPosition: { x: startX, y: startY }, end: endElement, endPosition: { x: endX, y: endY } })
+
+      startElement = null;
+      endElement = null;
     }
   }
 
@@ -235,42 +358,6 @@ export class Linkage extends Vue {
     svg.appendChild(newTriangle)
   }
 
-  mouseup(event: MouseEvent) {
-    if (!this.active) return;
-
-    if (!startElement || !endElement || !start) {
-      return
-    }
-
-    if (!GLOBAL_CANVAS) {
-      return;
-    }
-
-    const previewLine = this.getPreviewLine();
-
-    if (!previewLine) {
-      return;
-    }
-
-      const startX = parseFloat(previewLine.getAttribute('x1') as string)
-      const startY = parseFloat(previewLine.getAttribute('y1') as string)
-      const endX = parseFloat(previewLine.getAttribute('x2') as string)
-      const endY = parseFloat(previewLine.getAttribute('y2') as string)
-
-      GLOBAL_CANVAS?.removeChild(previewLine)
-
-
-
-    if (startElement && startElement.uuid !== this.model.uuid) {
-      this.removeFromClassList({ element: startElement, class: LINKED })
-
-      this.linkTwoElements({ start: startElement, startPosition: { x: startX, y: startY }, end: endElement, endPosition: { x: endX, y: endY } })
-
-      startElement = null;
-      endElement = null;
-    }
-  }
-
   registerEventListeners() {
     const el = this.$el as HTMLElement;
     el.addEventListener('mouseenter', this.mouseover)
@@ -289,5 +376,7 @@ export class Linkage extends Vue {
     el.removeEventListener('mouseout', this.mouseout)
     el.removeEventListener('mousedown', this.mousedown)
     el.removeEventListener('mouseup', this.mouseup)
+
+    document.removeEventListener('mouseup', this.mouseup)
   }
 }

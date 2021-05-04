@@ -18,11 +18,11 @@
         </q-toolbar>
         <div class="row">
           <div class="col-10">
-            
+
             <svg></svg>
-            
-            <Connection v-for="connection in connections" :model="connection" />
-            
+
+            <Connection v-for="connection in connections" :model="connection" v-if="linkModeActive" />
+
             <draggable
               handle=".drag-handle"
               class="dragArea list-group"
@@ -69,8 +69,8 @@
             <ConnectionOptions
             :uuid="selectedElement.uuid"
             :model="selectedElement"
-            
-            />            
+            v-else-if="selectedElement.uuid"
+            />
           </div>
         </div>
         </div>

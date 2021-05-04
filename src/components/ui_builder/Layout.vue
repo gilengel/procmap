@@ -17,8 +17,6 @@
       />
       -->
     </template>
-
-    <div class="foo"></div>
   </div>
 </template>
 
@@ -92,15 +90,4 @@ export default class Layout extends mixins(Drop) {
 .layout-row {
   margin-left: 10em;
 }
-
-/*
-.foo {
-  position: absolute;
-  background: rgba(orange, 0.3);
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 30%;
-}
-*/
 </style>

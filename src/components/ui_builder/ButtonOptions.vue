@@ -166,7 +166,7 @@ export default class ButtonOptions extends ButtonElement {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .option-column {
   padding-left: 1em;
   padding-right: 1em;

@@ -32,7 +32,7 @@ export default class Connection extends mixins(Selectable) {
       return `transform: rotate(${deg}deg) translate(${this.model.start.x}px, ${this.model.start.y}px`;
   }
 
-  private get rotation(): number {  
+  private get rotation(): number {
       if(!this.model.start || !this.model.end) {
           return 0;
       }
@@ -48,7 +48,7 @@ export default class Connection extends mixins(Selectable) {
       const a = document.getElementsByTagName("svg")[0];
       const top = a.getBoundingClientRect().top
 
-      
+
       const result = `left: ${this.model.start.x}px; top: ${this.model.start.y + top * 2}px; width: ${this.model.end.x - this.model.start.x}px;` +
              `transform: rotate(${this.rotation}deg)`;
 
@@ -56,7 +56,6 @@ export default class Connection extends mixins(Selectable) {
   }
 
   get clear_style(): string {
-      console.log(colors.getBrand('dark'))
       return `z-index: 999; left: calc(50% - 16px); top: -16px; background: ${colors.getBrand('dark')} !important; transform: rotate(${-this.rotation}deg)`
   }
 
@@ -97,8 +96,8 @@ export default class Connection extends mixins(Selectable) {
 
 .line:hover .triangle-wrapper {
   //animation-name: example;
-  //animation-duration: 4s;   
-  //animation-iteration-count: infinite; 
+  //animation-duration: 4s;
+  //animation-iteration-count: infinite;
 }
 
 .triangle-wrapper {

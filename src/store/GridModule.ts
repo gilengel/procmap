@@ -1,3 +1,4 @@
+import { ElementPin } from './../models/Grid';
 import { StringTransform } from './../models/String';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { Grid, Row, Column, Element, ElementAttribute, ElementConnection, Point } from '../models/Grid'
@@ -5,6 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import { ElementType, ElementAttributeType } from 'src/layouts/FormModel';
 import { start } from 'repl';
 import { Connection } from 'rete';
+
+import Vue from 'vue'
 
 function text(): Element {
   const widgetAttributes = new Array<ElementAttribute>();
@@ -35,8 +38,18 @@ function text(): Element {
     type: ElementType.Text,
     attributes: widgetAttributes,
     classList: [],
-    inputs: [],
-    outputs: []
+    inputs: [
+      {
+        identifier: 'text',
+        type: ElementAttributeType.String
+      }
+    ],
+    outputs: [
+      {
+        identifier: 'text',
+        type: ElementAttributeType.String
+      }
+    ]
   }
 }
 
@@ -188,9 +201,7 @@ export default class GridModulue extends VuexModule {
   }
 
   @Mutation
-  _linkTwoElements(param: { start: Element, startPosition: Point, end: Element, endPosition: Point }) {
-    console.log(`s=${param.start.uuid} e=${param.end.uuid}`)
-
+  _linkTwoElements(param: { identifier: string, start: Element, startPosition: Point, end: Element, endPosition: Point }) {
     const connection: ElementConnection = {
       uuid: uuidv4(),
       input: param.start.uuid,
@@ -198,31 +209,32 @@ export default class GridModulue extends VuexModule {
       start: param.startPosition,
       end: param.endPosition,
       value: '',
-      transform: [StringTransform.ToKebabcase, StringTransform.ToUppercase]
+      transform: []
     }
 
-    const startIndex = param.start.outputs?.findIndex((c: ElementConnection) => c.input === param.start.uuid)
-    const endIndex = param.end.inputs?.findIndex((c: ElementConnection) => c.output === param.end.uuid)
 
-    if (startIndex !== -1 && endIndex !== -1) {
-      return
-    }
+    const startIndex = param.start.outputs?.findIndex(pin => pin.identifier === param.identifier)
+    const endIndex = param.end.inputs?.findIndex(pin => pin.identifier === param.identifier)
 
-    param.start.outputs?.push(connection);
-    param.end.inputs?.push(connection);
+    //console.log(param.start.outputs && startIndex && startIndex >= 0)
+    //if (param.start.outputs && startIndex && startIndex >= 0 &&
+     // param.end.inputs && endIndex && endIndex >= 0) {
+
+    Vue.set(param.start.outputs[startIndex], 'connection', connection)
+    Vue.set(param.end.inputs[endIndex], 'connection', connection)
 
     this._connections.push(connection)
   }
 
   @Action({ commit: '_linkTwoElements' })
-  linkTwoElements(param: { start: Element, startPosition: Point, end: Element, endPosition: Point }) {
+  linkTwoElements(param: { identifier: string, start: Element, startPosition: Point, end: Element, endPosition: Point }) {
     return param
   }
 
   @Mutation
   _setConnectionValue(param: { connection: ElementConnection, value: any }) {
-    const connection = this._connections.find(c => c.uuid === param.connection.uuid)
 
+    const connection = this._connections.find(c => c.uuid === param.connection.uuid)
     if (!connection) {
       return
     }
@@ -232,6 +244,54 @@ export default class GridModulue extends VuexModule {
 
   @Action({ commit: '_setConnectionValue' })
   setConnectionValue(param: { connection: ElementConnection, value: any }) {
+    return param;
+  }
+
+  @Mutation
+  _addConnectionTransformation(param: { connection: ElementConnection, transformation: StringTransform }) {
+    const connection = this._connections.find(c => c.uuid === param.connection.uuid)
+
+    if (!connection) {
+      return
+    }
+
+    connection.transform.push(param.transformation)
+  }
+
+  @Action({ commit: '_addConnectionTransformation' })
+  addConnectionTransformation(param: { connection: ElementConnection, transformation: StringTransform }) {
+    return param;
+  }
+
+  @Mutation
+  _setConnectionTransformations(param: { connection: ElementConnection, transformations: Array<StringTransform> }) {
+    const connection = this._connections.find(c => c.uuid === param.connection.uuid)
+
+    if (!connection) {
+      return
+    }
+
+    connection.transform = param.transformations
+  }
+
+  @Action({ commit: '_setConnectionTransformations' })
+  setConnectionTransformations(param: { connection: ElementConnection, transformations: Array<StringTransform> }) {
+    return param;
+  }
+
+  @Mutation
+  _removeConnectionTransformation(param: { connection: ElementConnection, index: number }) {
+    const connection = this._connections.find(c => c.uuid === param.connection.uuid)
+
+    if (!connection) {
+      return
+    }
+
+    connection.transform.splice(param.index, 1)
+  }
+
+  @Action({ commit: '_removeConnectionTransformation' })
+  removeConnectionTransformation(param: { connection: ElementConnection, index: number }) {
     return param;
   }
 

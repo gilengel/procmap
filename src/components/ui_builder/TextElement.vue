@@ -37,10 +37,13 @@ import { applyTransformations } from '../../models/String'
 export default class TextElement extends BaseElement {
   @Prop({default: false}) editable!: boolean;
 
+  // Used if the text element is not connected to a parent element
+  private tempValue: string = '';
+
   get classlist() {
       let a = [];
 
-      if(this.isConnected){
+      if(this.isConnected && this.active){
           a.push(LINKED)
       }
 
@@ -51,8 +54,12 @@ export default class TextElement extends BaseElement {
     let result = '';
     // use always connected value first
     const element = this.model as Element;
-    if(element.inputs && element.inputs.length > 0 && element.inputs[0].value) {
-      result = applyTransformations(element.inputs[0].value, element.inputs[0].transform)
+    if(element.inputs && element.inputs.length > 0 && element.inputs[0].connection) {
+      result = applyTransformations(element.inputs[0].connection.value, element.inputs[0].connection.transform)
+    }
+
+    if(result.length == 0) {
+      result = this.tempValue
     }
 
     return result;
@@ -61,10 +68,12 @@ export default class TextElement extends BaseElement {
   @Watch('valueInput')
   onValueInputChanged(val: string, oldVal: string) {
     this.setOutputConnectionValue(val);
+    this.tempValue = val;
   }
 
   set valueInput(val: string) {
     this.setOutputConnectionValue(val);
+    this.tempValue = val;
   }
 
   setOutputConnectionValue(value: string) {
@@ -74,8 +83,10 @@ export default class TextElement extends BaseElement {
       return
     }
 
-    for(const connection of element.outputs) {
-      this.setConnectionValue({ connection : connection, value: value })
+    for(const output of element.outputs) {
+      if(output.connection) {
+        this.setConnectionValue({ connection : output.connection, value: value })
+      }
     }
   }
 
@@ -100,7 +111,11 @@ export default class TextElement extends BaseElement {
   }
 
   get isConnected(): boolean {
-      return this.model.outputs.length > 0 || this.model.inputs.length > 0;
+    const element = this.model as Element
+    const connectedOutputPin = element.outputs?.find(pin => pin.connection)
+    const connectedInputPin = element.inputs?.find(pin => pin.connection)
+
+    return connectedOutputPin !== undefined || connectedInputPin !== undefined;
   }
 
   get classList(): Array<string> {

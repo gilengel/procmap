@@ -135,7 +135,6 @@ export default class LayoutRow extends Vue {
   };
 
   private splitDisabled(columnIndex: number) {
-      console.log(this.model.columns[columnIndex].width)
     return this.colSizes[columnIndex] < this.minColSize * 2;
   }
 
@@ -160,7 +159,6 @@ export default class LayoutRow extends Vue {
   }
 
   mounted() {
-      console.log(this.model)
     for (let column of this.model.columns) {
       column;
     }
@@ -266,6 +264,7 @@ export default class LayoutRow extends Vue {
   }
 
   closeDragElement() {
+    console.log("=)=")
     document.onmouseup = null;
     document.onmousemove = null;
 
