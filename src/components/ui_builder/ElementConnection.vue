@@ -3,7 +3,6 @@
         <div class="triangle-wrapper">
             <div class="triangle"></div>
         </div>
-
         <q-btn outline dark round color="accent" icon="las la-tools" :style="clear_style" />
     </div>
 </template>
@@ -12,9 +11,9 @@
 import { createTrianglePoints } from 'src/helpers/svg';
 import { ElementConnection } from 'src/models/Grid';
 import { mixins } from "vue-class-component";
-import { Component, Prop } from 'vue-property-decorator'
+import { Component, Prop, Watch } from 'vue-property-decorator'
 
-import { colors, extend } from 'quasar'
+import { colors } from 'quasar'
 import { Selectable } from 'src/mixins/Selectable';
 
 @Component({

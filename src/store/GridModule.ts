@@ -1,11 +1,8 @@
-import { ElementPin } from './../models/Grid';
 import { StringTransform } from './../models/String';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { Grid, Row, Column, Element, ElementAttribute, ElementConnection, Point } from '../models/Grid'
 import { v4 as uuidv4 } from "uuid";
 import { ElementType, ElementAttributeType } from 'src/layouts/FormModel';
-import { start } from 'repl';
-import { Connection } from 'rete';
 
 import Vue from 'vue'
 
