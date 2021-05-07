@@ -17,7 +17,15 @@
           />
         </q-toolbar>
         <div class="row">
-          <div class="col-10">
+          <div class="col-2">
+            <ElementList @startDragging="widgetDraggingStarted" @stopDragging="widgetDraggingStopped" />
+                        <OutputOptions
+            :uuid="selectedElement.uuid"
+            :model="selectedElement"
+
+            />
+          </div>
+          <div class="col-8">
 
             <svg></svg>
 
@@ -71,6 +79,13 @@
             :model="selectedElement"
             v-else-if="selectedElement.uuid"
             />
+
+            <OutputOptions
+            :uuid="selectedElement.uuid"
+            :model="selectedElement"
+            v-else
+            />
+
           </div>
         </div>
         </div>
@@ -90,14 +105,22 @@
 import { Vue, Component } from "vue-property-decorator";
 import LayoutRow from "components/ui_builder/LayoutRow.vue";
 import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
+import OutputOptions from "components/ui_builder/OutputOptions.vue";
 import TextOptions from "components/ui_builder/TextOptions.vue";
 import HeadingOptions from "components/ui_builder/HeadingOptions.vue";
 import Connection from "components/ui_builder/ElementConnection.vue";
-import ConnectionOptions from "components/ui_builder/ConnectionOptions.vue"
+import ConnectionOptions from "components/ui_builder/ConnectionOptions.vue";
 import ToggleButton from "components/ToggleButton.vue";
+import ElementList from "components/ui_builder/ElementList.vue";
 import { Action, Getter } from "vuex-class";
 
-import { Grid, Element, ElementType, Row, ElementConnection } from "../models/Grid";
+import {
+  Grid,
+  Element,
+  ElementType,
+  Row,
+  ElementConnection,
+} from "../models/Grid";
 
 import draggable from "vuedraggable";
 
@@ -112,7 +135,9 @@ import draggable from "vuedraggable";
     HeadingOptions,
     ToggleButton,
     Connection,
-    ConnectionOptions
+    ConnectionOptions,
+    ElementList,
+    OutputOptions
   },
 })
 export default class UiBuilderLayout extends Vue {
@@ -185,13 +210,32 @@ export default class UiBuilderLayout extends Vue {
   ];
 
   drag = false;
+  rowDraggingDisabled = false;
 
+  get dragOptions() {
+    return {
+      animation: 200,
+      group: "description",
+      disabled: this.rowDraggingDisabled,
+      ghostClass: "ghost",
+    };
+  }
+
+  widgetDraggingStarted() {
+    this.rowDraggingDisabled = true;
+  }
+
+  widgetDraggingStopped() {
+    this.rowDraggingDisabled = false;
+  }
+  /*
   dragOptions = {
     animation: 200,
     group: "description",
     disabled: false,
     ghostClass: "ghost",
   };
+  */
 
   mounted() {
     window.addEventListener("keydown", (e) => {
@@ -249,5 +293,4 @@ line {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-
 </style>

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ElementType, ElementAttributeType } from 'src/layouts/FormModel';
 
 import Vue from 'vue'
+import { type } from 'os';
 
 function text(): Element {
   const widgetAttributes = new Array<ElementAttribute>();

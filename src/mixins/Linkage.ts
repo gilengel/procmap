@@ -40,120 +40,121 @@ function contains(rect: DOMRect, point: Array<number>): boolean {
 
 @Component
 export class Linkage extends Vue {
-    _linkageStarted: boolean = false;
+  _linkageStarted: boolean = false;
 
-    @Prop({ default: false }) active!: boolean;
+  @Prop({ default: false }) active!: boolean;
 
-    @Watch('active')
-    onActiveChange (val: boolean) {
-        if (val) {
-            this.registerEventListeners();
-        } else {
-            this.unregisterEventListeners();
-        }
+  @Watch('active')
+  onActiveChange(val: boolean) {
+    if (val) {
+      this.registerEventListeners();
+    } else {
+      this.unregisterEventListeners();
+    }
+  }
+
+  @Action('addToClassList')
+  addToClassList!: (param: { element: Element, class: string }) => void
+
+  @Action('removeFromClassList')
+  removeFromClassList!: (param: { element: Element, class: string }) => void
+
+  @Action('linkTwoElements')
+  linkTwoElements!: (param: { identifier: string, start: Element, startPosition: Point, end: Element, endPosition: Point }) => void
+
+  @Getter('connections')
+  connections!: () => Array<ElementConnection>
+
+  mounted() {
+    //this.registerEventListeners();
+
+    GLOBAL_CANVAS = document.getElementsByTagName("svg")[0]
+
+
+    this.createTriangle(100, 100, 20, LINKAGE_TRIANGLE_PREVIEW)
+  }
+
+  beforeDestroy() {
+    this.unregisterEventListeners();
+  }
+
+  mouseover(event: MouseEvent) {
+    if (!this.active) return;
+
+    this.addToClassList({ element: this.model, class: LINKED })
+
+    endElement = this.model;
+    endRect = this.$el.getBoundingClientRect();
+  }
+
+  mouseout(event: MouseEvent) {
+    if (!this.active) return;
+
+    event.preventDefault();
+
+
+    this.removeFromClassList({ element: this.model, class: LINKED })
+
+    endElement = null;
+    endRect = null;
+  }
+
+  mousedown(event: MouseEvent) {
+    if (!this.active) return;
+    if (!GLOBAL_CANVAS) return;
+
+    this._linkageStarted = true;
+
+
+    this.addToClassList({ element: this.model, class: LINKED })
+
+    const bb = GLOBAL_CANVAS.getBoundingClientRect();
+    start = [event.clientX, event.clientY];
+
+    document.addEventListener('mousemove', this.mousemove)
+    document.addEventListener('mouseup', this.mouseup)
+
+    startElement = this.model;
+    startRect = this.$el.getBoundingClientRect()
+
+    this.createLine(start[0] - bb.left, start[1] - bb.top, start[0] - bb.left, start[1] - bb.top, LINKAGE_PREVIEW)
+  }
+
+
+  pointOnRect(point: Array<number>, rect: DOMRect, offset: number): Array<number> {
+    var midX = (rect.left + rect.right) / 2;
+    var midY = (rect.top + rect.bottom) / 2;
+    var m = (start[1] - point[1]) / (start[0] - point[0]);
+
+    if (point[0] <= midX) { // check "left" side
+      var minXy = m * (rect.left - point[0]) + point[1];
+      if (rect.top <= minXy && minXy <= rect.bottom)
+        return [rect.left - offset, minXy];
     }
 
-    @Action('addToClassList')
-    addToClassList!: (param: { element: Element, class: string }) => void
-
-    @Action('removeFromClassList')
-    removeFromClassList!: (param: { element: Element, class: string }) => void
-
-    @Action('linkTwoElements')
-    linkTwoElements!: (param: { identifier: string, start: Element, startPosition: Point, end: Element, endPosition: Point }) => void
-
-    @Getter('connections')
-    connections!: () => Array<ElementConnection>
-
-    mounted () {
-        //this.registerEventListeners();
-
-        GLOBAL_CANVAS = document.getElementsByTagName("svg")[0]
-
-
-        this.createTriangle(100, 100, 20, LINKAGE_TRIANGLE_PREVIEW)
+    if (point[0] >= midX) { // check "right" side
+      var maxXy = m * (rect.right - point[0]) + point[1];
+      if (rect.top <= maxXy && maxXy <= rect.bottom)
+        return [rect.right + offset, maxXy];
     }
 
-    beforeDestroy () {
-        this.unregisterEventListeners();
+    if (point[1] <= midY) { // check "top" side
+      var minYx = (rect.top - point[1]) / m + point[0];
+      if (rect.left <= minYx && minYx <= rect.right)
+        return [minYx, rect.top - offset];
     }
 
-    mouseover (event: MouseEvent) {
-        if (!this.active) return;
-
-        this.addToClassList({ element: this.model, class: LINKED })
-
-        endElement = this.model;
-        endRect = this.$el.getBoundingClientRect();
+    if (point[1] >= midY) { // check "bottom" side
+      var maxYx = (rect.bottom - point[1]) / m + point[0];
+      if (rect.left <= maxYx && maxYx <= rect.right)
+        return [maxYx, rect.bottom + offset];
     }
 
-    mouseout (event: MouseEvent) {
-        if (!this.active) return;
+    // edge case when finding midpoint intersection: m = 0/0 = NaN
+    if (point[0] === midX && point[1] === midY) return point;
 
-        event.preventDefault();
-
-
-        this.removeFromClassList({ element: this.model, class: LINKED })
-
-        endElement = null;
-        endRect = null;
-    }
-
-    mousedown (event: MouseEvent) {
-        if (!this.active) return;
-        this._linkageStarted = true;
-
-
-        this.addToClassList({ element: this.model, class: LINKED })
-
-        const top = GLOBAL_CANVAS.getBoundingClientRect().top;
-
-        start = [event.clientX, event.clientY];
-
-        document.addEventListener('mousemove', this.mousemove)
-        document.addEventListener('mouseup', this.mouseup)
-
-        startElement = this.model;
-        startRect = this.$el.getBoundingClientRect()
-
-        this.createLine(start[0], start[1], start[0], start[1], LINKAGE_PREVIEW)
-    }
-    
-
-    pointOnRect (point: Array<number>, rect: DOMRect, offset: number): Array<number> {
-        var midX = (rect.left + rect.right) / 2;
-        var midY = (rect.top + rect.bottom) / 2;
-        var m = (start[1] - point[1]) / (start[0] - point[0]);
-
-        if (point[0] <= midX) { // check "left" side
-            var minXy = m * (rect.left - point[0]) + point[1];
-            if (rect.top <= minXy && minXy <= rect.bottom)
-                return [rect.left - offset, minXy];
-        }
-
-        if (point[0] >= midX) { // check "right" side
-            var maxXy = m * (rect.right - point[0]) + point[1];
-            if (rect.top <= maxXy && maxXy <= rect.bottom)
-                return [rect.right + offset, maxXy];
-        }
-
-        if (point[1] <= midY) { // check "top" side
-            var minYx = (rect.top - point[1]) / m + point[0];
-            if (rect.left <= minYx && minYx <= rect.right)
-                return [minYx, rect.top - offset];
-        }
-
-        if (point[1] >= midY) { // check "bottom" side
-            var maxYx = (rect.bottom - point[1]) / m + point[0];
-            if (rect.left <= maxYx && maxYx <= rect.right)
-                return [maxYx, rect.bottom + offset];
-        }
-
-        // edge case when finding midpoint intersection: m = 0/0 = NaN
-        if (point[0] === midX && point[1] === midY) return point;
-
-        return point
-    }
+    return point
+  }
 
   mousemove(event: MouseEvent) {
     if (!this.active) return;
@@ -166,7 +167,7 @@ export class Linkage extends Vue {
       return;
     }
 
-    const top = GLOBAL_CANVAS.getBoundingClientRect().top;
+    const bb = GLOBAL_CANVAS.getBoundingClientRect();
 
     const previewLine = this.getPreviewLine();
     if (!previewLine) {
@@ -177,18 +178,17 @@ export class Linkage extends Vue {
     const lineStart = this.pointOnRect(lineEnd, startRect, 10)
 
     if (endRect && !equal(startRect, endRect)) {
-        lineEnd = this.pointOnRect(lineStart, endRect, 10)
-        
+      lineEnd = this.pointOnRect(lineStart, endRect, 10)
     }
 
     end[0] = lineEnd[0]
-    end[1] = lineEnd[1] - top
-      
+    end[1] = lineEnd[1]
 
-    previewLine.setAttribute('x1', `${lineStart[0]}`)
-    previewLine.setAttribute('y1', `${lineStart[1] - top}`)
-    previewLine.setAttribute('x2', `${lineEnd[0]}`)
-    previewLine.setAttribute('y2', `${lineEnd[1] - top}`)
+
+    previewLine.setAttribute('x1', `${lineStart[0] - bb.left}`)
+    previewLine.setAttribute('y1', `${lineStart[1] - bb.top}`)
+    previewLine.setAttribute('x2', `${lineEnd[0] - bb.left}`)
+    previewLine.setAttribute('y2', `${lineEnd[1] - bb.top}`)
 
     const previewTriangle = this.getPreviewTriangle();
     if (previewTriangle) {
@@ -219,16 +219,17 @@ export class Linkage extends Vue {
     const endX = parseFloat(previewLine.getAttribute('x2') as string)
     const endY = parseFloat(previewLine.getAttribute('y2') as string)
 
-      GLOBAL_CANVAS?.removeChild(previewLine)
-      
-      GLOBAL_CANVAS.removeChild(this.getPreviewTriangle())
+    GLOBAL_CANVAS?.removeChild(previewLine)
+
+    GLOBAL_CANVAS.removeChild(this.getPreviewTriangle())
 
 
 
     if (startElement && startElement.uuid !== this.model.uuid && startElement.outputs && startElement.outputs.length > 0) {
       this.removeFromClassList({ element: startElement, class: LINKED })
 
-      this.linkTwoElements({ identifier: startElement.outputs[0].identifier, start: startElement, startPosition: { x: startX, y: startY }, end: endElement, endPosition: { x: endX, y: endY } })
+      const left = GLOBAL_CANVAS.getBoundingClientRect().left
+      this.linkTwoElements({ identifier: startElement.outputs[0].identifier, start: startElement, startPosition: { x: startX + left, y: startY }, end: endElement, endPosition: { x: endX + left, y: endY } })
 
       startElement = null;
       endElement = null;
@@ -253,11 +254,11 @@ export class Linkage extends Vue {
     return null;
   }
 
-    removePreviewTriangle () {
-        const previewTriangles = document.getElementsByClassName(LINKAGE_TRIANGLE_PREVIEW)
-        if (previewTriangles && previewTriangles.length > 0) {
-            previewTriangles[0].parentNode?.removeChild(previewTriangles[0])
-        }
+  removePreviewTriangle() {
+    const previewTriangles = document.getElementsByClassName(LINKAGE_TRIANGLE_PREVIEW)
+    if (previewTriangles && previewTriangles.length > 0) {
+      previewTriangles[0].parentNode?.removeChild(previewTriangles[0])
+    }
   }
 
   get canvas() {

@@ -4,7 +4,8 @@ export enum ElementType {
   Button = "Button",
   Text = "Text",
   Row = "Row",
-  Heading = "Heading"
+  Heading = "Heading",
+  Map = "Map"
 }
 
 
@@ -16,14 +17,22 @@ export interface Element {
   column?: Column;
   classList: Array<string>;
 
-  inputs?: Array<ElementPin>;
-  outputs?: Array<ElementPin>;
+  inputs?: Array<ElementPin | ElementNestedPin | ElementPinConnection>;
+  outputs?: Array<ElementPin | ElementNestedPin | ElementPinConnection>;
 }
 
 export interface ElementPin {
   type: ElementAttributeType,
   identifier: string,
   connection?: ElementConnection
+}
+
+export interface ElementNestedPin {
+  children: Array<ElementPin | ElementNestedPin>
+}
+
+export interface ElementPinConnection {
+  connection? : ElementConnection
 }
 
 export interface Point {
@@ -46,6 +55,7 @@ export enum ElementAttributeType {
   Number = "Number",
   String = "String",
   Boolean = "Boolean",
+  Coolection = "Collection",
 }
 
 export interface ElementAttribute {

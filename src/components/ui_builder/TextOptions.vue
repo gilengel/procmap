@@ -107,5 +107,22 @@ export default class TextOptions extends TextElement {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.option-column {
+  padding-left: 1em;
+  padding-right: 1em;
+  color: white;
+
+  .preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 1em;
+  }
+}
+.q-icon {
+  font-size: 3em;
+  margin: 0.3rem;
+}
 </style>

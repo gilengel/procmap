@@ -5,8 +5,13 @@
         <q-menu dark>
           <q-list style="min-width: 100px">
             <template v-for="element in allowedElements">
-              <q-item clickable v-close-popup @click="addElement(element)" :key="element">
-                <q-item-section>{{element}}</q-item-section>
+              <q-item
+                clickable
+                v-close-popup
+                @click="addElement(element)"
+                :key="element"
+              >
+                <q-item-section>{{ element }}</q-item-section>
               </q-item>
             </template>
           </q-list>
@@ -31,6 +36,13 @@
       />
     </div>
 
+    <draggable
+      @change="elementAdded"
+        :list="list"
+        group="widget"
+        ghost-class="ghost"
+        :disabled="linkModeActive"
+      >
     <TextElement
       data-key="itemId"
       :model="model.element"
@@ -58,6 +70,17 @@
       editable="true"
       v-if="model && model.element && model.element.type === 'Heading'"
     />
+
+    <MapElement
+      data-key="itemId"
+      :model="model.element"
+      :dataValue="model.element.type"
+      :active="linkModeActive"
+      editable="true"
+      v-if="model && model.element && model.element.type === 'Map'"
+    />
+
+    </draggable>
   </div>
 </template>
 
@@ -67,6 +90,8 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 import ButtonElement from "./ButtonElement.vue";
 import TextElement from "./TextElement.vue";
 import HeadingElement from "./HeadingElement.vue";
+import MapElement from "./MapElement.vue";
+import draggable from "vuedraggable";
 import {
   Row,
   Column,
@@ -86,9 +111,17 @@ import { v4 as uuidv4 } from "uuid";
     ButtonElement,
     TextElement,
     HeadingElement,
+    MapElement,
+    draggable
   },
 })
 export default class LayoutColumn extends Vue {
+      list= [
+        { name: "John", id: 0 },
+        { name: "Joao", id: 1 },
+        { name: "Jean", id: 2 }
+      ];
+
   // Minimal size for one column
   @Prop({
     validator(x) {
@@ -98,7 +131,9 @@ export default class LayoutColumn extends Vue {
   columnIndex!: number;
 
   @Prop({
-      validator(x) { return typeof x === "boolean" }
+    validator(x) {
+      return typeof x === "boolean";
+    },
   })
   linkModeActive!: boolean;
 
@@ -119,6 +154,18 @@ export default class LayoutColumn extends Vue {
   removeElementFromColumn!: (column: Column) => void;
 
   allowedElements = ["Button", "Text", "Heading"];
+
+  elementAdded(evt) {
+
+    if(evt.added) {
+      this.addElement(ElementType[evt.added.element.name as keyof typeof ElementType])
+    }
+
+    if(evt.removed) {
+      this.removeElementFromColumn(this.model)
+    }
+
+  }
 
   private addElement(widgetType: ElementType) {
     const widgetAttributes = new Array<ElementAttribute>();

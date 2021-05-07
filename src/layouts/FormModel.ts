@@ -2,7 +2,8 @@ import axios from "axios";
 
 export enum ElementType {
   Button = "Button",
-  Text = "Text"
+  Text = "Text",
+  Map = "Map"
 }
 
 export interface Element {
@@ -15,7 +16,8 @@ export interface Element {
 export enum ElementAttributeType {
   Number = "Number",
   String = "String",
-  Boolean = "Boolean"
+  Boolean = "Boolean",
+  Collection = "Collection",
 }
 
 export interface ElementAttribute {
