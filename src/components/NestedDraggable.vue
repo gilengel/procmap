@@ -1,24 +1,41 @@
 <template>
-<ul>
-  <li>Element 1</li>
-  <li>Element 2</li>
-  <li>
-    <ul>
-      <li>Subelement 1</li>
-      <li>Subelement 2</li>
-      <li>Subelement 3</li>
-    </ul>
-  </li>
-  <li>Element 4</li>
-</ul>
-<!--
+  <!--
+  <ul>
+    <li>
+      Animals
+      <ul>
+        <li>Birds</li>
+        <li>
+          Mammals
+          <ul>
+            <li>Elephant</li>
+            <li>Mouse</li>
+          </ul>
+        </li>
+        <li>Reptiles</li>
+      </ul>
+    </li>
+    <li>
+      Plants
+      <ul>
+        <li>
+          Flowers
+          <ul>
+            <li>Rose</li>
+            <li>Tulip</li>
+          </ul>
+        </li>
+        <li>Trees</li>
+      </ul>
+    </li>
+  </ul>
+  -->
   <draggable class="dragArea" tag="ul" :list="tasks" :group="{ name: 'g1' }">
     <li v-for="el in tasks" :key="el.name">
       <p>{{ el.name }}</p>
       <NestedDraggable :tasks="el.tasks" />
     </li>
   </draggable>
-  -->
 </template>
 <script lang="ts">
 import Vue from "vue";
@@ -32,46 +49,49 @@ import draggable from "vuedraggable";
 })
 export default class NestedDraggable extends Vue {
   @Prop()
-  tasks: any
+  tasks: any;
 }
 </script>
 <style lang="scss" scoped>
-
-$size: 3em;
-ul:first-of-type {
-  padding-left: $size;
-}
-ul {
+$height: 2em;
+ul,
+ul ul {
   list-style: none;
-  padding-left: 0;
-  position: relative;
+  margin: 0;
+  padding: 0;
 }
-ul::after {
-  content: ' ';
-  position: absolute;
-  left: $size / 2;
-  top: 0;
-  width: $size;
-  height: calc(100% - #{$size / 2});
-  border-left: solid 1px red;
+ul ul {
+  margin-left: 10px;
 }
 
-li {
+ul {
+  li {
+    margin: 0;
+    padding: 0 7px;
+    line-height: 20px;
+    border-left: 1px solid rgb(100, 100, 100);
+
+    p {
+        margin: 0;
+    }
+  }
+}
+
+ul li:last-child {
+  border-left: none;
+}
+ul li:before {
   position: relative;
-  min-height: $size;
-  line-height: $size;
+  top: -0.3em;
+  height: $height;
+  width: 20px;
+  color: white;
+  border-bottom: 1px solid rgb(100, 100, 100);
+  content: "";
+  display: inline-block;
+  left: -7px;
 }
-li::after {
-  content: ' ';
-  position: absolute;
-  left: -$size / 2;
-  top: 50%;
-  width: calc(#{$size / 2} - 4px);
-  height: 50%;
-  border-top: solid 1px red;
-}
-.dragArea {
-  min-height: 50px;
-  outline: 1px dashed;
+ul li:last-child:before {
+  border-left: 1px solid rgb(100, 100, 100);
 }
 </style>

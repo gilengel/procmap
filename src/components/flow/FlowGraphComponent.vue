@@ -73,23 +73,6 @@ export default class FlowGraphComponent extends Vue {
     }
   }
 
-  /*
-  makeComponentDataReactive() {
-    for (const category of this.nodes) {
-      category.components.forEach((c) => {
-        const data = c.defaultData;
-
-        // Convert all default values to vue reactive ones
-        for (const i in data) {
-          if (!(data[i] instanceof Object)) {
-            Vue.set(data, i, data[i]);
-          }
-        }
-      });
-    }
-  }
-  */
-
   registerEditorEvents() {
     this.editor.on(["nodecreate"], (node) => {
       // Add random uuid used to identify model in store related to the new node
@@ -158,9 +141,6 @@ export default class FlowGraphComponent extends Vue {
 
     this.engine = new Rete.Engine("demo@0.1.0");
     this.registerComponents();
-
-    // Progress is used for longer task to display a progress bar
-    //this.makeComponentDataReactive();
 
     this.registerEditorEvents();
 
@@ -249,13 +229,21 @@ export default class FlowGraphComponent extends Vue {
 
 <style lang="scss" scoped>
 .preview {
+    background: salmon;
+    height: 100%;
+}
+    /*
   display: flex;
   flex-direction: column;
   height: 100%;
 
   overflow: hidden;
 
+  
+
   .flow {
+      
+      height: 40%;
     flex-grow: 2;
     display: flex;
     flex-direction: column;
@@ -266,6 +254,13 @@ export default class FlowGraphComponent extends Vue {
 
       flex-grow: 2;
     }
+
   }
-}
+  */
+
+  .flow {
+      background: green;
+      height: 40%;
+  }
+
 </style>

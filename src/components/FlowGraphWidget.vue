@@ -16,7 +16,6 @@
           :graph="graph"
           :nodes="nodes"
           v-html=""
-          v-on="$listeners"
         />
       </template>
     </q-splitter>

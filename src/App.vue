@@ -17,6 +17,10 @@ body {
   font-size: 0.8em;
 }
 
+#q-app {
+    height: 100vh;
+}
+
 .q-toolbar {
   font-size: 0.5em !important;
   background: $dark !important;

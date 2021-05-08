@@ -1,53 +1,80 @@
 <template>
-    <div class="column full-height">
-        <q-toolbar class="bg-black text-white vue-draggable-handle">
-          <q-toolbar-title shrink style="margin-right: 2em">Widget Builder</q-toolbar-title>
+<h1>Layout</h1>
+<!--
+    <div class="row">
+          <div class="col-2">
+            <ElementList @startDragging="widgetDraggingStarted" @stopDragging="widgetDraggingStopped" />
+                        <OutputOptions
+            :uuid="selectedElement.uuid"
+            :model="selectedElement"
 
-          <q-btn-toggle
-            v-model="model"
-            push
-            flat
-            toggle-color="secondary"
-            :options="[
-                {value: 'one', slot: 'one'},
-                {value: 'two', slot: 'two'},
-                ]"
-          >
-            <template v-slot:one>
-              <div>
-                <q-icon name="las la-link" />
-              </div>
-            </template>
+            />
+          </div>
+          <div class="col-8">
 
-            <template v-slot:two>
-              <div>
-                <q-icon name="las la-project-diagram" />
-              </div>
-            </template>
-          </q-btn-toggle>
+            <svg></svg>
 
-          <ToggleButton
-            color="white"
-            selected-color="secondary"
-            icon="las la-link"
-            label="Link to elements together"
-            v-model="linkModeActive"
-          />
+            <Connection v-for="connection in connections" :model="connection" v-if="linkModeActive" />
 
-          <q-space />
-          <q-btn
-            style="
-              background: salmon;
-              color: white;
-              margin-top: 8px;
-              margin-bottom: 8px;
-            "
-            label="Save Layout"
-          />
-        </q-toolbar>
-        <WidgetLayout v-if="model == 'one'" />
-        <WidgetFlow v-if="model == 'two'" />
-    </div>
+            <draggable
+              handle=".drag-handle"
+              class="dragArea list-group"
+              v-bind="dragOptions"
+              @start="drag = true"
+              @end="drag = false"
+            >
+              <transition-group
+                type="transition"
+                :name="!drag ? 'flip-list' : null"
+              >
+                <LayoutRow
+                  dataKey="itemId"
+                  dataValue="Row"
+                  :linkModeActive="linkModeActive"
+                  :deleteRow="deleteRow"
+                  :model="row"
+                  :rowIndex="row_index"
+                  :key="row_index"
+                  v-for="(row, row_index) in grid.rows"
+                />
+              </transition-group>
+            </draggable>
+          </div>
+          <div class="col-2 options-container" ref="options_container">
+            <ButtonOptions
+              :uuid="selectedElement.uuid"
+              :model="selectedElement"
+              v-if="selectedElement && selectedElement.type === 'Button'"
+            />
+
+            <TextOptions
+              :uuid="selectedElement.uuid"
+              :model="selectedElement"
+              v-else-if="selectedElement && selectedElement.type === 'Text'"
+            />
+
+            <HeadingOptions
+            :uuid="selectedElement.uuid"
+            :model="selectedElement"
+            v-else-if="selectedElement && selectedElement.type === 'Heading'"
+            />
+
+            <ConnectionOptions
+            :uuid="selectedElement.uuid"
+            :model="selectedElement"
+            v-else-if="selectedElement.uuid"
+            />
+
+            <OutputOptions
+            :uuid="selectedElement.uuid"
+            :model="selectedElement"
+            v-else
+            />
+
+          </div>
+        </div>
+        </div>
+        -->
 </template>
 
 <script lang='ts'>
@@ -61,8 +88,6 @@ import Connection from "components/ui_builder/ElementConnection.vue";
 import ConnectionOptions from "components/ui_builder/ConnectionOptions.vue";
 import ToggleButton from "components/ToggleButton.vue";
 import ElementList from "components/ui_builder/ElementList.vue";
-import WidgetFlow from "components/ui_builder/WidgetFlow.vue";
-import WidgetLayout from "components/ui_builder/WidgetLayout.vue";
 import { Action, Getter } from "vuex-class";
 
 import {
@@ -71,13 +96,11 @@ import {
   ElementType,
   Row,
   ElementConnection,
-} from "../models/Grid";
+} from "../../models/Grid";
 
 import draggable from "vuedraggable";
 
 @Component({
-  name: "MainLayout",
-
   components: {
     draggable,
     LayoutRow,
@@ -88,12 +111,10 @@ import draggable from "vuedraggable";
     Connection,
     ConnectionOptions,
     ElementList,
-    OutputOptions,
-    WidgetFlow,
-    WidgetLayout,
+    OutputOptions
   },
 })
-export default class UiBuilderLayout extends Vue {
+export default class WidgetLayout extends Vue {
   @Getter("selectedModels")
   getSelectedElements!: () => Array<any>;
 
@@ -119,7 +140,7 @@ export default class UiBuilderLayout extends Vue {
     clearPreviousSelected: boolean;
   }) => void;
 
-  model = "one";
+  model = 'one'
 
   linkModeActive: boolean = false;
 
@@ -206,8 +227,7 @@ export default class UiBuilderLayout extends Vue {
 }
 </script>
 
-<style lang='scss' scoped>
-
+<style lang='scss'>
 $size: 24px;
 .ghost {
   //border: solid 2px salmon;
@@ -246,14 +266,15 @@ line {
 }
 
 .q-btn-group {
-  > button {
-    border-radius: 50% !important;
-    width: 42px;
-    height: 42px;
-  }
 
-  > button:not(:last-of-type) {
-    //margin-right: 0.5em;
-  }
+    > button {
+        border-radius: 50% !important;
+        width: 42px;
+        height: 42px;
+    }
+
+    > button:not(:last-of-type) {
+        //margin-right: 0.5em;
+    }
 }
 </style>

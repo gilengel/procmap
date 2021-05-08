@@ -32,7 +32,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 import { MetaFlowCategory } from "./flow/Index";
 
 @Component
-export default class MapEditorComponent extends Vue {
+export default class FlowGraphNodesList extends Vue {
   @Prop() readonly nodes!: Array<MetaFlowCategory>;
 
   dragstart(id: string, ev: DragEvent) {

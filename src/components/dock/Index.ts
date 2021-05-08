@@ -13,10 +13,18 @@ import EventBus, {
 let registeredComponents: Array<MetaFlowCategory> = [];
 
 function install(editor: NodeEditor, nodes: Array<MetaFlowCategory>) {
-  registeredComponents = nodes;
+    registeredComponents = nodes;
 
-  editor.view.container.addEventListener('dragover', e => e.preventDefault())
-  editor.view.container.addEventListener('drop', (e: DragEvent) => {
+    editor.view.container.onmouseover = (e) => {
+        console.log("FOOOOOOOOOOoo")
+    }
+    editor.view.container.addEventListener('dragover', (e: DragEvent) => {
+        console.log(e)
+        e.preventDefault()
+    })
+    editor.view.container.addEventListener('drop', (e: DragEvent) => {
+      e.preventDefault()
+      console.log("Drop")
     if (!e.dataTransfer) return
 
     const id = e.dataTransfer.getData('componentId')
