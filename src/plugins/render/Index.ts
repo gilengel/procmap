@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import './Filters'
-import VueNode from '../Node.vue'
-import Socket from '../Socket.vue'
+import VueNode from '../../components/Node.vue'
+import Socket from '../../components/Socket.vue'
 import Vue, { Component } from 'vue'
 import mixin from './Mixin'
 

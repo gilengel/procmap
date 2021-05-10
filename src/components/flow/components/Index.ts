@@ -1,11 +1,7 @@
 
 import MapComponent from './Map'
-import Voronoi from './Voronoi'
-import SelectRandom from './SelectRantom'
 
 import { Component } from 'rete'
-import Filter from './Filter'
-import Mountains from './Mountains'
 
 export interface MetaFlowCategory {
   readonly label: string;
@@ -36,34 +32,6 @@ const basicCategory: MetaFlowCategory = {
         dimension: { width: 1024, height: 1024 }
       }
     },
-    {
-      id: 'voronoi',
-      label: 'Voronoi',
-      icon: 'las la-map-marked',
-      component: Voronoi,
-      defaultData: {
-        amount: 100,
-        iterations: 2
-      }
-    },
-    {
-      id: 'select_random',
-      label: 'Select Random',
-      icon: 'las la-map-marked',
-      component: SelectRandom,
-      defaultData: {
-        amount: 2
-      }
-    },
-    {
-      id: 'mountain',
-      label: 'Mountain',
-      icon: 'las la-mountain',
-      component: Mountains,
-      defaultData: {
-
-      }
-    }
   ]
 }
 

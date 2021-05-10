@@ -2,7 +2,7 @@
   <q-layout view="hHh lpR fFf">
     <q-page-container>
       <q-page>
-        <MapEditorComponent />
+        <FlowEditorComponent dockPosition="left" :dockWidth="20" style="height: 100vh" flowTitle="Flow Graph" />
       </q-page>
     </q-page-container>
   </q-layout>
@@ -10,11 +10,11 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import MapEditorComponent from 'components/MapEditorComponent.vue'
+import FlowEditorComponent from 'src/components/FlowEditorComponent.vue'
 
 export default defineComponent({
   name: 'MainLayout',
-  components: { MapEditorComponent }
+  components: { FlowEditorComponent }
 })
 </script>
 

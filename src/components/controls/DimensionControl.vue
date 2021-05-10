@@ -25,26 +25,17 @@
         </template>
       </q-input>
     </div>
-
-    <div :class="linked ? 'link highlight' : 'link'">
-       <ToggleButton v-model="linked" icon="las la-link" disableIcon="las la-unlink"/>
-    </div>
   </div>
 </template>
 
 <script lang="ts">
 
-import VueFlowControl from '../FlowControl'
-import ToggleButton from '../ToggleButton.vue'
+import VueFlowControl from './FlowControl'
 
 import { Component } from 'vue-property-decorator'
 import { evaluate } from 'mathjs'
 
-import { Dimension } from '../models'
-
-@Component({
-  components: { ToggleButton }
-})
+@Component
 export default class DimensionControl extends VueFlowControl {
   width = 0;
   height = 0
@@ -52,7 +43,7 @@ export default class DimensionControl extends VueFlowControl {
   linked = false;
 
   mounted () {
-    const property = this.getValue<Dimension>()
+    const property = this.getValue<any>()
 
     this.width = property.width
     this.height = property.height

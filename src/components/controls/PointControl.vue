@@ -25,16 +25,11 @@
 <script lang="ts">
 
 import { NodeEditor } from 'rete'
-import ToggleButton from '../ToggleButton.vue'
 
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { evaluate } from 'mathjs'
 
-// import { Dimension } from '../models'
-
-@Component({
-  components: { ToggleButton }
-})
+@Component
 export default class DimensionControl extends Vue {
   @Prop(NodeEditor) emitter: NodeEditor | undefined;
   @Prop(String) ikey: string | undefined;

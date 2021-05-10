@@ -2,7 +2,7 @@
   <div class="preview">
     <q-toolbar class="bg-grey-9 text-white">
       <q-toolbar-title>
-        Flow
+        {{title}}
       </q-toolbar-title>
     </q-toolbar>
 
@@ -13,21 +13,16 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import '@babel/polyfill'
 import Rete, { Engine, NodeEditor } from 'rete'
 
 import ConnectionPlugin from 'rete-connection-plugin'
-import VueRenderPlugin from './render/Index'
+import VueRenderPlugin from 'src/plugins/render/Index'
 
-import DockPlugin from './dock/Index'
+import DockPlugin from '../plugins/dock/Index'
 
-import { RandomMap } from './models'
-
-import { store } from '../store'
-
-import { Action, Getter } from 'vuex-class'
-import { getRegisteredComponentCategories } from './flow/Index'
+import { MetaFlowCategory } from './flow/components/Index'
 
 import resize from 'vue-resize-directive'
 
@@ -37,39 +32,25 @@ import resize from 'vue-resize-directive'
   }
 })
 export default class FlowGraphComponent extends Vue {
-  @Prop(RandomMap) map: RandomMap | undefined;
+  @Prop({
+    validator: (x) => typeof x === "string" && x.length > 0,
+
+    default: "Notes"
+  })
+  title?: string;
+
   @Prop(Object) geometry: Record<string, unknown> | undefined;
-
-  @Action('render') updateRender!: (value: boolean) => void;
-  @Action('saveSystem') saveSystem!: (arg: { system: JSON }) => void;
-  @Action('resetSystemImported') resetSystemImported!: () => void;
-
-  @Getter('systemImported') systemImported!: boolean
+  @Prop() readonly nodes!: Array<MetaFlowCategory>;
 
   editor!: NodeEditor;
   engine!: Engine;
-
-  /*
-  protected get systemImported (): boolean {
-    return this.$store.getters.systemImported as boolean
-  }
-  */
-
-  @Watch('systemImported')
-  onSystemChanged (imported: boolean) {
-    if (imported) {
-      this.editor.fromJSON(this.$store.getters.system)
-        .then(() => this.resetSystemImported())
-        .catch((e) => console.error(e))
-    }
-  }
 
   createEditor () {
     const container = this.$refs.rete
     this.editor = new Rete.NodeEditor('demo@0.1.0', container as HTMLElement)
 
     this.editor.use(ConnectionPlugin)
-    this.editor.use(VueRenderPlugin, { store })
+    this.editor.use(VueRenderPlugin)
     this.editor.use(DockPlugin)
   }
 
@@ -78,7 +59,7 @@ export default class FlowGraphComponent extends Vue {
   }
 
   registerComponents () {
-    for (const category of getRegisteredComponentCategories()) {
+    for (const category of this.nodes) {
       category.components.map((c) => {
         this.editor.register(c.component)
         this.engine.register(c.component)
@@ -87,7 +68,7 @@ export default class FlowGraphComponent extends Vue {
   }
 
   makeComponentDataReactive () {
-    for (const category of getRegisteredComponentCategories()) {
+    for (const category of this.nodes) {
       category.components.forEach((c) => {
         const data = c.defaultData
         Vue.set(data, 'progress', 1.0)
@@ -104,59 +85,27 @@ export default class FlowGraphComponent extends Vue {
   }
 
   registerEditorEvents () {
-    /*
-    const listeners = new WeakMap()
-    this.editor.on('previewnode', node => {
-      if (this.previewNode instanceof ReteNode) {
-        this.previewNode.data.preview = false
-      }
-
-      this.previewNode = node
-      this.updatePreviewGeometry()
-    })
-    */
 
     this.editor.on(['process', 'nodecreated', 'connectioncreated'], async () => {
       const data = this.editor.toJSON()
-      this.saveSystem({ system: (data as unknown) as JSON })
       await this.engine.abort()
       await this.engine.process(data)
-
-      this.updateRender(true)
     })
 
-    /*
-    this.editor.on(['connectionremoved'], async c => {
-      // remove cached values in the node
-      delete c.input.node.data['old_' + c.input.key]
-      delete c.input.node.data[c.input.key]
-
-      await engine.abort()
-      await engine.process(this.editor.toJSON())
-
-      this.updatePreviewGeometry()
-    })
-*/
     this.editor.on(['import'], async () => {
       await this.engine.abort()
       await this.engine.process(this.editor.toJSON())
-
-      this.updateRender(true)
     })
 
     this.editor.on(['noderemoved'], async () => {
       await this.engine.abort()
       await this.engine.process(this.editor.toJSON())
-
-      this.updateRender(true)
     })
 
     this.editor.on(['keyup'], async (e: KeyboardEvent) => {
       this.keyUpEvent(e)
 
       await this.engine.process(this.editor.toJSON())
-
-      this.updateRender(true)
     })
   }
 
@@ -172,8 +121,6 @@ export default class FlowGraphComponent extends Vue {
 
     this.registerEditorEvents()
 
-    // await this.createDefaultNodes()
-
     this.editor.view.resize()
     this.editor.trigger('process')
   }
@@ -187,8 +134,8 @@ export default class FlowGraphComponent extends Vue {
     }
   }
 
-  width = 512;
-  height = 512;
+  width = 0;
+  height = 0;
 
   onResize (e : HTMLElement) {
     this.width = e.scrollWidth // - (e.scrollWidth % 50)
@@ -222,5 +169,4 @@ export default class FlowGraphComponent extends Vue {
     }
   }
 }
-
 </style>

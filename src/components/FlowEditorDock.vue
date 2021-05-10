@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="flow-dock">
     <q-toolbar class="bg-grey-9 text-white">
-      <q-toolbar-title> Notes </q-toolbar-title>
+      <q-toolbar-title>{{title}}</q-toolbar-title>
       <div class="q-gutter-sm"></div>
     </q-toolbar>
     <q-list dark padding>
@@ -27,13 +27,21 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 
-import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/Index'
+import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/components/Index'
 
 @Component
 export default class MapEditorComponent extends Vue {
-  availableComponentCategories: Array<MetaFlowCategory> = [];
+
+  @Prop({
+    validator: (x) => typeof x === "string" && x.length > 0,
+
+    default: "Notes"
+  })
+  title?: string;
+
+availableComponentCategories: Array<MetaFlowCategory> = [];
 
   mounted () {
     this.availableComponentCategories = getRegisteredComponentCategories()
@@ -47,5 +55,8 @@ export default class MapEditorComponent extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+  .flow-dock {
+    height: 100%;
+  }
 </style>

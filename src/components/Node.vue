@@ -2,15 +2,6 @@
   <div :class="[selected(), 'node shadow-4']">
     <div class="title">
       {{ node.name }}
-      <q-icon v-if="node.data.invalid" name="las la-skull-crossbones" size="sm" color="warning" />
-      <q-btn v-if="node.data.hasPreview && !node.data.invalid"
-        flat
-        round
-        :color="node.data.preview ? 'primary' : ''"
-        :icon="node.data.preview ? 'las la-video' : 'las la-video-slash'"
-        @click="togglePreview"
-      />
-      <!--v-show="node.data.preview == true || node.data.preview == false"-->
     </div>
     <div class="content">
       <div
@@ -66,15 +57,11 @@
 </template>
 
 <script lang="ts">
-import Mixin from './render/Mixin'
+import Mixin from 'src/plugins/render/Mixin'
 import Socket from './Socket.vue'
 
 import { Component } from 'vue-property-decorator'
 import { Node as ReteNode } from 'rete'
-
-import {
-  Action
-} from 'vuex-class'
 
 @Component({
   components: {
@@ -83,18 +70,6 @@ import {
 })
 export default class Node extends Mixin {
   node!: ReteNode
-
-  @Action('updatePreview') updatePreview!: (el: ReteNode) => void
-
-  togglePreview () {
-    if (this.editor === undefined || this.node === undefined) {
-
-    }
-
-    this.updatePreview(this.node)
-
-    // this.$forceUpdate()
-  }
 }
 </script>
 

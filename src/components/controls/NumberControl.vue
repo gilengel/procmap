@@ -14,7 +14,7 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
 
-import VueFlowControl from '../FlowControl'
+import VueFlowControl from './FlowControl'
 
 @Component
 export default class NumberControl extends VueFlowControl {
