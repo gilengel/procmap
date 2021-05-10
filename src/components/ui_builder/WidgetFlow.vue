@@ -1,6 +1,6 @@
 <template>
     <div class="widget-flow">
-    <q-splitter v-model="leftToolbar" style="height: 80%">
+    <q-splitter v-model="leftToolbar" style="height: 100%">
       <template #before>
         <FlowGraphNodesList :nodes="nodes" />
       </template>
@@ -24,7 +24,7 @@ import { MetaFlowCategory } from "../flow/Index";
 import { Node as ReteNode } from "rete";
 
 import {
-  StartFlowComponent,
+  WidgetInputComponent,
   PageFlowComponent,
   EndFlowComponent,
 } from "./WidgetModel";
@@ -37,14 +37,14 @@ const routingNodes: Array<MetaFlowCategory> = [
     components: [
       {
         id: "start",
-        label: "Start",
-        icon: "las la-play",
-        component: StartFlowComponent,
+        label: "Input",
+        icon: "las la-download",
+        component: WidgetInputComponent,
       },
       {
         id: "end",
-        label: "End",
-        icon: "las la-stop",
+        label: "Output",
+        icon: "las la-upload",
         component: EndFlowComponent,
       },
       {
@@ -61,11 +61,11 @@ const routingNodes: Array<MetaFlowCategory> = [
   components: {
     FlowGraphNodesList,
     FlowGraphComponent
-  },    
+  },
 })
 export default class WidgetFlow extends Vue {
   nodes = routingNodes;
-  @Prop() graph!: Array<ReteNode>;    
+  @Prop() graph!: Array<ReteNode>;
 
   // width of left toolbar
   leftToolbar = 20;

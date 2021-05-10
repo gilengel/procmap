@@ -1,5 +1,5 @@
 <template>
-  <div class="preview">
+  <div class="main-container">
     <q-toolbar class="bg-black text-white">
       <q-toolbar-title>Flow</q-toolbar-title>
       <q-btn flat round dense>
@@ -7,8 +7,14 @@
       </q-btn>
     </q-toolbar>
 
+    <!--
     <div v-resize="onResize" class="flow">
       <div id="rete" ref="rete" />
+    </div>
+    -->
+
+    <div class="flow">
+      <div id="rete" ref="rete"></div>
     </div>
   </div>
 </template>
@@ -228,21 +234,55 @@ export default class FlowGraphComponent extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.preview {
-    background: salmon;
-    height: 100%;
+.main-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+  overflow: hidden;
 }
-    /*
+
+.flow {
+  flex: 1;
+  position: relative;
+
+  #rete {
+    position: absolute;
+  }
+}
+
+/*
+.preview {
+  background: rgba(salmon, 0.1);
+  height: 100%;
+
+  flex-direction: row;
+  align-content: stretch;
+}
+
+.flow {
+  border: solid 2px limegreen;
+  min-height: 8em;
+}
+
+.flow2 {
+  border: solid 2px red;
+  min-height: 8em;
+  flex:1;
+}
+*/
+
+/*
   display: flex;
   flex-direction: column;
   height: 100%;
 
   overflow: hidden;
 
-  
+
 
   .flow {
-      
+
       height: 40%;
     flex-grow: 2;
     display: flex;
@@ -257,10 +297,4 @@ export default class FlowGraphComponent extends Vue {
 
   }
   */
-
-  .flow {
-      background: green;
-      height: 40%;
-  }
-
 </style>

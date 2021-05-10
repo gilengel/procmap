@@ -119,7 +119,7 @@ export default class UiBuilderLayout extends Vue {
     clearPreviousSelected: boolean;
   }) => void;
 
-  model = "one";
+  model = "two";
 
   linkModeActive: boolean = false;
 

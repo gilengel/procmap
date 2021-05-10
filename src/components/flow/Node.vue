@@ -19,12 +19,15 @@
       <!--v-show="node.data.preview == true || node.data.preview == false"-->
     </div>
     <div class="content" style="margin-left: 8px; margin-right: 8px">
+
         <div
-          v-for="(control, index) in controls()"
+          v-for="(control, index) in node.controls"
           :key="index"
           v-control="control"
           class="control"
-        />
+        >
+        <span style="color: white">{{control.identifier}}</span>
+        </div>
 
     </div>
 

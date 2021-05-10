@@ -23,8 +23,10 @@ const registeredSockets = new Map([
   ['list', new Socket('list')],
   ['model', new Socket('model')],
 
-  ['page', new Socket('page')]
+  ['page', new Socket('page')],
 
+
+  ['number', new Socket('number')]
 ])
 
 function createControl(
@@ -34,6 +36,10 @@ function createControl(
   value: unknown,
   isValid: (input: unknown) => boolean
 ): ReteControl {
+  if (component === undefined) {
+    throw `control specified without component is disallowed. Control will not added to the node`
+  }
+
   return new FlowControl(component, emitter, key, value, isValid)
 }
 
@@ -195,13 +201,14 @@ export class FlowComponent extends Rete.Component {
 
     if (this.schema.controls) {
       this.schema.controls.forEach(control => {
-        node.addControl(
-          new FlowControl(
-            control.component,
-            this.editor as NodeEditor,
-            control.identifier as string,
-            0,
-            control.isValid as (input: 0) => boolean))
+        node.addControl(createControl(
+          control.component,
+          this.editor as NodeEditor,
+          control.identifier as string,
+          "",
+          // eslint-disable-next-line @typescript-eslint/unbound-method
+          control.isValid !== undefined ? control.isValid : () => true
+        ))
       })
     }
 
