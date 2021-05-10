@@ -18,11 +18,10 @@ import '@babel/polyfill'
 import Rete, { Engine, NodeEditor } from 'rete'
 
 import ConnectionPlugin from 'rete-connection-plugin'
-import VueRenderPlugin from 'src/plugins/render/Index'
+import VueRenderPlugin from 'src/components/flow/plugins/render/Index'
 
-import DockPlugin from '../plugins/dock/Index'
-
-import { MetaFlowCategory } from './flow/components/Index'
+import DockPlugin from 'src/components/flow/plugins/dock/Index'
+import { MetaFlowCategory } from 'src/components/flow/components/Index'
 
 import resize from 'vue-resize-directive'
 

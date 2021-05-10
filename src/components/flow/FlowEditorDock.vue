@@ -29,7 +29,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
-import { getRegisteredComponentCategories, MetaFlowCategory } from './flow/components/Index'
+import { getRegisteredComponentCategories, MetaFlowCategory } from 'src/components/flow/components/Index'
 
 @Component
 export default class MapEditorComponent extends Vue {

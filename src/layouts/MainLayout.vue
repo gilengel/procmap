@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import FlowEditorComponent from 'src/components/FlowEditorComponent.vue'
+import FlowEditorComponent from 'src/components/flow/FlowEditorComponent.vue'
 
 export default defineComponent({
   name: 'MainLayout',

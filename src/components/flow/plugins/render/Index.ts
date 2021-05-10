@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import './Filters'
-import VueNode from '../../components/Node.vue'
-import Socket from '../../components/Socket.vue'
+import VueNode from 'src/components/flow/Node.vue'
+import Socket from 'src/components/flow/Socket.vue'
 import Vue, { Component } from 'vue'
-import mixin from './Mixin'
+import Mixin from 'src/components/flow/plugins/render/Mixin'
 
 import { NodeEditor, Node as ReteNode, Control } from 'rete'
 interface VueElement {
@@ -129,7 +129,7 @@ function install (editor: NodeEditor, options: Record<string, unknown>) {
 export default {
   name: 'vue-render',
   install,
-  mixin,
+  Mixin,
   Node,
   Socket
 }

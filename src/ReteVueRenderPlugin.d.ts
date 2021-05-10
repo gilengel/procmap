@@ -1,4 +1,4 @@
-import Mixin from './plugins/render/Mixin'
+import Mixin from './components/flow/plugins/render/Mixin'
 import Vue from 'vue'
 import { NodeEditor } from 'rete'
 /* eslint-disable no-inner-declarations */

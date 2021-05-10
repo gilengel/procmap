@@ -1,7 +1,7 @@
 
 import { Node, NodeEditor } from 'rete'
 
-import { findRegisteredComponentById } from '../../components/flow/components/Index'
+import { findRegisteredComponentById } from '../../components/Index'
 
 import { createNode } from './Utils'
 
