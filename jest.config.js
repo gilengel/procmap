@@ -15,7 +15,7 @@ module.exports = {
   // cache: false,
   // verbose: true,
   // watch: true,
-  collectCoverage: true,
+  collectCoverage: false,
   coverageDirectory: '<rootDir>/test/jest/coverage',
   collectCoverageFrom: [
     '<rootDir>/src/**/*.vue',
@@ -24,7 +24,7 @@ module.exports = {
     '<rootDir>/src/**/*.jsx',
     '<rootDir>/src/**/*.tsx',
   ],
-  coveragePathIgnorePatterns: ['/node_modules/', '.d.ts$', '.test.ts$'],
+  coveragePathIgnorePatterns: ['/node_modules/', '.d.ts$'],
   coverageThreshold: {
     global: {
       //  branches: 50,

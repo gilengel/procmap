@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import './Filters'
 import VueNode from 'components/flow/Node.vue'
 import Socket from 'components/flow/Socket.vue'
 import Vue, { Component } from 'vue'

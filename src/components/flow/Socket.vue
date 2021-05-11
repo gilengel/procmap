@@ -1,15 +1,27 @@
 <template>
-    <div class="socket" :class="[type, socket.name, used ? 'used' : ''] | kebab" :title="socket.name+'\\n'+socket.hint">
+    <div class="socket" :class="[type, socket.name, used ? 'used' : '']" :title="socket.name+'\\n'+socket.hint">
 
     </div>
     <!-- Hello World -->
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-export default Vue.extend({
-  props: ['type', 'socket', 'used']
-})
+
+import { Socket as ReteSocket } from 'rete'
+
+import { Vue, Component, Prop } from 'vue-property-decorator'
+
+@Component
+export default class Socket extends Vue{
+  @Prop()
+  socket!: ReteSocket
+
+  @Prop()
+  type!: string
+
+  @Prop()
+  used!: boolean
+}
 </script>
 
 <style lang="sass" scoped>

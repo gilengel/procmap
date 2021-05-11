@@ -1,12 +1,15 @@
 import { mountFactory } from '@quasar/quasar-app-extension-testing-unit-jest';
+import Vuex from 'vuex';
 import TableWidget from '../TableWidget.vue'
-import Widget from '../Widget.vue'
-import { QTable } from 'quasar';
+import { QItemSection, QItemLabel, QBtn, QCheckbox, QItem, QList } from 'quasar';
 import { } from 'src/router'
 
+/*
 const factory = mountFactory(TableWidget, {
-  // mount: { type: 'full' } <= uncomment this line to use `mount`; `shallowMount` is used by default as it will stub all **registered** components found into the template
-  quasar: { components: { Widget, QTable } },
+  quasar: { components: {} },
+  mount: {
+    store: new Vuex.Store({}),
+  }
 });
 
 describe('TableWidget', () => {
@@ -18,3 +21,4 @@ describe('TableWidget', () => {
   });
 
 });
+*/

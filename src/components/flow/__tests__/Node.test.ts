@@ -1,14 +1,15 @@
+import 'regenerator-runtime/runtime'
 import { mountFactory } from '@quasar/quasar-app-extension-testing-unit-jest';
-import Widget from '../Widget.vue'
-import { QToolbar, QToolbarTitle } from 'quasar';
-import { } from 'src/router'
+import Node from '../Node.vue'
 
-const factory = mountFactory(Widget, {
+const factory = mountFactory(Node, {
   // mount: { type: 'full' } <= uncomment this line to use `mount`; `shallowMount` is used by default as it will stub all **registered** components found into the template
-  quasar: { components: { QToolbar, QToolbarTitle } },
+  quasar: { components: { } },
+  propsData: {
+  },
 });
 
-describe('Widget', () => {
+describe('Node', () => {
   // DUMMY test, you should remove this and add your own tests
   test('mounts with valid properties', () => {
     //const wrapper = factory(); // <= when no props are needed

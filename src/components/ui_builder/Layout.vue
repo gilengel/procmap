@@ -10,12 +10,6 @@
         :rowIndex="row_index"
         :key="row_index"
       />
-      <!--
-      <LayoutRowDivider
-        v-if="row_index != model.rows.length - 1"
-        rowIndex="row_index"
-      />
-      -->
     </template>
   </div>
 </template>
@@ -25,7 +19,6 @@ import { Component, Prop } from "vue-property-decorator";
 import { mixins } from "vue-class-component";
 
 import LayoutRow from "components/ui_builder/LayoutRow.vue";
-import LayoutRowDivider from "components/ui_builder/LayoutRowDivider.vue";
 import LayoutColumn from "components/ui_builder/LayoutColumn.vue";
 
 import { Drop } from "../../mixins/Drop";
@@ -38,7 +31,6 @@ import { Grid, ElementType } from "../../models/Grid";
   components: {
     Layout,
     LayoutRow,
-    LayoutRowDivider,
     LayoutColumn,
   },
 })

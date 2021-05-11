@@ -1,5 +1,7 @@
 import { applyTransformations, StringTransform } from '../String'
 
+import { expect, test, describe } from '@jest/globals';
+
 describe('String', () => {
   test('Identity works', () => {
     const value = "HelloWorld"
@@ -26,7 +28,7 @@ describe('String', () => {
   });
 
   test('To camelcase works', () => {
-    const value = "Hello-world"
+    const value = "hello world"
     const result = applyTransformations(value, [StringTransform.ToCamelcase])
     expect(result).toBe("helloWorld")
   });
