@@ -24,7 +24,7 @@ module.exports = {
     '<rootDir>/src/**/*.jsx',
     '<rootDir>/src/**/*.tsx',
   ],
-  coveragePathIgnorePatterns: ['/node_modules/', '.d.ts$'],
+  coveragePathIgnorePatterns: ['/node_modules/', '.d.ts$', '.test.ts$'],
   coverageThreshold: {
     global: {
       //  branches: 50,
