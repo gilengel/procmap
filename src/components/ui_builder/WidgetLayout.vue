@@ -1,6 +1,4 @@
 <template>
-<h1>Layout</h1>
-<!--
     <div class="row">
           <div class="col-2">
             <ElementList @startDragging="widgetDraggingStarted" @stopDragging="widgetDraggingStopped" />
@@ -11,10 +9,6 @@
             />
           </div>
           <div class="col-8">
-
-            <svg></svg>
-
-            <Connection v-for="connection in connections" :model="connection" v-if="linkModeActive" />
 
             <draggable
               handle=".drag-handle"
@@ -74,7 +68,6 @@
           </div>
         </div>
         </div>
-        -->
 </template>
 
 <script lang='ts'>
@@ -84,7 +77,6 @@ import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
 import OutputOptions from "components/ui_builder/OutputOptions.vue";
 import TextOptions from "components/ui_builder/TextOptions.vue";
 import HeadingOptions from "components/ui_builder/HeadingOptions.vue";
-import Connection from "components/ui_builder/ElementConnection.vue";
 import ConnectionOptions from "components/ui_builder/ConnectionOptions.vue";
 import ToggleButton from "components/ToggleButton.vue";
 import ElementList from "components/ui_builder/ElementList.vue";
@@ -95,8 +87,8 @@ import {
   Element,
   ElementType,
   Row,
-  ElementConnection,
-} from "../../models/Grid";
+  ElementConnection
+} from "src/models/Grid"
 
 import draggable from "vuedraggable";
 
@@ -108,10 +100,9 @@ import draggable from "vuedraggable";
     TextOptions,
     HeadingOptions,
     ToggleButton,
-    Connection,
     ConnectionOptions,
     ElementList,
-    OutputOptions
+    OutputOptions,
   },
 })
 export default class WidgetLayout extends Vue {
@@ -140,7 +131,7 @@ export default class WidgetLayout extends Vue {
     clearPreviousSelected: boolean;
   }) => void;
 
-  model = 'one'
+  model = "one";
 
   linkModeActive: boolean = false;
 
@@ -244,12 +235,6 @@ $size: 24px;
   border: 1px solid rgb(100, 100, 100);
 }
 
-svg {
-  position: absolute;
-  height: 100%;
-  width: 80%;
-}
-
 line {
   stroke: $accent;
   stroke-width: 4px;
@@ -266,15 +251,14 @@ line {
 }
 
 .q-btn-group {
+  > button {
+    border-radius: 50% !important;
+    width: 42px;
+    height: 42px;
+  }
 
-    > button {
-        border-radius: 50% !important;
-        width: 42px;
-        height: 42px;
-    }
-
-    > button:not(:last-of-type) {
-        //margin-right: 0.5em;
-    }
+  > button:not(:last-of-type) {
+    //margin-right: 0.5em;
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 import { StringTransform } from './String';
-import { ElementAttribute } from './Grid';
+
 export enum ElementType {
   Button = "Button",
   Text = "Text",
@@ -17,22 +17,15 @@ export interface Element {
   column?: Column;
   classList: Array<string>;
 
-  inputs?: Array<ElementPin | ElementNestedPin | ElementPinConnection>;
-  outputs?: Array<ElementPin | ElementNestedPin | ElementPinConnection>;
+  inputs?: Array<ElementPin>;
+  outputs?: Array<ElementPin>;
 }
 
 export interface ElementPin {
   type: ElementAttributeType,
   identifier: string,
   connection?: ElementConnection
-}
-
-export interface ElementNestedPin {
-  children: Array<ElementPin | ElementNestedPin>
-}
-
-export interface ElementPinConnection {
-  connection? : ElementConnection
+  children: Array<ElementPin | ElementPin>
 }
 
 export interface Point {
@@ -46,9 +39,6 @@ export interface ElementConnection {
 
   value?: any;
   transform: Array<StringTransform>;
-
-  start?: Point;
-  end?: Point;
 }
 
 export enum ElementAttributeType {

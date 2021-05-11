@@ -26,7 +26,7 @@
 import FlowGraphComponent from "./flow/FlowGraphComponent.vue";
 import { Component, Prop } from "vue-property-decorator";
 
-import { MetaFlowCategory } from "./flow/Index";
+import { MetaFlowCategory } from 'components/flow/components/Index'
 
 import FlowGraphNodesList from "./FlowGraphNodesList.vue";
 import Widget from "./Widget.vue";

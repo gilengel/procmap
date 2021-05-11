@@ -24,7 +24,7 @@ export interface PageConnection extends NewPageConnection{
   connection_pk: number,
 }
 
-import { GetMultiple, PAGES_URL } from './Backend'
+import { GetMultiple, PAGES_URL } from 'src/models/Backend'
 
 export function GetAllPages() : Promise<Array<Page>> {
   return GetMultiple(PAGES_URL)

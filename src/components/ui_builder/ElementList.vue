@@ -94,7 +94,7 @@ export default class ElementList extends Vue {
   onEnd() {
     this.$emit('stopDragging')
   }
-  onMoveCallback(evt, originalEvent): boolean {
+  onMoveCallback(evt: any, originalEvent: any): boolean {
     const targetClassList = evt.related.classList as DOMTokenList;
 
     if (targetClassList.contains("layout-row")) {

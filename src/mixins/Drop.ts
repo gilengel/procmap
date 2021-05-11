@@ -31,7 +31,11 @@ export class Drop extends Vue {
     const el = event.target as HTMLElement;
     const allowedDropClass = event.dataTransfer?.getData("allowed_drop_class");
 
-    for (let elClass of allowedDropClass?.split(',')) {
+    if (!allowedDropClass) {
+      throw new Error(`allowed_drop_class is not set on the event.dataTransfer`)
+    }
+
+    for (let elClass of allowedDropClass.split(',')) {
       if (el.classList.contains(elClass)) {
         return true;
       }

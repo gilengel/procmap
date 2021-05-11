@@ -6,7 +6,7 @@ import { Node as ReteNode } from "rete";
 
 import { CreateNowTimestamp } from '../models/Date'
 
-import { Page, NewPage } from '../models/Page'
+import { Page, NewPage } from 'components/flow/Page'
 
 
 import { NodeData } from "rete/types/core/data"

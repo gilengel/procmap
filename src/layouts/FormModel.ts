@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { ElementAttributeType } from 'src/models/Grid'
+
 export enum ElementType {
   Button = "Button",
   Text = "Text",
@@ -12,14 +14,6 @@ export interface Element {
   attributes: Array<ElementAttribute>;
   value?: String;
 }
-
-export enum ElementAttributeType {
-  Number = "Number",
-  String = "String",
-  Boolean = "Boolean",
-  Collection = "Collection",
-}
-
 export interface ElementAttribute {
   name: string;
   type: ElementAttributeType;

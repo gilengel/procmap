@@ -29,7 +29,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
 
-import { MetaFlowCategory } from "./flow/Index";
+import { MetaFlowCategory } from 'components/flow/components/Index'
 
 @Component
 export default class FlowGraphNodesList extends Vue {

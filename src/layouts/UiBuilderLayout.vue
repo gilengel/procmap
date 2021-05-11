@@ -45,8 +45,11 @@
             label="Save Layout"
           />
         </q-toolbar>
-        <WidgetLayout v-if="model == 'one'" />
-        <WidgetFlow v-if="model == 'two'" />
+        <WidgetLayout v-show="model == 'one'" />
+
+        <div style="flex-grow: 1">
+          <FlowEditorComponent :nodes="nodes" dockPosition="left" :dockWidth="10" flowTitle="Graph" v-show="model == 'two'" />
+        </div>
     </div>
 </template>
 
@@ -57,21 +60,26 @@ import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
 import OutputOptions from "components/ui_builder/OutputOptions.vue";
 import TextOptions from "components/ui_builder/TextOptions.vue";
 import HeadingOptions from "components/ui_builder/HeadingOptions.vue";
-import Connection from "components/ui_builder/ElementConnection.vue";
 import ConnectionOptions from "components/ui_builder/ConnectionOptions.vue";
 import ToggleButton from "components/ToggleButton.vue";
 import ElementList from "components/ui_builder/ElementList.vue";
-import WidgetFlow from "components/ui_builder/WidgetFlow.vue";
+import FlowEditorComponent from 'components/flow/FlowEditorComponent.vue';
 import WidgetLayout from "components/ui_builder/WidgetLayout.vue";
 import { Action, Getter } from "vuex-class";
+import { getRegisteredComponentCategories } from 'src/components/flow/components/Index'
+import { Node as ReteNode, Connection as ReteConnection } from "rete";
+import FlowEventBus, { FLOW_NODES_CONNECTED, FLOW_NODES_DISCONNECTED, FLOW_NODE_ADDED } from 'components/flow/FlowEventBus'
 
 import {
   Grid,
   Element,
   ElementType,
   Row,
+  Column,
   ElementConnection,
 } from "../models/Grid";
+
+import { createTextElement } from 'src/store/GridModule'
 
 import draggable from "vuedraggable";
 
@@ -85,11 +93,10 @@ import draggable from "vuedraggable";
     TextOptions,
     HeadingOptions,
     ToggleButton,
-    Connection,
     ConnectionOptions,
     ElementList,
     OutputOptions,
-    WidgetFlow,
+    FlowEditorComponent,
     WidgetLayout,
   },
 })
@@ -98,7 +105,7 @@ export default class UiBuilderLayout extends Vue {
   getSelectedElements!: () => Array<any>;
 
   @Getter("grid")
-  grid!: () => Grid;
+  grid!: Grid;
 
   @Getter("connections")
   connections!: () => Array<ElementConnection>;
@@ -119,9 +126,22 @@ export default class UiBuilderLayout extends Vue {
     clearPreviousSelected: boolean;
   }) => void;
 
+  @Action("addElementToColumn")
+  addElementToColumn!: (param: { column: Column; element: Element }) => Promise<void>;
+
+  @Action('linkTwoElements')
+  linkTwoElements!: (param: { identifier: string, start: Element, end: Element }) => void
+
+  @Action('unlinkTwoElements')
+  unlinkTwoElements!: (param: { identifier: string, start: Element, end: Element }) => void
+
   model = "two";
 
   linkModeActive: boolean = false;
+
+  get nodes() {
+    return getRegisteredComponentCategories();
+  }
 
   get selectedElement(): Element | {} {
     const elements = this.getSelectedElements;
@@ -192,6 +212,26 @@ export default class UiBuilderLayout extends Vue {
   };
   */
 
+  private extractElementsFromReteConnection(connection: ReteConnection) : { input: Element, output: Element} {
+      if(!connection.input.node || !connection.output.node) {
+        throw new Error(`The newly created connection between two nodes has an invalid input node, an invalid output node or both.`)
+      }
+
+      if(!connection.input.node.data.elementModel || !connection.output.node.data.elementModel) {
+        throw new Error(`The elementModel is not specified for the input, output or both of the new connection. Check if you set it properly after a new node was created`)
+      }
+
+      const inputElement = connection.input.node.elementModel as Element;
+      const outputElement = connection.output.node.elementModel as Element;
+
+      if(!outputElement.outputs || outputElement.outputs.length == 0) {
+        // TODO rework in order to make this check obsolet
+        throw new Error(`You linked an output element that has no defined outputs`)
+      }
+
+      return { input: inputElement, output: outputElement }
+  }
+
   mounted() {
     window.addEventListener("keydown", (e) => {
       if (e.key === "Delete") {
@@ -202,6 +242,48 @@ export default class UiBuilderLayout extends Vue {
         );
       }
     });
+
+    FlowEventBus.$on(FLOW_NODE_ADDED, (node : ReteNode) => {
+      switch(node.name) {
+        case 'Text': {
+          for(const row of this.grid.rows){
+            for(const column of row.columns){
+              if(!column.element) {
+                const element = createTextElement();
+                console.log(element.uuid)
+                this.addElementToColumn({ column: column, element: element }).then((v) => {
+
+                  //Vue.set(node.data, 'elementModel', element)
+                })
+                node.elementModel = element
+                node.data.elementModel = Math.random()
+
+                return
+              }
+            }
+          }
+          break;
+        }
+        default:
+          break;
+      }
+    });
+
+    FlowEventBus.$on(FLOW_NODES_CONNECTED, (connection: ReteConnection) => {
+      const { input, output } = this.extractElementsFromReteConnection(connection);
+
+      if(input.outputs) {
+        this.linkTwoElements({ identifier: input.outputs[0].identifier, start: output, end: input})
+      }
+    })
+
+    FlowEventBus.$on(FLOW_NODES_DISCONNECTED, (connection: ReteConnection) => {
+      const { input, output } = this.extractElementsFromReteConnection(connection);
+
+      if(input.outputs) {
+        this.unlinkTwoElements({ identifier: input.outputs[0].identifier, start: output, end: input})
+      }
+    })
   }
 }
 </script>
@@ -235,25 +317,11 @@ line {
   stroke-width: 4px;
 }
 
-.linkage-triangle-preview {
-  position: absolute;
-  //fill: $accent;
-  fill: $accent;
-  stroke: $accent;
-  stroke-width: 6px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 .q-btn-group {
   > button {
     border-radius: 50% !important;
     width: 42px;
     height: 42px;
-  }
-
-  > button:not(:last-of-type) {
-    //margin-right: 0.5em;
   }
 }
 </style>

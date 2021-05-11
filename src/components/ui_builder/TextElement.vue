@@ -1,5 +1,5 @@
 <template>
-  <div class="el-text" :class="classlist">
+  <div class="el-text">
     <template v-if="withLabel">
     <q-input v-if="editable"
       dark
@@ -27,7 +27,6 @@
 <script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import BaseElement from './BaseElement.vue';
-import { LINKED } from '../../mixins/Linkage';
 import { Element } from '../../models/Grid';
 import { applyTransformations } from '../../models/String'
 
@@ -40,20 +39,11 @@ export default class TextElement extends BaseElement {
   // Used if the text element is not connected to a parent element
   private tempValue: string = '';
 
-  get classlist() {
-      let a = [];
-
-      if(this.isConnected && this.active){
-          a.push(LINKED)
-      }
-
-      return a.concat(this.model.classList)
-  }
-
   get valueInput() {
     let result = '';
     // use always connected value first
     const element = this.model as Element;
+
     if(element.inputs && element.inputs.length > 0 && element.inputs[0].connection) {
       result = applyTransformations(element.inputs[0].connection.value, element.inputs[0].connection.transform)
     }
@@ -85,6 +75,7 @@ export default class TextElement extends BaseElement {
 
     for(const output of element.outputs) {
       if(output.connection) {
+
         this.setConnectionValue({ connection : output.connection, value: value })
       }
     }

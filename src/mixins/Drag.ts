@@ -47,7 +47,7 @@ export class Drag extends Vue {
   dragStart(event: DragEvent) {
     this.$el.classList.add("dragging");
 
-    event.dataTransfer?.setData("allowed_drop_class", this.dropTargetClass)
+    event.dataTransfer?.setData("allowed_drop_class", this.dropTargetClass.join(','))
     event.dataTransfer?.setData(this.dataKey, this.dataValue)
   }
 

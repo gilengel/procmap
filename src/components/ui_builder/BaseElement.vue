@@ -6,10 +6,9 @@ import IModel from '../../store/Model'
 import { mixins } from "vue-class-component";
 
 import { Selectable } from '../../mixins/Selectable'
-import { Linkage } from '../../mixins/Linkage'
 import { ElementConnection } from 'src/models/Grid';
 
-export default class BaseElement extends mixins(Selectable, Linkage) {
+export default class BaseElement extends mixins(Selectable) {
   @Prop({ default: 'uuid' }) uuid!: string
 
   @Getter('element')

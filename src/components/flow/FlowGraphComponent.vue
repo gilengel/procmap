@@ -1,300 +1,170 @@
 <template>
-  <div class="main-container">
-    <q-toolbar class="bg-black text-white">
-      <q-toolbar-title>Flow</q-toolbar-title>
-      <q-btn flat round dense>
-        <q-icon name="las la-window-minimize" />
-      </q-btn>
+  <div class="flow-graph-container column">
+    <q-toolbar class="bg-grey-9 text-white">
+      <q-toolbar-title>
+        {{title}}
+      </q-toolbar-title>
     </q-toolbar>
-
-    <!--
-    <div v-resize="onResize" class="flow">
-      <div id="rete" ref="rete" />
-    </div>
-    -->
-
-    <div class="flow">
+    <div class="flow" v-resize="onResize">
       <div id="rete" ref="rete"></div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-/* eslint-disable */
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import '@babel/polyfill'
+import Rete, { Engine, NodeEditor } from 'rete'
 
-import { Vue, Component, Prop } from "vue-property-decorator";
-import "@babel/polyfill";
-import Rete, { Engine, NodeEditor, Node as ReteNode } from "rete";
-import ConnectionPlugin from "rete-connection-plugin";
-import VueRenderPlugin from "../render/Index";
-import DockPlugin from "../dock/Index";
-import { v4 as uuidv4 } from "uuid";
-import resize from "vue-resize-directive";
-import { store } from "../../store/index";
-import EventBus, {
-  FLOW_NODE_SELECTED,
-  FLOW_NODE_ADDED,
-  FLOW_NODE_REMOVED,
-  FLOW_GRAPH_UPDATED,
-  FLOW_GRAPH_IMPORTED,
-  FLOW_GRAPH_MANUALLY_CHANGED,
-} from "../../EventBus";
-import { MetaFlowCategory } from "../flow/Index";
+import ConnectionPlugin from 'rete-connection-plugin'
+import VueRenderPlugin from 'src/components/flow/plugins/render/Index'
 
-import { Data } from "rete/types/core/data";
+import DockPlugin from 'src/components/flow/plugins/dock/Index'
+import { MetaFlowCategory } from 'src/components/flow/components/Index'
+
+import resize from 'vue-resize-directive'
 
 @Component({
   directives: {
-    resize,
-  },
+    resize
+  }
 })
 export default class FlowGraphComponent extends Vue {
-  @Prop() readonly nodes!: Array<MetaFlowCategory>;
+  @Prop({
+    validator: (x) => typeof x === "string" && x.length > 0,
 
-  // All nodes of the current graph
-  @Prop() graph!: Array<ReteNode>;
+    default: "Notes"
+  })
+  title?: string;
+
+  @Prop(Object) geometry: Record<string, unknown> | undefined;
+  @Prop() readonly nodes!: Array<MetaFlowCategory>;
 
   editor!: NodeEditor;
   engine!: Engine;
 
-  createEditor() {
-    const container = this.$refs.rete;
-    this.editor = new Rete.NodeEditor("demo@0.1.0", container as HTMLElement);
+  createEditor () {
+    const container = this.$refs.rete
+    this.editor = new Rete.NodeEditor('demo@0.1.0', container as HTMLElement)
 
-    this.editor.use(ConnectionPlugin);
-    this.editor.use(VueRenderPlugin, ({ store } as unknown) as void);
-    this.editor.use(DockPlugin, (this.nodes as unknown) as void);
+    this.editor.use(ConnectionPlugin)
+    this.editor.use(VueRenderPlugin)
+    this.editor.use(DockPlugin)
   }
 
-  createCustomEditorEvents() {
-    this.editor.bind("previewnode");
+  createCustomEditorEvents () {
+    this.editor.bind('previewnode')
   }
 
-  registerComponents() {
+  registerComponents () {
     for (const category of this.nodes) {
       category.components.map((c) => {
-        this.editor.register(c.component);
-        this.engine.register(c.component);
-      });
+        this.editor.register(c.component)
+        this.engine.register(c.component)
+      })
     }
   }
 
-  registerEditorEvents() {
-    this.editor.on(["nodecreate"], (node) => {
-      // Add random uuid used to identify model in store related to the new node
-      if (!node.data.uuid) {
-        node.data.uuid = uuidv4();
-      }
+  makeComponentDataReactive () {
+    for (const category of this.nodes) {
+      category.components.forEach((c) => {
+        const data = c.defaultData
 
-      //this.graph.push(node);
-
-      this.$emit("add-widget", node);
-      EventBus.$emit(FLOW_NODE_ADDED, node);
-
-      return node;
-    });
-
-    this.editor.on(["process", "nodecreated", "noderemoved"], async () => {
-      const data = this.editor.toJSON();
-      await this.engine.abort();
-      await this.engine.process(data);
-
-      EventBus.$emit(FLOW_GRAPH_UPDATED, data);
-    });
-    this.editor.on(["connectioncreated"], async () => {
-      const data = this.editor.toJSON();
-      await this.engine.abort();
-      await this.engine.process(data);
-
-      EventBus.$emit(FLOW_GRAPH_MANUALLY_CHANGED, this.editor.toJSON());
-    });
-
-    this.editor.on(["nodeselected"], (node: ReteNode) => {
-      EventBus.$emit(FLOW_NODE_SELECTED, node);
-    });
-
-    this.editor.on(["import"], async () => {
-      await this.engine.abort();
-      await this.engine.process(this.editor.toJSON());
-    });
-
-    this.editor.on(["keyup"], async (e: KeyboardEvent) => {
-      this.keyUpEvent(e);
-
-      await this.engine.process(this.editor.toJSON());
-
-      EventBus.$emit(FLOW_GRAPH_MANUALLY_CHANGED, this.editor.toJSON());
-    });
-
-    this.editor.on(["click"], (args: { e: Event; container: HTMLElement }) => {
-      this.editor.selected.list = [];
-    });
+        // Convert all default values to vue reactive ones
+        for (const i in data) {
+          if (!(data[i] instanceof Object)) {
+            Vue.set(data, i, data[i])
+          }
+        }
+      })
+    }
   }
 
-  private registerToEventBus() {
-    EventBus.$on(FLOW_NODE_SELECTED, () => {
-      this.engine.process(this.editor.toJSON());
-    });
+  registerEditorEvents () {
 
-    EventBus.$on(FLOW_GRAPH_IMPORTED, (model: Data) => {
-      this.editor.fromJSON(model);
-    });
+    this.editor.on(['process', 'nodecreated', 'noderemoved', 'connectioncreated', 'connectionremoved'], async () => {
+      await this.engine.abort()
+      await this.engine.process(this.editor.toJSON())
+    })
+
+    this.editor.on(['import'], async () => {
+      await this.engine.abort()
+      await this.engine.process(this.editor.toJSON())
+    })
+
+    this.editor.on(['keyup'], async (e: KeyboardEvent) => {
+      this.keyUpEvent(e)
+
+      await this.engine.process(this.editor.toJSON())
+    })
+
+    this.editor.on(['zoom'], async ({transform, zoom}) => {
+      console.log(transform)
+      console.log(zoom)
+    })
   }
 
-  async mounted() {
-    this.createEditor();
-    this.createCustomEditorEvents();
+  mounted () {
+    this.createEditor()
+    this.createCustomEditorEvents()
 
-    this.engine = new Rete.Engine("demo@0.1.0");
-    this.registerComponents();
+    this.engine = new Rete.Engine('demo@0.1.0')
+    this.registerComponents()
 
-    this.registerEditorEvents();
+    // Progress is used for longer task to display a progress bar
+    //this.makeComponentDataReactive()
 
-    this.registerToEventBus();
+    this.registerEditorEvents()
 
-    const data = {
-      id: "demo@0.1.0",
-      nodes: {
-        "1": {
-          id: 1,
-          data: {},
-          inputs: {},
-          outputs: {
-            text: {
-              connections: [
-                {
-                  node: 2,
-                  input: "text",
-                  data: {},
-                },
-              ],
-            },
-          },
-          position: [80, 200],
-          name: "text",
-        },
-
-        "2": {
-          id: 2,
-          data: {},
-          inputs: {},
-          outputs: {
-            map: {
-              connections: [
-                {
-                  node: 3,
-                  input: "map",
-                  data: {},
-                },
-              ],
-            },
-          },
-          position: [280, 200],
-          name: "TextFilter",
-        },
-
-        "3": {
-          id: 3,
-          data: {},
-          inputs: {},
-          outputs: {},
-          position: [580, 200],
-          name: "table",
-        },
-      },
-    };
-
-    //await this.editor.fromJSON(data);
-
-    this.editor.view.resize();
-    this.editor.trigger("process");
+    this.editor.view.resize()
+    this.editor.trigger('process');
   }
 
-  keyUpEvent(e: KeyboardEvent) {
+  keyUpEvent (e: KeyboardEvent) {
     if (
-      e.code === "Delete" &&
-      (e.target as HTMLElement).tagName.toUpperCase() !== "INPUT"
+      e.code === 'Delete' &&
+      (e.target as HTMLElement).tagName.toUpperCase() !== 'INPUT'
     ) {
-      this.editor.selected.each((n) => this.editor.removeNode(n));
+      this.editor.selected.each((n) => this.editor.removeNode(n))
     }
   }
 
-  width = 512;
-  height = 512;
+  width = 0;
+  height = 0;
 
-  onResize(e: HTMLElement) {
-    this.width = e.scrollWidth; // - (e.scrollWidth % 50)
-    this.height = e.scrollHeight; // - (e.scrollHeight % 50)
+  onResize (e : HTMLElement) {
+    this.width = e.scrollWidth // - (e.scrollWidth % 50)
+    this.height = e.scrollHeight // - (e.scrollHeight % 50)
 
     if (this.width !== e.scrollWidth || this.height !== e.scrollHeight) {
-      this.editor.view.resize();
+      this.editor.view.resize()
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.main-container {
+.flow-graph-container {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-content: stretch;
-  overflow: hidden;
-}
+  //border: solid 4px white;
 
-.flow {
-  flex: 1;
   position: relative;
 
-  #rete {
-    position: absolute;
-  }
-}
-
-/*
-.preview {
-  background: rgba(salmon, 0.1);
-  height: 100%;
-
-  flex-direction: row;
-  align-content: stretch;
-}
-
-.flow {
-  border: solid 2px limegreen;
-  min-height: 8em;
-}
-
-.flow2 {
-  border: solid 2px red;
-  min-height: 8em;
-  flex:1;
-}
-*/
-
-/*
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  overflow: hidden;
-
-
-
   .flow {
+    position: relative;
+    //background: lime;
+    width: 100%;
 
-      height: 40%;
-    flex-grow: 2;
-    display: flex;
-    flex-direction: column;
+    flex-grow: 1;
 
     #rete {
-      height: 100%;
-      overflow: collapse;
+      position: absolute;
 
-      flex-grow: 2;
+      //background: white;
+
+      width: 100% !important;
+      height: 100% !important;
     }
-
   }
-  */
+}
 </style>

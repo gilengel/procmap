@@ -36,7 +36,7 @@
 <script lang='ts'>
 import { Vue, Component, Watch } from "vue-property-decorator";
 import { GetMultiple, GetOne, PAGES_URL } from "../models/Backend";
-import { Page } from "../models/Page";
+import { Page } from "../components/flow/Page";
 
 import DynamicPage from "../components/DynamicPage.vue";
 

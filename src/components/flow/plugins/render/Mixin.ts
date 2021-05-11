@@ -49,7 +49,7 @@ export default class Mixin extends Vue {
     return Array.from(this.node.controls.values())
   }
 
-  selected () {
+  selected() {
     return this.editor.selected.contains(this.node) ? 'selected' : ''
   }
 }

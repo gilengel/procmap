@@ -178,7 +178,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import axios from "axios";
 
-import { GetAllPages, NewPage, Page } from "../models/Page";
+import { GetAllPages, NewPage, Page } from "components/flow/Page";
 
 import { TempFlow } from "../models/TempFlow";
 import {

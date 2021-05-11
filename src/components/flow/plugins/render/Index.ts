@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import './Filters'
-import VueNode from '../flow/Node.vue'
-import Socket from '../flow/Socket.vue'
+import VueNode from 'components/flow/Node.vue'
+import Socket from 'components/flow/Socket.vue'
 import Vue, { Component } from 'vue'
-import mixin from './Mixin'
+import Mixin from 'components/flow/plugins/render/Mixin'
+
+import FlowEventBus, { FLOW_NODE_ADDED, FLOW_NODES_CONNECTED, FLOW_NODES_DISCONNECTED } from 'components/flow/FlowEventBus'
 
 import { NodeEditor, Node as ReteNode, Control } from 'rete'
-import { mainModule } from 'process'
 interface VueElement {
   component: Component
   props: Record<string, unknown>
@@ -17,7 +18,7 @@ interface VueElement {
   update: () => void
 }
 
-function createVue(el: HTMLElement, vueComponent: Component, vueProps = {}, options = {}): Vue {
+function createVue (el: HTMLElement, vueComponent: Component, vueProps = {}, options = {}): Vue {
   const app = new Vue({
     render: h => h(vueComponent, { props: vueProps }),
     ...options
@@ -37,7 +38,7 @@ interface VueReteWrapper {
   render: string
 }
 
-function createNode(editor: NodeEditor,
+function createNode (editor: NodeEditor,
   {
     el,
     node,
@@ -62,9 +63,8 @@ function createNode(editor: NodeEditor,
   return app
 }
 
-function createControl(editor: NodeEditor, { el, control }: { el: HTMLElement, control: Control & VueElement }, options: Record<string, unknown>) {
+function createControl (editor: NodeEditor, { el, control }: { el: HTMLElement, control: Control & VueElement }, options: Record<string, unknown>) {
   const vueComponent = control.component
-
   const vueProps = { ...control.props, getData: control.getData.bind(control), putData: control.putData.bind(control) }
   const app = createVue(el, vueComponent, vueProps, options)
 
@@ -78,12 +78,13 @@ const update = (entity: VueElement) => {
     if (!entity.vueContext) return resolve(null)
 
     entity.vueContext.$forceUpdate()
+
     entity.vueContext.$nextTick(resolve)
   })
 }
 
 // const listeners = new WeakMap()
-function install(editor: NodeEditor, options: Record<string, unknown>) {
+function install (editor: NodeEditor, options: Record<string, unknown>) {
   editor.on('rendernode', (
     {
       el,
@@ -103,7 +104,7 @@ function install(editor: NodeEditor, options: Record<string, unknown>) {
   editor.on(['rendercontrol'], ({ el, control }) => {
     const vueControl = control as Control & VueElement
 
-    if (!vueControl.render && vueControl.render !== 'vue') return
+    if (vueControl.render && vueControl.render !== 'vue') return
     vueControl._vue = createControl(editor, { el, control: vueControl }, options)
     vueControl.update = async () => await update(vueControl)
   })
@@ -116,12 +117,24 @@ function install(editor: NodeEditor, options: Record<string, unknown>) {
   editor.on('nodeselected', () => {
     editor.nodes.map(n => update(n as ReteNode & VueElement))
   })
+
+  editor.on(['nodecreated'], node => FlowEventBus.$emit(FLOW_NODE_ADDED, node))
+
+  editor.on(['connectioncreated'], connection => FlowEventBus.$emit(FLOW_NODES_CONNECTED, connection))
+  editor.on(['connectionremoved'], connection => FlowEventBus.$emit(FLOW_NODES_DISCONNECTED, connection))
+
+  editor.on(["click"], () => {
+    editor.selected.clear();
+
+    // update the selection status of all nodes
+    editor.nodes.map(n => update(n as ReteNode & VueElement))
+  });
 }
 
 export default {
   name: 'vue-render',
   install,
-  mixin,
+  Mixin,
   Node,
   Socket
 }

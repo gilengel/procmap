@@ -1,4 +1,4 @@
-import { FlowComponent } from "../components/flow/FlowGraph";
+import { FlowComponent } from "components/flow/models/Component"
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { Store } from "vuex";
 

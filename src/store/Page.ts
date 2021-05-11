@@ -1,6 +1,6 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 
-import { NewPage, UpdateNewPage, Page } from '../models/Page'
+import { NewPage, UpdateNewPage, Page } from 'components/flow/Page'
 import { PostOne, UpdateOne, PAGES_URL } from '../models/Backend'
 
 @Module

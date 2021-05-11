@@ -59,7 +59,7 @@ import { Component } from "vue-property-decorator";
 import IModel from "../store/Model";
 import { Getter, Action } from "vuex-class";
 
-import EventBus, { ADD_MODEL } from "../EventBus";
+import EventBus, { ADD_MODEL } from "components/flow/FlowEventBus"
 
 import axios from "axios";
 
@@ -142,7 +142,7 @@ export default class FormWidget extends Widget {
           );
 
           if (attribute) {
-            variablesForm[attribute.value] = column.element.value;
+            variablesForm.attribute.value = column.element.value;
 
             if (column.element.value === undefined) {
               validForm = false;

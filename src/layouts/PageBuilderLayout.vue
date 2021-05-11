@@ -115,14 +115,14 @@ import {
   getRegisteredComponentCategories,
   MetaFlowCategory,
   MetaFlowComponent,
-} from "components/flow/Index";
+} from "components/flow/components/Index"
 
 import { Node as ReteNode } from "rete";
 
 import { v4 as uuidv4 } from "uuid";
 
 import axios from "axios";
-import { Page } from "../models/Page";
+import { Page } from "../components/flow/Page";
 
 interface Widget {
   i: string;

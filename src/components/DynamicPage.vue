@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
-import { Page } from "../models/Page";
+import { Page } from "./flow/Page";
 import { GetOne, PAGES_URL } from "../models/Backend";
 import TableWidget from "components/TableWidget.vue";
 import ImageWidget from "components/ImageWidget.vue";

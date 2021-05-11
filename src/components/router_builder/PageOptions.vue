@@ -35,7 +35,7 @@
 
 import { Vue, Prop, Component } from "vue-property-decorator";
 import { Getter, Action } from "vuex-class";
-import { GetAllPages, NewPage, UpdateNewPage } from '../../models/Page';
+import { GetAllPages, NewPage, UpdateNewPage } from 'components/flow/Page'
 
 interface Page {
   pk_id: number;

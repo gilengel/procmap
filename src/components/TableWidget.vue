@@ -82,7 +82,7 @@ export default class TableWidget extends Widget {
       //   * is greater than 0 then sort b to an index lower than a, i.e. b comes first
 
       // (optional) you can format the data with a function
-      format: (val, row) => val,
+      format: (val: any, row: any) => val,
       // one more format example:
       // format: val => val
     },

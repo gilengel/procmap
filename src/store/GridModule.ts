@@ -2,12 +2,12 @@ import { StringTransform } from './../models/String';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { Grid, Row, Column, Element, ElementAttribute, ElementConnection, Point } from '../models/Grid'
 import { v4 as uuidv4 } from "uuid";
-import { ElementType, ElementAttributeType } from 'src/layouts/FormModel';
+import { ElementType } from 'src/layouts/FormModel';
+import { ElementAttributeType } from 'src/models/Grid'
 
 import Vue from 'vue'
-import { type } from 'os';
 
-function text(): Element {
+export function createTextElement(): Element {
   const widgetAttributes = new Array<ElementAttribute>();
 
   widgetAttributes.push({
@@ -55,16 +55,16 @@ const DefaultGrid = {
   rows: [
     {
       columns: [
-        { width: 4, element: text() },
-        { width: 8, element: text() },
+        { width: 4, element: null },
+        { width: 8, element: null },
       ],
     },
 
     {
       columns: [
-        { width: 4, element: text() },
         { width: 4, element: null },
-        { width: 4, element: text() },
+        { width: 4, element: null },
+        { width: 4, element: null },
       ],
     },
 
@@ -199,24 +199,37 @@ export default class GridModulue extends VuexModule {
   }
 
   @Mutation
-  _linkTwoElements(param: { identifier: string, start: Element, startPosition: Point, end: Element, endPosition: Point }) {
+  _unlinkTwoElements(param: { identifier: string, start: Element, end: Element }) {
+    const startIndex = param.start.outputs?.findIndex(pin => pin.identifier === param.identifier)
+    const endIndex = param.end.inputs?.findIndex(pin => pin.identifier === param.identifier)
+
+    const connection = param.start.outputs[startIndex].connection as ElementConnection;
+    const connectionIndex = this._connections.findIndex(v => v.uuid === connection.uuid)
+    this._connections.slice(connectionIndex, 1)
+
+    Vue.set(param.start.outputs[startIndex], 'connection', null)
+    Vue.set(param.end.inputs[endIndex], 'connection', null)
+
+
+  }
+
+  @Action({ commit: '_unlinkTwoElements' })
+  unlinkTwoElements(param: { identifier: string, start: Element, end: Element }) {
+    return param
+  }
+
+  @Mutation
+  _linkTwoElements(param: { identifier: string, start: Element, end: Element }) {
     const connection: ElementConnection = {
       uuid: uuidv4(),
       input: param.start.uuid,
       output: param.end.uuid,
-      start: param.startPosition,
-      end: param.endPosition,
       value: '',
       transform: []
     }
 
-
     const startIndex = param.start.outputs?.findIndex(pin => pin.identifier === param.identifier)
     const endIndex = param.end.inputs?.findIndex(pin => pin.identifier === param.identifier)
-
-    //console.log(param.start.outputs && startIndex && startIndex >= 0)
-    //if (param.start.outputs && startIndex && startIndex >= 0 &&
-     // param.end.inputs && endIndex && endIndex >= 0) {
 
     Vue.set(param.start.outputs[startIndex], 'connection', connection)
     Vue.set(param.end.inputs[endIndex], 'connection', connection)
@@ -225,7 +238,7 @@ export default class GridModulue extends VuexModule {
   }
 
   @Action({ commit: '_linkTwoElements' })
-  linkTwoElements(param: { identifier: string, start: Element, startPosition: Point, end: Element, endPosition: Point }) {
+  linkTwoElements(param: { identifier: string, start: Element, end: Element }) {
     return param
   }
 

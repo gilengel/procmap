@@ -64,7 +64,7 @@ import { Vue, Component } from "vue-property-decorator";
 import { Action } from "vuex-class";
 import { GridLayout, GridItem } from "vue-grid-layout";
 import FlowGraphWidget from "components/FlowGraphWidget.vue";
-import { MetaFlowCategory } from "../components/flow/Index";
+import { MetaFlowCategory } from "components/flow/components/Index"
 
 import PageOptions from "../components/router_builder/PageOptions.vue";
 import { TempFlow } from "../models/TempFlow";
@@ -72,12 +72,11 @@ import { GetOne, UpdateOne, PostMultiple, PostOne } from "../models/Backend";
 import { Node as ReteNode } from "rete";
 import { NodeData } from "rete/types/core/data";
 import { FLOW_ROUTER_START, FLOW_ROUTER_END } from './RouterFlowModel';
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 import { CreateNowTimestamp } from '../models/Date'
 
-import { Page, NewPage } from '../models/Page'
+import { Page, NewPage } from '../components/flow/Page'
 
 
 
@@ -97,7 +96,8 @@ import EventBus, {
   FLOW_GRAPH_IMPORTED,
   FLOW_NODE_SELECTED,
   FLOW_GRAPH_MANUALLY_CHANGED,
-} from "../EventBus";
+} from "components/flow/FlowEventBus";
+
 
 const routingNodes: Array<MetaFlowCategory> = [
   {
