@@ -50,6 +50,7 @@ export default class FlowGraphComponent extends Vue {
     this.editor.use(ConnectionPlugin)
     this.editor.use(VueRenderPlugin)
     this.editor.use(DockPlugin)
+
   }
 
   createCustomEditorEvents () {
@@ -105,6 +106,7 @@ export default class FlowGraphComponent extends Vue {
   }
 
   mounted () {
+      
     this.createEditor()
     this.createCustomEditorEvents()
 

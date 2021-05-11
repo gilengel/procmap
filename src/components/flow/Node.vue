@@ -67,10 +67,6 @@ import { Node as ReteNode } from 'rete'
 })
 export default class Node extends Mixin {
   node!: ReteNode
-
-  get foo() {
-    return this.editor.selected.list;
-  }
 }
 </script>
 

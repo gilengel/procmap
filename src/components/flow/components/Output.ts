@@ -1,5 +1,4 @@
 import { FlowComponent } from '../models/Component'
-import VariableControlVue from 'components/controls/VariableControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 
 export default new FlowComponent({
