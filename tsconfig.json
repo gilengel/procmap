@@ -1,11 +1,18 @@
 {
   "extends": "@quasar/app/tsconfig-preset",
-	"compilerOptions": {
-		"target": "es6",
-		"moduleResolution": "node",
-		"baseUrl": ".",
-
-		"experimentalDecorators": true
-	},
-	"include": [ "./src/**/*.ts", "./src/**/*.vue" ],
+  "compilerOptions": {
+    "target": "es6",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "types": [
+      "jest",
+      "quasar"
+    ]
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.vue"
+  ]
 }

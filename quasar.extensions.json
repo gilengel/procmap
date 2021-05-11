@@ -6,7 +6,8 @@
     "babel": "babelrc",
     "options": [
       "scripts",
-      "typescript"
+      "typescript",
+      "SFC"
     ]
   }
 }
