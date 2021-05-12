@@ -12,8 +12,8 @@
 </template>
 
 <script lang="ts">
+import regeneratorRuntime from "regenerator-runtime"
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import '@babel/polyfill'
 import Rete, { Engine, NodeEditor } from 'rete'
 
 import ConnectionPlugin from 'rete-connection-plugin'
@@ -106,7 +106,7 @@ export default class FlowGraphComponent extends Vue {
   }
 
   mounted () {
-      
+
     this.createEditor()
     this.createCustomEditorEvents()
 
