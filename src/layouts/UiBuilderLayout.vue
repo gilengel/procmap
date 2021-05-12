@@ -2,53 +2,10 @@
     <div class="column full-height">
         <q-toolbar class="bg-black text-white vue-draggable-handle">
           <q-toolbar-title shrink style="margin-right: 2em">Widget Builder</q-toolbar-title>
-
-          <q-btn-toggle
-            v-model="model"
-            push
-            flat
-            toggle-color="secondary"
-            :options="[
-                {value: 'one', slot: 'one'},
-                {value: 'two', slot: 'two'},
-                ]"
-          >
-            <template v-slot:one>
-              <div>
-                <q-icon name="las la-link" />
-              </div>
-            </template>
-
-            <template v-slot:two>
-              <div>
-                <q-icon name="las la-project-diagram" />
-              </div>
-            </template>
-          </q-btn-toggle>
-
-          <ToggleButton
-            color="white"
-            selected-color="secondary"
-            icon="las la-link"
-            label="Link to elements together"
-            v-model="linkModeActive"
-          />
-
-          <q-space />
-          <q-btn
-            style="
-              background: salmon;
-              color: white;
-              margin-top: 8px;
-              margin-bottom: 8px;
-            "
-            label="Save Layout"
-          />
         </q-toolbar>
-        <WidgetLayout v-show="model == 'one'" />
-
+        
         <div style="flex-grow: 1">
-          <FlowEditorComponent :nodes="nodes" dockPosition="left" :dockWidth="10" flowTitle="Graph" v-show="model == 'two'" />
+          <FlowEditorComponent :nodes="nodes" dockPosition="left" :dockWidth="10" flowTitle="Graph" />
         </div>
     </div>
 </template>
@@ -61,7 +18,6 @@ import OutputOptions from "components/ui_builder/OutputOptions.vue";
 import TextOptions from "components/ui_builder/TextOptions.vue";
 import HeadingOptions from "components/ui_builder/HeadingOptions.vue";
 import ConnectionOptions from "components/ui_builder/ConnectionOptions.vue";
-import ToggleButton from "components/ToggleButton.vue";
 import ElementList from "components/ui_builder/ElementList.vue";
 import FlowEditorComponent from 'components/flow/FlowEditorComponent.vue';
 import WidgetLayout from "components/ui_builder/WidgetLayout.vue";
@@ -79,8 +35,6 @@ import {
   ElementConnection,
 } from "../models/Grid";
 
-import { createTextElement } from 'src/store/GridModule'
-
 import draggable from "vuedraggable";
 
 @Component({
@@ -88,16 +42,7 @@ import draggable from "vuedraggable";
 
   components: {
     draggable,
-    LayoutRow,
-    ButtonOptions,
-    TextOptions,
-    HeadingOptions,
-    ToggleButton,
-    ConnectionOptions,
-    ElementList,
-    OutputOptions,
     FlowEditorComponent,
-    WidgetLayout,
   },
 })
 export default class UiBuilderLayout extends Vue {
@@ -245,25 +190,8 @@ export default class UiBuilderLayout extends Vue {
 
     FlowEventBus.$on(FLOW_NODE_ADDED, (node : ReteNode) => {
       switch(node.name) {
-        case 'Text': {
-          for(const row of this.grid.rows){
-            for(const column of row.columns){
-              if(!column.element) {
-                const element = createTextElement();
-                console.log(element.uuid)
-                this.addElementToColumn({ column: column, element: element }).then((v) => {
-
-                  //Vue.set(node.data, 'elementModel', element)
-                })
-                node.elementModel = element
-                node.data.elementModel = Math.random()
-
-                return
-              }
-            }
-          }
-          break;
-        }
+        case 'Text':
+            break;
         default:
           break;
       }

@@ -53,30 +53,11 @@ export default class FlowGraphComponent extends Vue {
 
   }
 
-  createCustomEditorEvents () {
-    this.editor.bind('previewnode')
-  }
-
-  registerComponents () {
+  registerComponents () { 
     for (const category of this.nodes) {
       category.components.map((c) => {
         this.editor.register(c.component)
         this.engine.register(c.component)
-      })
-    }
-  }
-
-  makeComponentDataReactive () {
-    for (const category of this.nodes) {
-      category.components.forEach((c) => {
-        const data = c.defaultData
-
-        // Convert all default values to vue reactive ones
-        for (const i in data) {
-          if (!(data[i] instanceof Object)) {
-            Vue.set(data, i, data[i])
-          }
-        }
       })
     }
   }
@@ -108,7 +89,6 @@ export default class FlowGraphComponent extends Vue {
   mounted () {
       
     this.createEditor()
-    this.createCustomEditorEvents()
 
     this.engine = new Rete.Engine('demo@0.1.0')
     this.registerComponents()

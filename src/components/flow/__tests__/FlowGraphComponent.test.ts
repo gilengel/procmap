@@ -1,6 +1,7 @@
 import 'regenerator-runtime/runtime'
 import { mountFactory } from '@quasar/quasar-app-extension-testing-unit-jest';
 import FlowGraphComponent from '../FlowGraphComponent.vue'
+import { getRegisteredComponentCategories } from 'components/flow/components/Index'
 import { QToolbar, QToolbarTitle } from 'quasar';
 import { } from 'src/router'
 
@@ -9,7 +10,7 @@ const factory = mountFactory(FlowGraphComponent, {
     quasar: { components: { QToolbar, QToolbarTitle } },
     propsData: {
         dockWidth: 20,
-        nodes: []
+        nodes: getRegisteredComponentCategories()
     }
 });
 
