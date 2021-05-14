@@ -1,6 +1,8 @@
 
 import InputComponent from './Input'
 import OutputComponent from './Output'
+import CreateObjectComponent from './CreateObject'
+import SplitObjectComponent from './SplitObject'
 import TextComponent from './Text'
 
 import { Component } from 'rete'
@@ -17,7 +19,7 @@ export interface MetaFlowComponent {
   readonly label: string;
   readonly icon: string;
   readonly component: Component,
-  readonly defaultData: Record<string, unknown>
+  readonly defaultData?: Record<string, unknown>
 }
 
 const basicCategory: MetaFlowCategory = {
@@ -30,7 +32,6 @@ const basicCategory: MetaFlowCategory = {
       label: 'Input',
       icon: 'las la-download',
       component: InputComponent,
-      defaultData: { }
     },
 
     {
@@ -38,7 +39,20 @@ const basicCategory: MetaFlowCategory = {
       label: 'Output',
       icon: 'las la-upload',
       component: OutputComponent,
-      defaultData: { }
+    },
+
+    {
+      id: 'split',
+      label: 'Split',
+      icon: 'las la-sitemap',
+      component: SplitObjectComponent,
+    },
+
+    {
+      id: 'create',
+      label: 'Create',
+      icon: 'las la-sitemap',
+      component: CreateObjectComponent,
     },
 
     {
@@ -46,7 +60,6 @@ const basicCategory: MetaFlowCategory = {
       label: 'Text',
       icon: 'las la-sms',
       component: TextComponent,
-      defaultData: {}
     },
   ]
 }

@@ -1,27 +1,30 @@
 import { FlowComponent } from '../models/Component'
-import InputControlVue from 'src/components/controls/InputControl.vue'
-import TypeControlVue from 'components/controls/TypeControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
+import OutputControlVue from 'src/components/controls/OutputControl.vue'
 
 export default new FlowComponent({
-  label: 'Input',
+  label: 'CreateObject',
+
+  inputs: [
+    {
+      type: 'variable',
+      label: 'Variable',
+      mandatory: true,
+    }
+  ],
 
   outputs: [
     {
       type: 'variable',
       label: 'Variable',
       mandatory: true,
-
-      control: {
-        component: TypeControlVue
-      }
     }
   ],
 
   controls: [
     {
-      identifier: 'create_output_pin',
-      component: InputControlVue
+      identifier: 'variable',
+      component: OutputControlVue
     }
   ],
 
@@ -31,6 +34,7 @@ export default new FlowComponent({
     outputs: WorkerOutputs
   ): Promise<void> => {
     return new Promise((resolve) => {
+      console.log("Create Object")
       resolve()
     })
   }

@@ -145,7 +145,7 @@ export class FlowComponent extends Rete.Component {
     if (this.schema.controls) {
       this.schema.controls.forEach(control => {
         node.addControl(
-          new FlowControl(control.component, editor, control.identifier as string, 0, control.isValid as any))
+          new FlowControl(control.component, editor, control.identifier as string, 0, control.isValid as any, node))
       })
     }
 

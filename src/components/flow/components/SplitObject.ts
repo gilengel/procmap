@@ -1,27 +1,25 @@
 import { FlowComponent } from '../models/Component'
-import InputControlVue from 'src/components/controls/InputControl.vue'
-import TypeControlVue from 'components/controls/TypeControl.vue'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
+import NameControl from 'src/components/controls/NameControl.vue'
 
 export default new FlowComponent({
-  label: 'Input',
+  label: 'SplitObject',
 
-  outputs: [
+  inputs: [
     {
       type: 'variable',
       label: 'Variable',
       mandatory: true,
-
-      control: {
-        component: TypeControlVue
-      }
     }
+  ],
+
+  outputs: [
   ],
 
   controls: [
     {
-      identifier: 'create_output_pin',
-      component: InputControlVue
+      identifier: 'variable',
+      component: NameControl
     }
   ],
 

@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import regeneratorRuntime from "regenerator-runtime"
+import 'regenerator-runtime/runtime'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import Rete, { Engine, NodeEditor } from 'rete'
 
@@ -66,21 +66,6 @@ export default class FlowGraphComponent extends Vue {
     }
   }
 
-  makeComponentDataReactive () {
-    for (const category of this.nodes) {
-      category.components.forEach((c) => {
-        const data = c.defaultData
-
-        // Convert all default values to vue reactive ones
-        for (const i in data) {
-          if (!(data[i] instanceof Object)) {
-            Vue.set(data, i, data[i])
-          }
-        }
-      })
-    }
-  }
-
   registerEditorEvents () {
 
     this.editor.on(['process', 'nodecreated', 'noderemoved', 'connectioncreated', 'connectionremoved'], async () => {
@@ -112,9 +97,6 @@ export default class FlowGraphComponent extends Vue {
 
     this.engine = new Rete.Engine('demo@0.1.0')
     this.registerComponents()
-
-    // Progress is used for longer task to display a progress bar
-    //this.makeComponentDataReactive()
 
     this.registerEditorEvents()
 

@@ -1,6 +1,7 @@
 import Vue, { VueConstructor } from 'vue'
 import { NodeEditor, Control as ReteControl } from 'rete/types'
-import Rete from 'rete'
+import Rete, { Node as ReteNode } from 'rete'
+
 
 
 export interface ControlSchema {
@@ -17,10 +18,10 @@ export class FlowControl<S> extends Rete.Control {
 
   props: FlowControlProps<S>
 
-  constructor (component: VueConstructor<Vue>, emitter: NodeEditor, key: string, value: S, isValid: (input: S) => boolean) {
+  constructor (component: VueConstructor<Vue>, emitter: NodeEditor, key: string, value: S, isValid: (input: S) => boolean, node: ReteNode) {
     super(key)
     this.component = component
-    this.props = { emitter, propertyKey: key, value: value, isValid: isValid }
+    this.props = { emitter, propertyKey: key, value: value, isValid: isValid, node }
   }
 }
 
@@ -29,6 +30,7 @@ interface FlowControlProps<T> {
   readonly propertyKey: string
   value: T
   readonly isValid: (input: T) => boolean
+  readonly node?: ReteNode
 }
 
 export function createControl (

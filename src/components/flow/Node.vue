@@ -1,52 +1,31 @@
 <template>
-  <div :class="[selected(), 'node shadow-1']">
-    <div class="title">
-      {{ node.name }}
-    </div>
-    <div class="content">
-      <div
-        class="column inputs"
-        v-if="node.controls.size > 0 || node.inputs.size > 0"
-      >
-        <div v-for="input in inputs()" :key="input.name" class="input-container">
-          <!-- Pin -->
-          <Socket
-            v-socket:input="input"
-            type="input"
-            :socket="input.socket"
-            :used="input.connections.length > 0"
-          />
-
-          <!-- Pin Name -->
-          <div class="input-title" v-show="!input.showControl()">
-            {{ input.name }}
-          </div>
-
-          <!-- Pin Control -->
-          <div
-            class="input-control"
-            v-show="input.showControl()"
-            v-control="input.control"
-          ></div>
-        </div>
-      </div>
-      <div class="column">
+  <div :class="[selected(), 'node', 'shadow-4']">
+    <div class="title q-pa-sm">{{ node.name }}</div>
+    <div class="controls q-pl-sm q-pr-sm">
         <div
           class="control"
           v-for="(control, index) in controls()"
           v-control="control"
           :key="index"
         ></div>
+    </div>
+    <div class="pins row">
+      <div class="col-12 col-md-6 q-pt-sm q-pb-sm">
+        <div
+          v-for="input in inputs()"
+          :key="input.name"
+          class="row input-container"
+        >
+          <InputPin :pin="input" :bindSocket="bindSocket" />
+        </div>
       </div>
-      <div class="column outputs">
-        <div class="output-container" v-for="output in outputs()" :key="output.name">
-            <div class="output-title">{{ output.name }}</div>
-            <Socket
-              v-socket:output="output"
-              type="output"
-              :socket="output.socket"
-              :used="output.connections.length > 0"
-            ></Socket>
+      <div class="col-12 col-md-6 q-pt-sm q-pb-sm" >
+        <div
+          v-for="output in outputs()"
+          :key="output.name"
+          class="row output-container"
+        >
+          <OutputPin :pin="output" :bindSocket="bindSocket" />
         </div>
       </div>
     </div>
@@ -54,19 +33,22 @@
 </template>
 
 <script lang="ts">
-import Mixin from 'src/components/flow/plugins/render/Mixin'
-import Socket from './Socket.vue'
+import Mixin from "src/components/flow/plugins/render/Mixin";
+import Socket from "./Socket.vue";
+import InputPin from "./InputPin.vue";
+import OutputPin from "./OutputPin.vue";
 
-import { Component } from 'vue-property-decorator'
-import { Node as ReteNode } from 'rete'
+import { Component } from "vue-property-decorator";
+import { Node as ReteNode } from "rete";
 
 @Component({
   components: {
-    Socket: Socket
-  }
+    InputPin,
+    OutputPin,
+  },
 })
 export default class Node extends Mixin {
-  node!: ReteNode
+  node!: ReteNode;
 }
 </script>
 
@@ -81,6 +63,10 @@ $group-handler-offset: -10px;
 $context-menu-round: 7px;
 $socket-size: 10px;
 $socket-margin: 10px;
+
+.node {
+  color: white;
+}
 
 /*
 .selected::before {
@@ -97,7 +83,19 @@ $socket-margin: 10px;
   bottom: -2px;
   //right: 0;
 }
-*/
+
+.node {
+  color: white;
+
+  .title {
+    border: solid 1px white;
+  }
+
+  .pin-container {
+    border: solid 1px green;
+  }
+}
+
 .node {
   background: $node-color;
   cursor: pointer;
@@ -108,12 +106,12 @@ $socket-margin: 10px;
   flex-direction: column;
   justify-content: space-between;
 
-   -ms-user-select:none;
-   -moz-user-select:none;
-   -webkit-user-select:none;
-   -webkit-touch-callout: none;
-   -khtml-user-select: none;
-    user-select:none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -khtml-user-select: none;
+  user-select: none;
 
   .content {
     display: flex;
@@ -134,7 +132,8 @@ $socket-margin: 10px;
   }
 }
 
-.input-container, .output-container {
+.input-container,
+.output-container {
   padding-right: 6px;
   display: flex;
   align-items: center;
@@ -152,10 +151,6 @@ $socket-margin: 10px;
 
 .title {
   color: white;
-  display: flex;
-  line-height: 3em;
-  padding-left: 1em;
-  overflow: hidden;
 
   justify-content: space-between;
   align-items: center;
@@ -167,7 +162,8 @@ $socket-margin: 10px;
   padding-right: 20px;
 }
 
-.inputs, .outputs {
+.inputs,
+.outputs {
   text-align: left;
 }
 
@@ -184,4 +180,5 @@ $socket-margin: 10px;
 .socket::after {
   visibility: hidden;
 }
+*/
 </style>
