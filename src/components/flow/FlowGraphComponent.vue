@@ -85,8 +85,7 @@ export default class FlowGraphComponent extends Vue {
     })
 
     this.editor.on(['zoom'], async ({transform, zoom}) => {
-      console.log(transform)
-      console.log(zoom)
+
     })
   }
 

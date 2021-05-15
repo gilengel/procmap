@@ -42,6 +42,64 @@ enum Direction {
 interface ReteEditorWithStore {
   store: any
 }
+
+export function buildParameterPin(
+      editor: NodeEditor,
+      node: ReteNode,
+      parameter: ParameterSchema,
+      direction: Direction
+  ) {
+    const socket = registeredSockets.get(parameter.type)
+    if (socket === undefined) {
+        const bestMatch = StringSimilarity.findBestMatch(
+            parameter.type,
+            Array.from(registeredSockets.keys())
+        )
+
+        throw new Error(
+            `Socket with the name ${parameter.type} does not exists.` +
+            (bestMatch.bestMatch.rating > 0.5
+                ? ` Did you mean the socket "${bestMatch.bestMatch.target}"?`
+                : 'Make sure that a socket with this name is registered in the FlowGraphComponent.')
+        )
+    }
+
+    if (direction === Direction.Out) {
+        const pin = new Rete.Output(parameter.id !== undefined ? parameter.id : parameter.type, parameter.label, socket)
+        node.addOutput(pin)
+
+        if (parameter.control !== undefined) {
+            node.addControl(
+                createControl(
+                    parameter.control.component,
+                    editor,
+                    parameter.control.identifier !== undefined ? parameter.control.identifier : parameter.type,
+                    parameter.value,
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    parameter.control.isValid !== undefined ? parameter.control.isValid : () => true
+                )
+            )
+        }
+
+        return
+    }
+
+    const pin = new Rete.Input(parameter.id !== undefined ? parameter.id : parameter.type, parameter.label, socket)
+    if (parameter.control !== undefined) {
+        pin.addControl(
+            createControl(
+                parameter.control.component,
+                editor,
+                parameter.control.identifier !== undefined ? parameter.control.identifier : parameter.type,
+                parameter.value,
+                // eslint-disable-next-line @typescript-eslint/unbound-method
+                parameter.control.isValid !== undefined ? parameter.control.isValid : () => true
+            )
+        )
+    }
+
+    node.addInput(pin)
+}
 export class FlowComponent extends Rete.Component {
   readonly schema: ComponentSchema;
 
@@ -56,63 +114,7 @@ export class FlowComponent extends Rete.Component {
     }
   }
 
-  private buildParameterPin (
-    editor: NodeEditor,
-    node: ReteNode,
-    parameter: ParameterSchema,
-    direction: Direction
-  ) {
-    const socket = registeredSockets.get(parameter.type)
-    if (socket === undefined) {
-      const bestMatch = StringSimilarity.findBestMatch(
-        parameter.type,
-        Array.from(registeredSockets.keys())
-      )
 
-      throw new Error(
-        `Socket with the name ${parameter.type} does not exists.` +
-          (bestMatch.bestMatch.rating > 0.5
-            ? ` Did you mean the socket "${bestMatch.bestMatch.target}"?`
-            : 'Make sure that a socket with this name is registered in the FlowGraphComponent.')
-      )
-    }
-
-    if (direction === Direction.Out) {
-      const pin = new Rete.Output(parameter.id !== undefined ? parameter.id : parameter.type, parameter.label, socket)
-      node.addOutput(pin)
-
-      if (parameter.control !== undefined) {
-        node.addControl(
-          createControl(
-            parameter.control.component,
-            editor,
-            parameter.control.identifier !== undefined ? parameter.control.identifier : parameter.type,
-            parameter.value,
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            parameter.control.isValid !== undefined ? parameter.control.isValid : () => true
-          )
-        )
-      }
-
-      return
-    }
-
-    const pin = new Rete.Input(parameter.id !== undefined ? parameter.id : parameter.type, parameter.label, socket)
-    if (parameter.control !== undefined) {
-      pin.addControl(
-        createControl(
-          parameter.control.component,
-          editor,
-          parameter.control.identifier !== undefined ? parameter.control.identifier : parameter.type,
-          parameter.value,
-          // eslint-disable-next-line @typescript-eslint/unbound-method
-          parameter.control.isValid !== undefined ? parameter.control.isValid : () => true
-        )
-      )
-    }
-
-    node.addInput(pin)
-  }
 
   builder (node: ReteNode): Promise<void> {
     const editor = this.editor
@@ -122,7 +124,7 @@ export class FlowComponent extends Rete.Component {
 
     if (this.schema.inputs) {
       this.schema.inputs.forEach(parameter => {
-        this.buildParameterPin(
+        buildParameterPin(
           editor,
           node,
           parameter,
@@ -133,7 +135,7 @@ export class FlowComponent extends Rete.Component {
 
     if (this.schema.outputs) {
       this.schema.outputs.forEach(parameter => {
-        this.buildParameterPin(
+        buildParameterPin(
           editor,
           node,
           parameter,
@@ -157,8 +159,8 @@ export class FlowComponent extends Rete.Component {
 
     let vueStore: Store<unknown> | undefined
     if (nodeEditor) {
-      const renderPlugin = nodeEditor.plugins.get('vue-render')
-      vueStore = (renderPlugin as ReteEditorWithStore).store as Store<unknown>
+      //const renderPlugin = nodeEditor.plugins.get('vue-render')
+      //vueStore = (renderPlugin as ReteEditorWithStore).store as Store<unknown>
     }
 
     await this.schema.workerFn(node, inputs, outputs, vueStore)

@@ -30,7 +30,8 @@ export default new FlowComponent({
     inputs: WorkerInputs,
     outputs: WorkerOutputs
   ): Promise<void> => {
-    return new Promise((resolve) => {
+      return new Promise((resolve) => {
+        console.log(`Input 5Mark täglich`)
       resolve()
     })
   }

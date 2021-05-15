@@ -16,7 +16,7 @@
           :key="input.name"
           class="row input-container"
         >
-          <InputPin :pin="input" :bindSocket="bindSocket" />
+          <InputPin :pin="input" :bindSocket="bindSocket" :bindControl="bindControl" />
         </div>
       </div>
       <div class="col-12 col-md-6 q-pt-sm q-pb-sm" >
@@ -25,7 +25,7 @@
           :key="output.name"
           class="row output-container"
         >
-          <OutputPin :pin="output" :bindSocket="bindSocket" />
+          <OutputPin :pin="output" :bindSocket="bindSocket" :bindControl="bindControl" />
         </div>
       </div>
     </div>

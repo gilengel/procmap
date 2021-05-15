@@ -1,5 +1,6 @@
 import { FlowComponent } from '../models/Component'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
+import TypeControlVue from 'src/components/controls/TypeControl.vue'
 import OutputControlVue from 'src/components/controls/OutputControl.vue'
 
 export default new FlowComponent({
@@ -10,6 +11,10 @@ export default new FlowComponent({
       type: 'variable',
       label: 'Variable',
       mandatory: true,
+      
+      control: {
+        component: TypeControlVue
+      }      
     }
   ],
 

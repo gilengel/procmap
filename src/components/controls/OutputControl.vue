@@ -21,6 +21,10 @@ import VueFlowControl from "./FlowControl";
 import registeredSockets from "components/flow/models/Sockets";
 
 import Rete from "rete";
+import { buildParameterPin } from "../flow/models/Component";
+
+import OutputComponent from 'components/flow/components/Output'
+import { Direction } from "src/models/Grid";
 
 @Component
 export default class OutputControl extends VueFlowControl {
@@ -28,6 +32,15 @@ export default class OutputControl extends VueFlowControl {
 
   addVariable() {
     const firstInput = this.node.inputs.values().next();
+
+    const a =     {
+      id: 'output',
+      label: 'Output',
+      icon: 'las la-upload',
+      component: OutputComponent,
+    }
+    buildParameterPin(undefined, this.node, a, Direction.Right)
+    console.log(this)
 
     const socket = registeredSockets.get("variable");
     if (!socket) {
