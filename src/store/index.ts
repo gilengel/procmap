@@ -4,6 +4,7 @@ import Page from './Page'
 import SelectedElements from './SelectedElements'
 import Model from './Model'
 import GridModule from './GridModule'
+import Style from './Style'
 
 /*
  * If not building with SSR mode, you can
@@ -20,7 +21,8 @@ export default function () {
       GridModule,
       Model,
       Page,
-      SelectedElements
+      SelectedElements,
+      Style
     },
 
     // enable strict mode (adds overhead!)

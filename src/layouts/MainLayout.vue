@@ -2,8 +2,10 @@
   <q-layout>
     <q-page-container>
       <q-page>
-        <q-toolbar class="bg-black text-white vue-draggable-handle">
+        <q-toolbar>
           <q-toolbar-title>procmap</q-toolbar-title>
+
+          <StyleSelector />
         </q-toolbar>
 
         <div class="row">
@@ -180,6 +182,8 @@ import axios from "axios";
 
 import { GetAllPages, NewPage, Page } from "components/flow/Page";
 
+import StyleSelector from "components/StyleSelector.vue"
+
 import { TempFlow } from "../models/TempFlow";
 import {
   GetMultiple,
@@ -192,7 +196,9 @@ import { CreateNowTimestamp } from "src/models/Date";
 @Component({
   name: "MainLayout",
 
-  components: {},
+  components: {
+      StyleSelector
+  },
 })
 export default class MainLayout extends Vue {
   createNewFlow: boolean = false;
@@ -318,14 +324,6 @@ export default class MainLayout extends Vue {
 </script>
 
 <style lang='scss'>
-body {
-  background: $dark-page;
-}
-
-html,
-body {
-  height: 100%;
-}
 
 h1 {
   font-size: 2em !important;

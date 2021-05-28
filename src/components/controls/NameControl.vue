@@ -1,7 +1,7 @@
 <template>
   <div class="linked-control column q-gutter-md">
     <div class="col">
-      <q-input dark v-model="variableName" label="Name" stack-label dense />
+      <q-input v-model="variableName" label="Name" stack-label dense />
     </div>
   </div>
 </template>

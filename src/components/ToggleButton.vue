@@ -59,7 +59,6 @@ export default class ToggleButton extends Vue {
 
 <style lang="scss">
 .toolbar {
-  background: $dark !important;
   position: relative;
   display: flex;
   justify-content: center;

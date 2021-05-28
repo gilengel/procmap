@@ -17,7 +17,7 @@
               {{ getValueOfAttribute(column.element, "label") }}
             </label>
             <q-input
-              dark
+              
               placeholder="Text"
               :type="getValueOfAttribute(column.element, 'type')"
               v-model="column.element.value"
@@ -29,7 +29,6 @@
           >
             <q-btn
               v-if="getValueOfAttribute(column.element, 'hasIcon') === 'true'"
-              dark
               :flat="
                 getValueOfAttribute(column.element, 'isHighlighted') !== 'true'
               "

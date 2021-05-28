@@ -5,44 +5,33 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from "@vue/composition-api";
 
 export default defineComponent({
-  name: 'App'
-})
+  name: "App",
+});
 </script>
 
 <style lang="scss">
-body {
-  font-size: 0.8em;
-}
+.body--light {
+  background: $grey-1;
 
-#q-app {
-    height: 100vh;
-}
-
-.q-toolbar {
-  font-size: 0.5em !important;
-  background: $dark !important;
-
-  min-height: 36px;
-
-  .q-toolbar__title {
-    padding: 0;
-    margin: 0;
-    font-size: 2.2em;
+  .q-toolbar {
+    background: darken($grey-1, 10%);
   }
 }
 
-body {
-  background: $dark-page;
+body.body--dark {
+  background: #22252b;
+
+  .q-toolbar {
+    background: darken(#22252b, 5%);
+  }
 }
 
-html,
-body {
-  height: 100%;
+#q-app {
+  height: 100vh;
 }
-
 
 .q-banner {
   position: absolute;
@@ -58,8 +47,8 @@ body {
 }
 
 .linked {
-    outline: solid $accent 4px;
-    transition: outline 0.3s;
+  outline: solid $accent 4px;
+  transition: outline 0.3s;
 }
 
 canvas {

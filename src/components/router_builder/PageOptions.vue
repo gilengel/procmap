@@ -6,10 +6,9 @@
     </q-toolbar>
     <div class="widget-content q-pa-md">
       <label>Page</label>
-      <q-input v-model="name" label="Name" dark stack-label />
+      <q-input v-model="name" label="Name" stack-label />
 
       <q-select
-        dark
         filled
         :value="selectedPageName"
         :model="selectedPageName"

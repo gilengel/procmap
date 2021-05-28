@@ -130,7 +130,4 @@ export default class PageFlowLayout extends Vue {
 </script>
 
 <style lang='scss'>
-body {
-  background: $dark-page;
-}
 </style>
