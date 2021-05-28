@@ -82,6 +82,10 @@ import FlowEventBus, {
   FLOW_NODE_ADDED,
 } from "components/flow/FlowEventBus";
 
+import { buildParameterPin, Direction } from "components/flow/models/Component";
+
+import { VariableModel } from "src/models/Variable";
+
 import {
   Grid,
   Element,
@@ -312,8 +316,35 @@ export default class UiBuilderLayout extends Vue {
       const inputNode = connection.input.node;
       const outputNode = connection.output.node;
 
-      if((inputNode && inputNode.name !== "Text") || (outputNode && outputNode.name === "Text")) {
-        return
+      if (!inputNode || !outputNode) {
+        return;
+      }
+
+      if (inputNode.name === "SplitObject") {
+        const data = outputNode.data as Record<string, VariableModel>;
+        const result = new Array();
+
+        for (const key in data) {
+          const inputsCount = inputNode.outputs.size;
+          const id = `variable${inputsCount}`;
+          const a = {
+            type: `variable`,
+            id: key,
+            label: data[key].identifier,
+            mandatory: true,
+          };
+
+          buildParameterPin(
+            outputNode.vueContext.$props.emitter,
+            inputNode,
+            a,
+            Direction.Out
+          );
+        }
+      }
+
+      if (inputNode.name !== "Text" || outputNode.name === "Text") {
+        return;
       }
 
       const { input, output } = this.extractElementsFromReteConnection(
@@ -330,6 +361,20 @@ export default class UiBuilderLayout extends Vue {
     });
 
     FlowEventBus.$on(FLOW_NODES_DISCONNECTED, (connection: ReteConnection) => {
+      const inputNode = connection.input.node;
+      const outputNode = connection.output.node;
+
+      if (!inputNode || !outputNode) {
+        return;
+      }
+
+      if (inputNode.name === "SplitObject") {
+        for (const output of inputNode.outputs) {
+          inputNode.removeOutput(output[1]);
+        }
+
+        return;
+      }
       const { input, output } = this.extractElementsFromReteConnection(
         connection
       );

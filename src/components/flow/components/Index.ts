@@ -53,6 +53,9 @@ const basicCategory: MetaFlowCategory = {
       label: 'Create',
       icon: 'las la-sitemap',
       component: CreateObjectComponent,
+      //defaultData: {
+      //  variableIdentifier: ''
+      //}
     },
 
     {

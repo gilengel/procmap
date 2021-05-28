@@ -1,12 +1,22 @@
 <template>
   <div class="linked-control column q-gutter-md">
-    <div class="col">
-      <q-select  
-        filled 
-        v-model="newFilter"
-        :options="filterOptions" 
-        dense 
+    <div class="row">
+      <q-input
+        class="col"
+        label="Name"
+        stack-label
+        dense
+        :value="scope.value.identifier"
+        @input="changeIdentifier($event)"
+      />
+      <q-select
+        class="col"
+        filled
+        :value="scope.value.type"
+        :options="filterOptions"
+        dense
         color="secondary"
+        @input="changeType($event)"
       />
     </div>
   </div>
@@ -17,7 +27,7 @@ import { Component } from "vue-property-decorator";
 
 import VueFlowControl from "./FlowControl";
 
-import { ElementAttributeType } from "src/models/Grid"
+import { ElementAttributeType } from "src/models/Grid";
 
 function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
   return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
@@ -30,7 +40,15 @@ export default class TypeControl extends VueFlowControl {
   newFilter: string = "String";
 
   model: string = "";
-  
+
+  scope = {
+    value: {
+      identifier: '',
+      type: ElementAttributeType.String
+    },
+    changeIdentifier: this.changeIdentifier.bind(this)
+  }
+
   get filterOptions() {
     let a = [];
     for (const value of enumKeys(ElementAttributeType)) {
@@ -47,6 +65,21 @@ export default class TypeControl extends VueFlowControl {
     }
 
     return result;
+  }
+
+  changeIdentifier(e: any) {
+    this.scope.value.identifier = e
+    this.update()
+  }
+
+  changeType(e: any) {
+    this.scope.value.type = e
+    this.update()
+  }
+
+  update() {
+    this.putData(this.propertyKey, this.scope.value)
+    this.emitter?.trigger('process')
   }
 }
 </script>
