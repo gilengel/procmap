@@ -282,15 +282,6 @@ export default class MainLayout extends Vue {
 </script>
 
 <style lang='scss'>
-body {
-  background: $dark-page;
-}
-
-html,
-body {
-  height: 100%;
-}
-
 .q-banner {
   position: absolute;
   bottom: 12px;

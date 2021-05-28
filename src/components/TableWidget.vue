@@ -12,7 +12,6 @@
       :data="model.data"
       :pagination="pagination"
       row-key="id"
-      dark
       flat
       color="amber"
     />

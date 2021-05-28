@@ -3,13 +3,11 @@
     <div class="col">
       <q-btn
         flat
-        dark
         icon="las la-plus-circle"
         label="Add Input"
-        color="white"
         @click="addVariable"
       />
-      <q-input dark v-model="variableName" label="Name" stack-label dense />
+      <q-input v-model="variableName" label="Name" stack-label dense />
     </div>
   </div>
 </template>

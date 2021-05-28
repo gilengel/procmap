@@ -136,7 +136,6 @@ s {
   position: absolute;
   display: flex;
   z-index: 20;
-  background: $dark;
   border-radius: 5px;
   padding: 0.3rem;
   margin-bottom: 0.5rem;
@@ -187,7 +186,6 @@ $indicator: 16px;
   content: "";
   width: $indicator;
   height: $indicator;
-  background: $dark;
   left: 50%;
   bottom: -$indicator / 2;
   position: absolute;

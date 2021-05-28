@@ -39,8 +39,4 @@ export default class Options extends Vue {
   flex-grow: 2;
 }
 
-.q-toolbar {
-  background: $dark !important;
-}
-
 </style>

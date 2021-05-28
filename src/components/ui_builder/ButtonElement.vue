@@ -1,7 +1,6 @@
 <template>
   <div>
     <q-btn
-      dark
       text-color="white"
       :flat="!isHighlighted"
       :label="label"

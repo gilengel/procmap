@@ -7,14 +7,14 @@
     :deletable="deletable"
   >
     <div class="q-pa-md q-gutter-md">
-      <q-list dark v-for="todo in todos" :key="todo.text">
+      <q-list v-for="todo in todos" :key="todo.text">
         <q-item>
           <q-item-section>
             <q-item-label>{{ todo.text }}</q-item-label>
           </q-item-section>
 
           <q-item-section top side>
-            <q-checkbox dark v-model="todo.checked" />
+            <q-checkbox v-model="todo.checked" />
           </q-item-section>
         </q-item>
       </q-list>
@@ -55,7 +55,6 @@ export default class TodoWidget extends Widget {
 
 <style lang="scss">
 .toolbar {
-  background: $dark !important;
   position: relative;
   display: flex;
   justify-content: center;

@@ -1,8 +1,7 @@
 <template>
   <div class="linked-control column q-gutter-md">
     <div class="col">
-      <q-select 
-        dark 
+      <q-select  
         filled 
         v-model="newFilter"
         :options="filterOptions" 

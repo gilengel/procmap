@@ -52,8 +52,6 @@ export default class Widget extends Vue {
 
   display: flex;
   flex-direction: column;
-  background: rgba($dark-page, 0.9);
-
 }
 
 .widget-content {

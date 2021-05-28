@@ -119,7 +119,6 @@ export default class TextElement extends BaseElement {
 
 <style lang="scss">
 .el-text {
-    background: $dark-page;
     z-index: 2;
 
     user-select: none;

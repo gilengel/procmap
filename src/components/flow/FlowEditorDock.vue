@@ -4,7 +4,7 @@
       <q-toolbar-title>{{title}}</q-toolbar-title>
       <div class="q-gutter-sm"></div>
     </q-toolbar>
-    <q-list dark padding>
+    <q-list padding>
       <template v-for="category in nodes">
         <q-item-label header v-bind:key="category.label">{{
           category.label

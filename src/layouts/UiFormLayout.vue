@@ -185,16 +185,6 @@ export default class UiBuilderLayout extends Vue {
 </script>
 
 <style lang='scss'>
-body {
-  background: $dark-page;
-  color: white;
-}
-
-html,
-body {
-  height: 100%;
-}
-
 .blueprint-column {
   position: relative;
   border-radius: 2px;

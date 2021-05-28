@@ -7,12 +7,12 @@
     :deletable="deletable"
   >
     <div class="q-pa-md q-gutter-md">
-      <q-list dark v-for="item in model.list" :key="item">
+      <q-list v-for="item in model.list" :key="item">
         <q-item>
           <q-item-label>{{ item }}</q-item-label>
         </q-item>
       </q-list>
-      <q-input dark outlined v-model="temporaryItem" @keyup.enter="addToList" />
+      <q-input outlined v-model="temporaryItem" @keyup.enter="addToList" />
     </div>
   </Widget>
 </template>
