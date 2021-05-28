@@ -36,9 +36,10 @@ interface FlowControlProps<T> {
 export function createControl (
   component: VueConstructor<Vue>,
   emitter: NodeEditor,
+  node: ReteNode,
   key: string,
   value: unknown,
   isValid: (input: unknown) => boolean
 ): ReteControl {
-  return new FlowControl(component, emitter, key, value, isValid)
+  return new FlowControl(component, emitter, key, value, isValid, node)
 }

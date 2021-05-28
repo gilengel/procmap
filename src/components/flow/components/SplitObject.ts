@@ -29,6 +29,7 @@ export default new FlowComponent({
     outputs: WorkerOutputs
   ): Promise<void> => {
     return new Promise((resolve) => {
+      console.log(node)
       resolve()
     })
   }

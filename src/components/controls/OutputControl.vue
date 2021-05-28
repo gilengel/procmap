@@ -18,43 +18,30 @@
 import { Component } from "vue-property-decorator";
 
 import VueFlowControl from "./FlowControl";
-import registeredSockets from "components/flow/models/Sockets";
+import { buildParameterPin, Direction } from "../flow/models/Component";
+import TypeControlVue from 'components/controls/TypeControl.vue'
 
-import Rete from "rete";
-import { buildParameterPin } from "../flow/models/Component";
 
-import OutputComponent from 'components/flow/components/Output'
-import { Direction } from "src/models/Grid";
 
 @Component
 export default class OutputControl extends VueFlowControl {
   variableName: string = "";
 
   addVariable() {
-    const firstInput = this.node.inputs.values().next();
+    const inputsCount = this.node.inputs.size
+    const id = `variable${inputsCount}`
+    const a =  {
+      type: `variable`,
+      id: id,
+      label: id,
+      mandatory: true,
 
-    const a =     {
-      id: 'output',
-      label: 'Output',
-      icon: 'las la-upload',
-      component: OutputComponent,
+      control: {
+        identifier: id,
+        component: TypeControlVue
+      }
     }
-    buildParameterPin(undefined, this.node, a, Direction.Right)
-    console.log(this)
-
-    const socket = registeredSockets.get("variable");
-    if (!socket) {
-      throw new Error("Socket <variable> is not registered");
-    }
-
-    console.log(this.node.inputs.size)
-    const pin = new Rete.Input(
-      `variable_${this.node.inputs.size}`,
-      `variable_${this.node.inputs.size}`,
-      socket
-    );
-
-    this.node.addInput(pin);
+    buildParameterPin(this.$props.emitter, this.node, a, Direction.In)
     this.node.update()
   }
 }
