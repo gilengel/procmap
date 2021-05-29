@@ -4,7 +4,7 @@
       <q-toggle
         v-model="withLabel"
         label="With Label"
-        color="secondary"
+        color="primary"
       />
 
     <q-input
@@ -29,7 +29,7 @@
       v-model="typeGroup"
       :options="typeOptions"
       dark
-      color="secondary"
+      color="primary"
     />
   </div>
 </template>

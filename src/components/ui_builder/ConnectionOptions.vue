@@ -58,7 +58,7 @@
     <div class="row q-pa-sm">
       <div class="col-8">
         <q-select
-          color="secondary"
+          color="primary"
           dark
           outlined
           v-model="newFilter"
@@ -68,7 +68,7 @@
         </q-select>
       </div>
       <div class="col-4">
-        <q-btn color="secondary" label="Add Filter" @click="addFilter" />
+        <q-btn color="primary" label="Add Filter" @click="addFilter" />
       </div>
     </div>
   </div>

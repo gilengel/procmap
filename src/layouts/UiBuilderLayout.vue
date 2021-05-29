@@ -1,15 +1,13 @@
 <template>
   <div class="column full-height">
-    <q-toolbar class="bg-black text-white vue-draggable-handle">
-      <q-toolbar-title shrink style="margin-right: 2em"
-        >Widget Builder</q-toolbar-title
-      >
+    <q-toolbar>
+      <q-toolbar-title shrink style="margin-right: 2em">Widget Builder</q-toolbar-title>
 
       <q-btn-toggle
         v-model="model"
         push
         flat
-        toggle-color="secondary"
+        toggle-color="primary"
         :options="[
           { value: 'one', slot: 'one' },
           { value: 'two', slot: 'two' },
@@ -30,13 +28,14 @@
 
       <ToggleButton
         color="white"
-        selected-color="secondary"
+        selected-color="primary"
         icon="las la-link"
         label="Link to elements together"
         v-model="linkModeActive"
       />
 
       <q-space />
+      <StyleSelector />
       <q-btn
         style="
           background: salmon;
@@ -63,6 +62,7 @@
 
 <script lang='ts'>
 import { Vue, Component } from "vue-property-decorator";
+import StyleSelector from "components/StyleSelector.vue";
 import LayoutRow from "components/ui_builder/LayoutRow.vue";
 import ButtonOptions from "components/ui_builder/ButtonOptions.vue";
 import OutputOptions from "components/ui_builder/OutputOptions.vue";
@@ -103,6 +103,8 @@ import draggable from "vuedraggable";
   name: "MainLayout",
 
   components: {
+    StyleSelector,
+
     draggable,
     LayoutRow,
     ButtonOptions,
@@ -239,9 +241,10 @@ export default class UiBuilderLayout extends Vue {
   };
   */
 
-  private extractElementsFromReteConnection(
-    connection: ReteConnection
-  ): { input: Element; output: Element } {
+  private extractElementsFromReteConnection(connection: ReteConnection): {
+    input: Element;
+    output: Element;
+  } {
     if (!connection.input.node || !connection.output.node) {
       throw new Error(
         `The newly created connection between two nodes has an invalid input node, an invalid output node or both.`
@@ -273,7 +276,7 @@ export default class UiBuilderLayout extends Vue {
   mounted() {
     window.addEventListener("keydown", (e) => {
       if (e.key === "Delete") {
-        ((this.getSelectedElements as unknown) as Set<Element>).forEach(
+        (this.getSelectedElements as unknown as Set<Element>).forEach(
           (element: Element) => {
             //element.column.element = null;
           }
@@ -347,9 +350,8 @@ export default class UiBuilderLayout extends Vue {
         return;
       }
 
-      const { input, output } = this.extractElementsFromReteConnection(
-        connection
-      );
+      const { input, output } =
+        this.extractElementsFromReteConnection(connection);
 
       if (input.outputs) {
         this.linkTwoElements({
@@ -375,9 +377,8 @@ export default class UiBuilderLayout extends Vue {
 
         return;
       }
-      const { input, output } = this.extractElementsFromReteConnection(
-        connection
-      );
+      const { input, output } =
+        this.extractElementsFromReteConnection(connection);
 
       if (input.outputs) {
         this.unlinkTwoElements({
@@ -397,14 +398,14 @@ $size: 24px;
   //border: solid 2px salmon;
   border-radius: 4px;
 
-  color: $secondary;
+  color: $primary;
   //height: $size;
 
   overflow: collapse;
 }
 
 .options-container {
-  //border: solid 2px $secondary;
+  //border: solid 2px $primary;
   border: 1px solid rgb(100, 100, 100);
 }
 

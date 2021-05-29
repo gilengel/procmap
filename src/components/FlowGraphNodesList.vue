@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-toolbar class="bg-black text-white">
+    <q-toolbar>
       <q-toolbar-title>Notes</q-toolbar-title>
       <div class="q-gutter-sm" />
     </q-toolbar>

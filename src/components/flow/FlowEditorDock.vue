@@ -1,6 +1,6 @@
 <template>
   <div class="flow-dock">
-    <q-toolbar class="bg-grey-9 text-white">
+    <q-toolbar>
       <q-toolbar-title>{{title}}</q-toolbar-title>
       <div class="q-gutter-sm"></div>
     </q-toolbar>

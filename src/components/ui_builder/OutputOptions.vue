@@ -58,7 +58,7 @@ export default class OutputOptions extends TextElement {
   width: 32px;
   height: 32px;
 
-  border: solid 2px $secondary;
+  border: solid 2px $primary;
   border-radius: 2px;
 }
 

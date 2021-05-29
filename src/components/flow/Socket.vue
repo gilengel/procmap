@@ -1,8 +1,7 @@
 <template>
-  <div
-    :class="['socket', type, socket.name, used ? 'used' : '']"
-    :title="socket.name + '\\n' + socket.hint"
-  ></div>
+  <div :class="['socket', type, socket.name, used ? 'used' : '', $q.dark.isActive ? 'dark' : 'light']">
+    <q-tooltip>{{socket.name}} | {{socket.hint}}</q-tooltip>
+  </div>
 </template>
 
 <script lang="ts">
@@ -24,12 +23,12 @@ export default class Socket extends Vue {
 </script>
 
 <style lang="scss" scoped>
+
 $socket-size: 16px;
 $socket-margin: 10px;
 .socket {
   display: inline-block;
   cursor: pointer;
-  border: 2px solid white;
   border-radius: $socket-size/2.0;
   width: $socket-size;
   height: $socket-size;
@@ -43,7 +42,7 @@ $socket-margin: 10px;
     background: white;
   }
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     width: 0;
     height: 0;
@@ -61,11 +60,12 @@ $socket-margin: 10px;
     border-color: yellow;
   }
 }
-/*
 
-.socket
+.light {
+    border: solid 2px darken(#22252b, 5%);
+}
+.dark {
+    border: solid 2px white;
+}
 
-
-
-*/
 </style>

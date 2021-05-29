@@ -1,7 +1,7 @@
 <template>
     <q-toggle
       v-model="value"
-      color="secondary"
+      color="primary"
       label="Dark Mode"      
     />
 </template>

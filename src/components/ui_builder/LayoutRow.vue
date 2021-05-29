@@ -304,11 +304,11 @@ export default class LayoutRow extends Vue {
 
 .active:hover {
   > .actions {
-    background: $secondary;
+    background: $primary;
     visibility: visible;
   }
   > .row {
-    border: solid 2px $secondary;
+    border: solid 2px $primary;
   }
 }
 

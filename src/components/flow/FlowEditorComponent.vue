@@ -92,7 +92,7 @@ export default class MapEditorComponent extends Vue {
   .main-path {
     fill: none;
     stroke-width: 5px;
-    stroke: $secondary;
+    stroke: $primary;
   }
 }
 </style>

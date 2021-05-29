@@ -224,14 +224,14 @@ $size: 24px;
   //border: solid 2px salmon;
   border-radius: 4px;
 
-  color: $secondary;
+  color: $primary;
   //height: $size;
 
   overflow: collapse;
 }
 
 .options-container {
-  //border: solid 2px $secondary;
+  //border: solid 2px $primary;
   border: 1px solid rgb(100, 100, 100);
 }
 

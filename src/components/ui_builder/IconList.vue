@@ -48,6 +48,6 @@ export default class IconList extends Vue {
 
 <style lang="scss" scoped>
 .selected {
-  color: $secondary;
+  color: $primary;
 }
 </style>

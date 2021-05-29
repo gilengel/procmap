@@ -34,7 +34,6 @@
 
 <script lang="ts">
 import Mixin from "src/components/flow/plugins/render/Mixin";
-import Socket from "./Socket.vue";
 import InputPin from "./InputPin.vue";
 import OutputPin from "./OutputPin.vue";
 
@@ -64,10 +63,12 @@ $context-menu-round: 7px;
 $socket-size: 10px;
 $socket-margin: 10px;
 
-.node {
-  color: white;
-}
 
+.output-container {
+    justify-content: space-between;
+
+
+}
 /*
 .selected::before {
   display: block;

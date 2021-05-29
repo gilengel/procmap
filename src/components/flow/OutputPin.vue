@@ -1,8 +1,6 @@
 <template>
   <div class="row">
-    <div class="output-title col">
-      {{ pin.name }}
-    </div>
+    <div class="output-title col">{{ pin.name }}</div>
 
     <Socket
       v-socket:input="pin"
@@ -31,10 +29,13 @@ export default class OutputPin extends Mixin {
 </script>
 
 <style lang="scss" scoped>
+.row {
+  width: 100%;
+  justify-content: space-between;
+}
 .output-title {
   display: flex;
   align-items: center;
-  justify-content: center;
 
   padding-left: 1em;
 }

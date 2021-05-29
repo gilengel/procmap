@@ -42,7 +42,7 @@ body.body--dark {
 }
 
 .selected {
-  outline: solid $secondary 2px;
+  outline: solid $primary 2px;
   transition: outline 0.3s;
 }
 

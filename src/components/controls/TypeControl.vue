@@ -15,7 +15,7 @@
         :value="scope.value.type"
         :options="filterOptions"
         dense
-        color="secondary"
+        color="primary"
         @input="changeType($event)"
       />
     </div>

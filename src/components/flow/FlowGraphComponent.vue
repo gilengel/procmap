@@ -1,6 +1,6 @@
 <template>
   <div class="flow-graph-container column">
-    <q-toolbar class="bg-grey-9 text-white">
+    <q-toolbar>
       <q-toolbar-title>
         {{title}}
       </q-toolbar-title>

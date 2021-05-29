@@ -1,6 +1,6 @@
 <template>
   <!--<q-btn flat round :color="color" :icon="icon" @click="checked = !checked"/>-->
-  <q-btn flat round dark :color="checked ? 'secondary' : 'white'" :icon="_icon" @click="checked = !checked" />
+  <q-btn flat round dark :color="checked ? 'primary' : 'white'" :icon="_icon" @click="checked = !checked" />
 
 </template>
 

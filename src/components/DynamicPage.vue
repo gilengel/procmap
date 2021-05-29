@@ -125,7 +125,7 @@ export default class DynamicPage extends Vue {
 
 <style lang="scss" scoped>
 .q-btn {
-  color: $secondary;
+  color: $primary;
 }
 
 label {

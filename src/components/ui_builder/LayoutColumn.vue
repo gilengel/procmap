@@ -267,7 +267,7 @@ export default class LayoutColumn extends Vue {
     transform: translate(-50%, -2px);
 
     padding: 0;
-    background: $secondary;
+    background: $primary;
     visibility: collapse;
 
     display: flex;
@@ -278,7 +278,7 @@ export default class LayoutColumn extends Vue {
 }
 
 .active:hover {
-  outline: solid 2px $secondary;
+  outline: solid 2px $primary;
 }
 /*
 .layout-col:hover::after {

@@ -9,7 +9,7 @@
     <Option label="Type">
         <q-option-group
           dark
-          color="secondary"
+          color="primary"
           :options="buttonOptions"
           label="Notifications"
           type="radio"
@@ -18,11 +18,11 @@
     </Option>
 
     <Option label="Highlighted">
-      <q-toggle v-model="isHighlightedInput" color="secondary" label="Highlighed?" />
+      <q-toggle v-model="isHighlightedInput" color="primary" label="Highlighed?" />
     </Option>
 
     <Option label="With Icon?">
-      <q-toggle v-model="hasIconInput" color="secondary" label="With Icon?" />
+      <q-toggle v-model="hasIconInput" color="primary" label="With Icon?" />
     </Option>
 
     <Option label="Icon">
