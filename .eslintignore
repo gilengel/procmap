@@ -1,0 +1,10 @@
+/dist
+/src-bex/www
+/src-capacitor
+/src-cordova
+/src/plugins/rete-vue
+/.quasar
+/node_modules
+.eslintrc.js
+babel.config.js
+/src-ssr
