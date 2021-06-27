@@ -6,11 +6,17 @@ import {
   useStore as vuexUseStore,
 } from 'vuex'
 
-import Page from './page/index'
-import SelectedElements from './selectedElements/index'
-import Model from './model/index'
-import GridModule from './grid/index'
-//import Style from './Style'
+// import example from './module-example'
+// import { ExampleStateInterface } from './module-example/state';
+
+/*
+ * If not building with SSR mode, you can
+ * directly export the Store instantiation;
+ *
+ * The function below can be async too; either use
+ * async/await or return a Promise which resolves
+ * with the Store instance.
+ */
 
 export interface StateInterface {
   // Define your own store structure, using submodules if needed
@@ -32,11 +38,7 @@ export const storeKey: InjectionKey<VuexStore<StateInterface>> = Symbol('vuex-ke
 export default store(function (/* { ssrContext } */) {
   const Store = createStore<StateInterface>({
     modules: {
-      GridModule,
-      Model,
-      Page,
-      SelectedElements,
-      //Style
+      // example
     },
 
     // enable strict mode (adds overhead!)

@@ -1,14 +1,13 @@
 <template>
   <div :class="[selected(), 'node', 'shadow-4']">
-      
     <div class="title q-pa-sm">{{ node.name }}</div>
     <div class="controls q-pl-sm q-pr-sm">
-        <div
-          class="control"
-          v-for="(control, index) in controls()"
-          v-control="control"
-          :key="index"
-        ></div>
+      <div
+        class="control"
+        v-for="(control, index) in controls()"
+        v-control="control"
+        :key="index"
+      ></div>
     </div>
     <div class="pins row">
       <div class="col-12 col-md-6 q-pt-sm q-pb-sm">
@@ -17,44 +16,46 @@
           :key="input.name"
           class="row input-container"
         >
-          <InputPin :pin="input" :bindSocket="bindSocket" :bindControl="bindControl" />
+          <InputPin
+            :pin="input"
+            :bindSocket="bindSocket"
+            :bindControl="bindControl"
+          />
         </div>
       </div>
-      <div class="col-12 col-md-6 q-pt-sm q-pb-sm" >
+      <div class="col-12 col-md-6 q-pt-sm q-pb-sm">
         <div
           v-for="output in outputs()"
           :key="output.name"
           class="row output-container"
         >
-          <OutputPin :pin="output" :bindSocket="bindSocket" :bindControl="bindControl" />
+          <OutputPin
+            :pin="output"
+            :bindSocket="bindSocket"
+            :bindControl="bindControl"
+          />
         </div>
       </div>
     </div>
-    
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 
-import  ReteMixin from 'src/plugins/rete-vue/mixin';
+import ReteMixin from 'src/plugins/rete-vue/mixin';
 
-
-import InputPin from 'components/InputPin.vue'
-import OutputPin from 'components/OutputPin.vue'
+import InputPin from 'components/InputPin.vue';
+import OutputPin from 'components/OutputPin.vue';
 
 export default defineComponent({
-    mixins: [
-        ReteMixin
-    ],
+  mixins: [ReteMixin],
 
   components: {
     InputPin,
-    OutputPin
+    OutputPin,
   },
-  
-
-})
+});
 </script>
 
 <style lang="scss">
@@ -69,7 +70,7 @@ $context-menu-round: 7px;
 $socket-size: 10px;
 $socket-margin: 10px;
 .output-container {
-    justify-content: space-between;
+  justify-content: space-between;
 }
 /*
 .selected::before {
