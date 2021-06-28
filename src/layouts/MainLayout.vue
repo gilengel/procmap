@@ -4,7 +4,6 @@
       <q-page>
         <q-toolbar>
           <q-toolbar-title>procmap</q-toolbar-title>
-
           <StyleSelector />
         </q-toolbar>
 
@@ -12,7 +11,7 @@
           <div class="col">
             <h1 class="text-h1">Workflows</h1>
             <q-select
-              dark
+              
               v-model="selectedPage"
               :options="pages"
               label="Standard"
@@ -21,7 +20,7 @@
             />
 
             <span class="text-subtitle1 text-white">Change</span>
-            <q-list dark bordered separator>
+            <q-list bordered separator>
               <q-item
                 clickable
                 v-ripple
@@ -50,7 +49,7 @@
           </div>
           <div class="col">
             <h1 class="text-h1">Pages</h1>
-            <q-list dark bordered separator>
+            <q-list bordered separator>
               <q-item
                 clickable
                 v-ripple
@@ -184,7 +183,7 @@ import axios from 'axios';
 
 import { NewPage, Page } from 'src/models/Page';
 
-//import StyleSelector from 'components/StyleSelector.vue';
+import StyleSelector from 'components/StyleSelector.vue';
 
 import { TempFlow } from '../models/TempFlow';
 import {
@@ -199,7 +198,7 @@ export default defineComponent({
   name: 'MainLayout',
 
   components: {
-    //StyleSelector,
+    StyleSelector,
   },
 
   data() {

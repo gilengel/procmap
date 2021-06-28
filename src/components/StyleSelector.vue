@@ -1,6 +1,6 @@
 <template>
     <q-toggle
-      v-model="value"
+      v-model="isDark"
       color="primary"
       label="Dark Mode"
     />
@@ -9,29 +9,35 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import { mapActions, mapGetters } from 'vuex';
+import { Style, StyleColors } from 'src/models/Style'
 /*
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import { Style } from 'src/store/Style'
 import { Getter, Action } from 'vuex-class';
 */
 export default defineComponent({
-  data() {
-    return {
-      value: false
-    }
+
+  computed: {
+      isDark: {
+          get(): boolean {
+            const style = this['Style/currentStyle']() as Style
+
+            return style === Style.Dark
+          },
+
+          set(newValue: boolean) {
+              void this['Style/setStyle'](newValue ? Style.Dark : Style.Light)
+          }
+      }
+  },
+
+  methods: {
+      ...mapActions(['Style/setStyle']),
+      ...mapGetters(['Style/currentStyle'])
   }
 
-  /*
-  @Action('setStyle')
-  setStyle!: (params: Style) => void;
 
-
-store
-  @Watch('value')
-  onChildChanged(val: boolean, oldVal: boolean) {
-      this.$q.dark.set(val)
-  }
-  */
 })
 </script>
 

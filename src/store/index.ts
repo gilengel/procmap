@@ -10,7 +10,7 @@ import Page from './page/index'
 import SelectedElements from './selectedElements/index'
 import Model from './model/index'
 import GridModule from './grid/index'
-//import Style from './Style'
+import Style from './style/index'
 
 export interface StateInterface {
   // Define your own store structure, using submodules if needed
@@ -36,7 +36,7 @@ export default store(function (/* { ssrContext } */) {
       Model,
       Page,
       SelectedElements,
-      //Style
+      Style
     },
 
     // enable strict mode (adds overhead!)
