@@ -61,9 +61,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, reactive } from 'vue';
 import { TempFlow } from 'src/models/Flow';
 import { Node as ReteNode } from 'rete';
+import { Data, NodesData } from 'rete/types/core/data';
 
 import { GridLayout, GridItem } from 'vue-grid-layout';
 import FlowGraphWidget from 'src/components/widgets/FlowGraphWidget.vue';
@@ -72,7 +73,7 @@ import PageOptions from 'src/components/pageflow_builder/PageOptions.vue';
 import getEmitter from 'src/components/EmitterComponent';
 
 import { GetOne, UpdateOne } from '../models/Backend';
-import { useQuasar } from 'quasar'
+import { useQuasar } from 'quasar';
 
 import {
   FLOW_NODE_ADDED,
@@ -144,6 +145,8 @@ export default defineComponent({
     PageOptions,
   },
 
+  //flowGraph: { id: 'test' },
+
   data() {
     return {
       draggable: true,
@@ -151,33 +154,16 @@ export default defineComponent({
       colNum: 12,
       index: 0,
 
-      currentRouterGraph: [] as Array<ReteNode>,
+      //currentRouterGraph: [] as Array<ReteNode>,
 
       hasSelectedNode: false,
       selectedNode: '',
 
       graphModel: null as TempFlow | null,
 
+
+
       reteNodes: [] as Array<ReteNode>,
-      layout: {
-        id: 'fc339aab-9355-405a-99b3-0ced2fa2361c',
-        name: 'Flowchart Layout',
-        widgets: [
-          {
-            i: '78b0262e-392e-4164-9f42-53aac79c4646',
-            x: 0,
-            y: 0,
-            w: 12,
-            h: 30,
-            movable: false,
-            component: 'FlowGraphWidget',
-            properties: {
-              categories: routingNodes,
-              graph: this.currentRouterGraph,
-            },
-          },
-        ],
-      } as View,
     };
   },
 
@@ -209,7 +195,8 @@ export default defineComponent({
   mounted() {
     GetOne<TempFlow>(`temp_flow/${this.$route.params.id as string}`)
       .then((flow) => {
-        this.graphModel = flow;
+        this.editorModel.id = flow.data.id as string
+        this.editorModel.nodes = flow.data.nodes as NodesData
 
         if (flow.data.id && flow.data.nodes) {
           this.emitter?.emit(FLOW_GRAPH_IMPORTED, flow.data);
@@ -217,7 +204,7 @@ export default defineComponent({
       })
       .catch((error: Error | AxiosError) => {
         this.triggerError(error.message);
-      })
+      });
 
     this.emitter?.on(FLOW_NODE_SELECTED, (node: ReteNode) => {
       this.hasSelectedNode = true;
@@ -244,15 +231,39 @@ export default defineComponent({
   },
 
   setup() {
-    const emitter = getEmitter()
+    const emitter = getEmitter();
 
-    const q = useQuasar()
+    const editorModel : Data = reactive({ id : 'fondo', nodes: [] as unknown as NodesData})
+    const layout = reactive({
+        id: 'fc339aab-9355-405a-99b3-0ced2fa2361c',
+        name: 'Flowchart Layout',
+        widgets: [
+          {
+            i: '78b0262e-392e-4164-9f42-53aac79c4646',
+            x: 0,
+            y: 0,
+            w: 12,
+            h: 30,
+            movable: false,
+            component: 'FlowGraphWidget',
+            properties: {
+              categories: routingNodes,
+              graph: editorModel,
+            },
+          },
+        ],
+      })
+
+
+    const q = useQuasar();
 
     return {
       emitter,
-      q
-    }
-  }
+      q,
+      editorModel,
+      layout
+    };
+  },
 });
 </script>
 

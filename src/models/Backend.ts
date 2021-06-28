@@ -26,13 +26,12 @@ export function GetOne<Type>(url: string): Promise<Type> {
 export function GetMultiple<Type>(url: string): Promise<Array<Type>> {
   return new Promise((resolve, reject) => {
     axios
-      .request<Array<Type>>({
+      .request<{ content: Array<Type> }>({
         url: `${BACKEND_URL}/${url}`,
       })
       .then((response) => {
         const { data } = response
-        console.log(data)
-        resolve(data)
+        resolve(data.content)
       })
       .catch(function (error) {
         reject(error)

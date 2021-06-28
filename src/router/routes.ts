@@ -1,8 +1,11 @@
 import { RouteRecordRaw } from 'vue-router';
 
+export const DEFAULT_VIEW = '/';
+export const PAGE_FLOW_BUILDER = '/page_flow_builder/';
+
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: DEFAULT_VIEW,
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') }

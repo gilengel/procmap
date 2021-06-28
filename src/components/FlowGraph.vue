@@ -5,7 +5,7 @@
     </template>
 
     <template #after>
-      <flow-graph-editor :categories="categories" />
+      <flow-graph-editor :categories="categories" :graph="graph" />
     </template>
   </q-splitter>
 </template>
@@ -25,6 +25,11 @@ export default defineComponent({
       type: Array as PropType<Array<MetaFlowCategory>>,
       required: true,
     },
+
+    graph: {
+      required: false,
+      type: Object
+    }
   },
 
   data() {

@@ -12,20 +12,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, PropType, watch, toRefs, reactive } from 'vue';
 import 'regenerator-runtime/runtime';
 
-import Rete, { Component, Node as ReteNode } from 'rete';
+import Rete, { Component, Node as ReteNode, NodeEditor } from 'rete';
 import { Data } from 'rete/types/core/data';
 import ConnectionPlugin from 'rete-connection-plugin';
 import VueRenderPlugin from 'src/plugins/rete-vue/Index';
-import {
-  MetaFlowCategory,
-} from 'src/models/flow/Meta';
+import { MetaFlowCategory } from 'src/models/flow/Meta';
 import { FlowComponent } from 'src/models/flow/Component';
 import { ParameterSchema } from 'src/models/flow/Parameter';
-import { SchemaBasedNodeEditor } from 'src/models/flow/SchemaEditor'
-//import resize from 'vue-resize-directive'
+import { SchemaBasedNodeEditor } from 'src/models/flow/SchemaEditor';
 
 const EDITOR_ID = 'demo@0.1.0';
 
@@ -34,13 +31,15 @@ export default defineComponent({
     categories: {
       type: Array as PropType<Array<MetaFlowCategory>>,
       default: () => [],
-      //required: true,
-      //readonly: true
+    },
+
+    graph: {
+      required: false,
+      type: Object as PropType<Data>,
     },
 
     title: {
       default: 'Editor',
-      //validator: (x) => { return typeof x === 'string' && x.length > 0
     },
   },
 
@@ -48,10 +47,11 @@ export default defineComponent({
     return {
       width: 0,
       height: 0,
-      editor: undefined as undefined | SchemaBasedNodeEditor,
       engine: new Rete.Engine(EDITOR_ID),
+      editor: undefined as undefined | SchemaBasedNodeEditor
     };
   },
+
 
   mounted() {
     this.createEditor();
@@ -59,16 +59,35 @@ export default defineComponent({
     this.registerNodes();
     this.registerEditorEvents();
 
-    if (this.editor) {
-      this.editor.view.resize();
-      this.editor.trigger('process');
+    if (!this.editor) {
+      return;
     }
+
+    this.editor.view.resize();
+    this.editor.trigger('process');
+
+    const loadEditorFromJSON = async (): Promise<boolean | undefined> => {
+      return await this.editor?.fromJSON(this.graph as unknown as Data);
+    };
+
+    watch(
+      () => this.graph,
+      () => {
+        // TODO proper logging
+        void loadEditorFromJSON()
+      },
+      { deep: true,immediate: false }
+    );
   },
+
 
   methods: {
     createEditor() {
       const container = this.$refs.rete;
-      this.editor = new SchemaBasedNodeEditor(EDITOR_ID, container as HTMLElement);
+      this.editor = reactive(new SchemaBasedNodeEditor(
+        EDITOR_ID,
+        container as HTMLElement
+      ))
       this.editor.use(ConnectionPlugin);
       this.editor.use(VueRenderPlugin);
 
@@ -143,7 +162,7 @@ export default defineComponent({
           continue;
         }
 
-        this.editor?.addSocket(pin.type)
+        this.editor?.addSocket(pin.type);
       }
     },
 
@@ -178,16 +197,16 @@ export default defineComponent({
         ],
         async () => {
           await this.engine.abort();
-          await this.engine.process(this.editor?.toJSON() as Data);
+          await this.engine.process(this.editor?.toJSON() as Data );
         }
       );
       this.editor?.on(['import'], async () => {
         await this.engine.abort();
-        await this.engine.process(this.editor?.toJSON() as Data);
+        await this.engine.process(this.editor?.toJSON() as Data );
       });
       this.editor?.on(['keyup'], async (e: KeyboardEvent) => {
         this.keyUpEvent(e);
-        await this.engine.process(this.editor?.toJSON() as Data);
+        await this.engine.process(this.editor?.toJSON() as Data );
       });
     },
 
@@ -208,6 +227,8 @@ export default defineComponent({
       }
     },
   },
+
+
 });
 </script>
 

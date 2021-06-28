@@ -15,7 +15,6 @@ import { defineComponent, PropType } from 'vue';
 import { MetaFlowCategory } from 'src/models/flow/Meta';
 import FlowGraphComponent from 'components/FlowGraph.vue';
 import Widget from './Widget.vue';
-import { Node as ReteNode } from 'rete';
 
 export default defineComponent({
   name: 'FlowGraphWidget',
@@ -33,9 +32,8 @@ export default defineComponent({
     },
 
     graph: {
-      required: true,
-      type: Array as PropType<Array<ReteNode>>,
-      default: () => [],
+      required: false,
+      type: Object
     },
 
     resizable: {

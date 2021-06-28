@@ -4,15 +4,15 @@
       <q-page>
         <q-toolbar>
           <q-toolbar-title>procmap</q-toolbar-title>
-
+          <!--
           <StyleSelector />
+          -->
         </q-toolbar>
 
-        <div class="row">
+        <div class="row max-height">
           <div class="col">
             <h1 class="text-h1">Workflows</h1>
             <q-select
-              dark
               v-model="selectedPage"
               :options="pages"
               label="Standard"
@@ -20,8 +20,19 @@
               option-label="name"
             />
 
+            <q-btn
+              label="New Flow"
+              color="primary"
+              style="
+                background: salmon !important;
+                color: rgb(30, 30, 30) !important;
+                margin-top: 8px;
+                margin-bottom: 8px;
+              "
+              @click="createNewFlow = true"
+            />
             <span class="text-subtitle1 text-white">Change</span>
-            <q-list dark bordered separator>
+            <q-list bordered separator>
               <q-item
                 clickable
                 v-ripple
@@ -35,9 +46,11 @@
                 </q-item-section>
               </q-item>
             </q-list>
-
+          </div>
+          <div class="col">
+            <h1 class="text-h1">Pages</h1>
             <q-btn
-              label="New Flow"
+              label="New Page"
               color="primary"
               style="
                 background: salmon !important;
@@ -45,12 +58,9 @@
                 margin-top: 8px;
                 margin-bottom: 8px;
               "
-              @click="createNewFlow = true"
+              @click="createNewPage = true"
             />
-          </div>
-          <div class="col">
-            <h1 class="text-h1">Pages</h1>
-            <q-list dark bordered separator>
+            <q-list bordered separator>
               <q-item
                 clickable
                 v-ripple
@@ -75,18 +85,6 @@
                 </q-item-section>
               </q-item>
             </q-list>
-
-            <q-btn
-              label="New Page"
-              color="primary"
-              style="
-                background: salmon !important;
-                color: rgb(30, 30, 30) !important;
-                margin-top: 8px;
-                margin-bottom: 8px;
-              "
-              @click="createNewPage = true"
-            />
           </div>
         </div>
 
@@ -180,7 +178,7 @@
 import { defineComponent } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 import { NewPage, Page } from 'src/models/Page';
 
@@ -218,16 +216,15 @@ export default defineComponent({
   },
 
   computed: {
-    availablePageNames(): Page[] {
-      return [];
-      //return this.$data.pages.map((page) => page.name);
+    availablePageNames(): string[] {
+      return this.$data.pages.map((page) => page.name);
     },
   },
 
   methods: {
     getTempFlows() {
       GetMultiple<TempFlow>(TEMP_FLOW_URL)
-        .then((flows) => (this.flows = flows))
+        .then((flows) => { console.log(flows); this.flows = flows })
         .catch(() => {
           this.$q.notify({
             type: 'error',
@@ -237,16 +234,14 @@ export default defineComponent({
     },
 
     getAllPages() {
-      /*
-    GetAllPages()
-      .then((pages) => (this.pages = pages))
-      .catch((reason) => {
-        this.$q.notify({
-          type: 'error',
-          message: 'Could not reach backend',
+      GetMultiple<Page>(PAGES_URL)
+        .then((pages) => (this.pages = pages))
+        .catch((reason : Error | AxiosError) => {
+          this.$q.notify({
+            type: 'error',
+            message: reason.message,
+          });
         });
-      });
-      */
     },
 
     createFlow() {
@@ -294,7 +289,6 @@ export default defineComponent({
         .then((response) => {
           const { data } = response;
 
-          console.assert(data.length > 0);
           this.rerouteToFlowBuilder(data[0].page_id);
         })
         .catch(function (error) {
@@ -319,20 +313,25 @@ export default defineComponent({
     },
 
     rerouteToFlowBuilder(flowUuid: string) {
-      void this.$router.push(`page_flow_builder/${flowUuid}`);
+      void this.$router.push(`/page_flow_builder/${flowUuid}`);
     },
 
     rerouteToPageBuilder(pageUuid: string) {
       void this.$router.push(`page_builder/${pageUuid}`);
     },
   },
+
+  mounted() {
+    this.getTempFlows();
+    this.getAllPages();
+  }
 });
 </script>
 
 <style lang="scss">
 h1 {
   font-size: 2em !important;
-  color: white;
+  color: black;
 }
 
 .q-banner {
