@@ -23,6 +23,9 @@ import { MetaFlowCategory } from 'src/models/flow/Meta';
 import { FlowComponent } from 'src/models/flow/Component';
 import { ParameterSchema } from 'src/models/flow/Parameter';
 import { SchemaBasedNodeEditor } from 'src/models/flow/SchemaEditor';
+import getEmitter from 'src/components/EmitterComponent';
+
+import { FLOW_NODE_ADDED, FLOW_NODE_SELECTED } from 'src/events'
 
 const EDITOR_ID = 'demo@0.1.0';
 
@@ -48,7 +51,9 @@ export default defineComponent({
       width: 0,
       height: 0,
       engine: new Rete.Engine(EDITOR_ID),
-      editor: undefined as undefined | SchemaBasedNodeEditor
+      editor: undefined as undefined | SchemaBasedNodeEditor,
+
+      importing: false,
     };
   },
 
@@ -201,13 +206,18 @@ export default defineComponent({
         }
       );
       this.editor?.on(['import'], async () => {
+        this.importing = true;
         await this.engine.abort();
         await this.engine.process(this.editor?.toJSON() as Data );
+        this.importing = false;
       });
       this.editor?.on(['keyup'], async (e: KeyboardEvent) => {
         this.keyUpEvent(e);
         await this.engine.process(this.editor?.toJSON() as Data );
       });
+
+      this.editor?.on(['nodeselected'], (node: ReteNode) => this.emitter?.emit(FLOW_NODE_SELECTED, node) )
+      this.editor?.on(['nodecreated'], (node: ReteNode) => { if(!this.importing) { this.emitter?.emit(FLOW_NODE_ADDED, node) }})
     },
 
     keyUpEvent(e: KeyboardEvent) {
@@ -228,7 +238,13 @@ export default defineComponent({
     },
   },
 
+  setup() {
+    const emitter = getEmitter();
 
+    return {
+      emitter
+    };
+  }
 });
 </script>
 

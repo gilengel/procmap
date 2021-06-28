@@ -64,7 +64,7 @@
 import { defineComponent, reactive } from 'vue';
 import { TempFlow } from 'src/models/Flow';
 import { Node as ReteNode } from 'rete';
-import { Data, NodesData } from 'rete/types/core/data';
+import { Data, NodeData, NodesData } from 'rete/types/core/data';
 
 import { GridLayout, GridItem } from 'vue-grid-layout';
 import FlowGraphWidget from 'src/components/widgets/FlowGraphWidget.vue';
@@ -74,6 +74,11 @@ import getEmitter from 'src/components/EmitterComponent';
 
 import { GetOne, UpdateOne } from '../models/Backend';
 import { useQuasar } from 'quasar';
+
+import { mapActions, mapGetters } from 'vuex'
+
+
+import { convertReteNode2NewPage } from 'src/converters/FlowGraphConverter';
 
 import {
   FLOW_NODE_ADDED,
@@ -190,6 +195,11 @@ export default defineComponent({
         message: message,
       });
     },
+
+    ...mapActions([
+      'Page/storeNewPage',
+      'Page/persistNewPage'
+    ]),
   },
 
   mounted() {
@@ -213,11 +223,20 @@ export default defineComponent({
     this.emitter?.on(FLOW_NODE_ADDED, (node: ReteNode) => {
       if (!node.data.page) {
         node.data = Object.assign({}, node.data, {
-          //page: convertReteNode2NewPage((node as unknown) as NodeData),
+          page: convertReteNode2NewPage((node as unknown) as NodeData),
         });
       }
 
-      //this.storeNewPage(node.data.page as NewPage);
+      this['Page/storeNewPage'](node.data.page)
+      .then(() => {
+        console.log(':)')
+      }).catch((e : Error)  => {
+        this.q.notify({
+          type: 'negative',
+          message: e.message
+        });
+      })
+
 
       this.reteNodes.push(node);
 

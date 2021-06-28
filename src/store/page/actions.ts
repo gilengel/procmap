@@ -2,8 +2,25 @@ import { ActionTree } from 'vuex';
 import { StateInterface } from '../index';
 import { PageStateInterface } from './state';
 import { Page, NewPage, UpdateNewPage } from 'src/models/Page'
+import { GetMultiple, PAGES_URL } from 'src/models/Backend';
 
 const actions: ActionTree<PageStateInterface, StateInterface> = {
+  /**
+   * Fetches all stored pages from the backend.
+   *
+   * Be aware that the result can be big and avoid to call it to often
+   * to prevent slowing down the application
+   * @param stage
+   */
+  fetchAllFromBackend() {
+    GetMultiple<Page>(`${PAGES_URL}`)
+      .then((result) => {
+        this.commit('Page/_addPersistedPages', result)
+      })
+      .catch((err) => console.error(err));
+
+  },
+
   /**
    * Updates an already stored page in the store and in the backend.
    * @param page
@@ -26,7 +43,7 @@ const actions: ActionTree<PageStateInterface, StateInterface> = {
   * @param newPage The page to be saved
   */
    storeNewPage(stage, page: NewPage) {
-     this.commit('_storeNewPage', page)
+     this.commit('Page/_storeNewPage', page)
    },
 
    /**
@@ -35,7 +52,8 @@ const actions: ActionTree<PageStateInterface, StateInterface> = {
    * @param newPage The page to be saved
    */
    persistNewPage(stage, page: NewPage) {
-     this.commit('_persistNewPage', page)
+     console.log(page)
+     this.commit('Page/_persistNewPage', page)
    }
 };
 

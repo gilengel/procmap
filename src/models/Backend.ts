@@ -8,7 +8,7 @@ export const PAGES_URL = 'pages';
 export const PAGE_CONNECTIONS_URL = 'page_connection';
 export const TEMP_FLOW_URL = 'temp_flow';
 
-export function GetOne<Type>(url: string): Promise<Type> {
+export async function GetOne<Type>(url: string): Promise<Type> {
   return new Promise((resolve, reject) => {
     axios
       .request<Type>({
@@ -23,7 +23,7 @@ export function GetOne<Type>(url: string): Promise<Type> {
   })
 }
 
-export function GetMultiple<Type>(url: string): Promise<Array<Type>> {
+export async function GetMultiple<Type>(url: string): Promise<Array<Type>> {
   return new Promise((resolve, reject) => {
     axios
       .request<{ content: Array<Type> }>({
@@ -39,7 +39,7 @@ export function GetMultiple<Type>(url: string): Promise<Array<Type>> {
   })
 }
 
-export function PostOne<Type, ReturnType>(url: string, model: Type): Promise<ReturnType> {
+export async function PostOne<Type, ReturnType>(url: string, model: Type): Promise<ReturnType> {
   return new Promise((resolve, reject) => {
     axios
       .post(`${BACKEND_URL}/${url}`, model)
@@ -52,7 +52,7 @@ export function PostOne<Type, ReturnType>(url: string, model: Type): Promise<Ret
   })
 }
 
-export function PostMultiple<Type>(url: string, model: Type): Promise<Array<Type>> {
+export async function PostMultiple<Type>(url: string, model: Type): Promise<Array<Type>> {
   return new Promise((resolve, reject) => {
     axios
       .post(`${BACKEND_URL}/${url}`, model)
@@ -65,7 +65,7 @@ export function PostMultiple<Type>(url: string, model: Type): Promise<Array<Type
   })
 }
 
-export function UpdateOne<Type>(url: string, model: Type): Promise<ServerSingleResponse<Type>> {
+export async function UpdateOne<Type>(url: string, model: Type): Promise<ServerSingleResponse<Type>> {
   return new Promise((resolve, reject) => {
     axios
       .put(`${BACKEND_URL}/${url}`, model)
@@ -78,7 +78,7 @@ export function UpdateOne<Type>(url: string, model: Type): Promise<ServerSingleR
   })
 }
 
-export function DeleteOne<Type>(url: string, id: number): Promise<Type> {
+export async function DeleteOne<Type>(url: string, id: number): Promise<Type> {
   return new Promise((resolve, reject) => {
     axios
       .delete<Type>(`${BACKEND_URL}/${url}/${id}`)

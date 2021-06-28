@@ -178,7 +178,7 @@
 import { defineComponent } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 import { NewPage, Page } from 'src/models/Page';
 
@@ -192,6 +192,7 @@ import {
   PAGES_URL,
 } from 'src/models/Backend';
 import { CreateNowTimestamp } from 'src/models/Date';
+import { mapGetters } from 'vuex';
 
 export default defineComponent({
   name: 'MainLayout',
@@ -222,9 +223,11 @@ export default defineComponent({
   },
 
   methods: {
+    ...mapGetters(['Page/persistedPages']),
+
     getTempFlows() {
       GetMultiple<TempFlow>(TEMP_FLOW_URL)
-        .then((flows) => { console.log(flows); this.flows = flows })
+        .then((flows) => this.flows = flows)
         .catch(() => {
           this.$q.notify({
             type: 'error',
@@ -233,16 +236,7 @@ export default defineComponent({
         });
     },
 
-    getAllPages() {
-      GetMultiple<Page>(PAGES_URL)
-        .then((pages) => (this.pages = pages))
-        .catch((reason : Error | AxiosError) => {
-          this.$q.notify({
-            type: 'error',
-            message: reason.message,
-          });
-        });
-    },
+
 
     createFlow() {
       const hasName = this.newFlowName !== '';
@@ -303,7 +297,7 @@ export default defineComponent({
 
     confirmDeletePage(page: Page) {
       DeleteOne(PAGES_URL, page.page_pk)
-        .then(() => this.getAllPages())
+        .then(() => { this.pages = this['Page/persistedPages']() as Array<Page> })
         .catch(() => {
           this.$q.notify({
             type: 'error',
@@ -323,7 +317,8 @@ export default defineComponent({
 
   mounted() {
     this.getTempFlows();
-    this.getAllPages();
+
+    this.pages = this['Page/persistedPages']() as Array<Page>
   }
 });
 </script>

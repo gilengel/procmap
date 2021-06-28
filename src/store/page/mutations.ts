@@ -5,13 +5,24 @@ import { PAGES_URL, UpdateOne, PostOne } from 'src/models/Backend';
 
 const mutation: MutationTree<PageStateInterface> = {
   /**
+   * Adds already persisted pages to the intermediate memory of the store
+   *
+   * @param stage
+   */
+  _addPersistedPages(state, pages: Page[]) {
+    for(const page of pages) {
+      state._persistedPages.push(page)
+    }
+  },
+
+  /**
    * Updates an existing page on backend side and in local store
    * @param updatedPage
    */
   _updatePage(state, updatedPage: Page) {
     // Persist the page on backend
-    UpdateOne<Page>(`${PAGES_URL}/${updatedPage.page_id}`, updatedPage).then(
-      () => {
+    UpdateOne<Page>(`${PAGES_URL}/${updatedPage.page_id}`, updatedPage)
+      .then(() => {
         // Update the page in the client store
         let found = state._persistedPages.find(
           (page: Page) => page.page_pk === updatedPage.page_pk
@@ -20,9 +31,8 @@ const mutation: MutationTree<PageStateInterface> = {
         if (found) {
           found = Object.assign({}, found, updatedPage);
         }
-      }
-    )
-    .catch((er) => console.error(er));
+      })
+      .catch((er) => console.error(er));
   },
 
   /**

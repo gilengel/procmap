@@ -35,8 +35,8 @@ const getters: GetterTree<PageStateInterface, StateInterface> = {
    * @param page_id The uuid of the page
    * @returns Page if page is found, undefined if not
    */
-  persistedPage(state, uuid: string) : Page | undefined {
-    return state._persistedPages.find((page: Page) => page.page_id === uuid)
+  persistedPage(state)  {
+    return (page_id: string) : Page | undefined => {  return state._persistedPages.find((page: Page) => page.page_id === page_id) }
   },
 
   /**
@@ -45,8 +45,8 @@ const getters: GetterTree<PageStateInterface, StateInterface> = {
    * @param page_id The uuid of the new page
    * @returns Page if page is found, undefined if not
    */
-  newPageById(state, page_id: string): NewPage | undefined {
-    return state._newPages.find((page: NewPage) => page.page_id === page_id)
+  newPageById(state) {
+    return (page_id: string) : NewPage | undefined => { return state._newPages.find((page: NewPage) => page.page_id === page_id) }
   }
 };
 

@@ -27,7 +27,6 @@ declare module '@vue/runtime-core' {
 }
 
 export default boot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
 
   app.config.globalProperties.$mitt = mitt();
   // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)

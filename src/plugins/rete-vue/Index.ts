@@ -136,7 +136,7 @@ function install(editor: NodeEditor) {
     editor.nodes.map((n) => update(n as ReteNode & VueElement));
   });
 
-  //editor.on(['nodecreated'], node => this.emitter.emit(FLOW_NODE_ADDED, node))
+
 
   //editor.on(['connectioncreated'], connection => this.emitter.emit(FLOW_NODES_CONNECTED, connection))
   //editor.on(['connectionremoved'], connection => this.emitter.emit(FLOW_NODES_DISCONNECTED, connection))
