@@ -2,11 +2,11 @@ import { ControlSchema } from './Control';
 import { ParameterSchema } from './Parameter'
 import { Store } from 'vuex'
 import { FlowControl, createControl } from './Control'
-import registeredSockets from './Sockets'
 import Rete, { Node as ReteNode } from 'rete'
 import { NodeEditor } from 'rete/types'
 import { NodeData, WorkerInputs, WorkerOutputs } from 'rete/types/core/data'
 import * as StringSimilarity from 'string-similarity'
+import { SchemaBasedNodeEditor } from './SchemaEditor';
 
 export interface ComponentSchema {
   label: string;
@@ -40,16 +40,16 @@ export enum Direction {
 }
 
 export function buildParameterPin(
-  editor: NodeEditor,
+  editor: SchemaBasedNodeEditor,
   node: ReteNode,
   parameter: ParameterSchema,
   direction: Direction
 ) {
-  const socket = registeredSockets.get(parameter.type)
+  const socket = editor.registeredSockets.get(parameter.type)
   if (socket === undefined) {
     const bestMatch = StringSimilarity.findBestMatch(
       parameter.type,
-      Array.from(registeredSockets.keys())
+      Array.from(editor.registeredSockets.keys())
     )
 
     throw new Error(
@@ -123,7 +123,7 @@ export class FlowComponent extends Rete.Component {
     if (this.schema.inputs) {
       this.schema.inputs.forEach(parameter => {
         buildParameterPin(
-          editor,
+          editor as SchemaBasedNodeEditor,
           node,
           parameter,
           Direction.In
@@ -134,7 +134,7 @@ export class FlowComponent extends Rete.Component {
     if (this.schema.outputs) {
       this.schema.outputs.forEach(parameter => {
         buildParameterPin(
-          editor,
+          editor as SchemaBasedNodeEditor,
           node,
           parameter,
           Direction.Out
@@ -145,7 +145,7 @@ export class FlowComponent extends Rete.Component {
     if (this.schema.controls) {
       this.schema.controls.forEach(control => {
         node.addControl(
-          new FlowControl(control.component, editor, control.identifier as string, 0, () => true, node))
+          new FlowControl(control.component, editor, control.identifier as string, 0, () => true /*control.isValid*/, node))
       })
     }
 

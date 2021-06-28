@@ -5,7 +5,7 @@
       <div class="q-gutter-sm" />
     </q-toolbar>
     <q-list padding>
-      <template v-for="category in nodes" :key="category.label">
+      <template v-for="category in categories" :key="category.label">
         <q-item-label header>
           {{ category.label }}
         </q-item-label>
@@ -31,13 +31,13 @@ import {
   defineComponent,
   PropType
 } from 'vue';
-import { MetaFlowCategory } from 'src/components/flow/components/Index'
+import { MetaFlowCategory } from 'src/models/flow/Meta';
 
 export default defineComponent({
   // name: 'ComponentName'
 
   props: {
-    nodes: {
+    categories: {
         type: Array as PropType<Array<MetaFlowCategory>>,
         required: true
     }
@@ -51,3 +51,8 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss" scoped>
+  .q-item__section, .q-item {
+    color: black;
+  }
+</style>

@@ -1,4 +1,4 @@
-import { FlowComponent } from '../models/Component'
+import { FlowComponent } from 'src/models/flow/Component'
 
 export default new FlowComponent({
   label: 'SplitObject',

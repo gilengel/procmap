@@ -184,7 +184,7 @@ import axios from 'axios';
 
 import { NewPage, Page } from 'src/models/Page';
 
-import StyleSelector from 'components/StyleSelector.vue';
+//import StyleSelector from 'components/StyleSelector.vue';
 
 import { TempFlow } from '../models/TempFlow';
 import {
@@ -199,7 +199,7 @@ export default defineComponent({
   name: 'MainLayout',
 
   components: {
-    StyleSelector,
+    //StyleSelector,
   },
 
   data() {

@@ -1,11 +1,11 @@
-import { Component } from 'vue'
+import { ComponentPublicInstance } from 'vue'
 import { NodeEditor, Control as ReteControl } from 'rete/types'
 import Rete, { Node as ReteNode } from 'rete'
 
 
 
 export interface ControlSchema {
-  component: Component;
+  component: ComponentPublicInstance;
   isValid?(input: unknown) : boolean;
   // Node property key, this is set automatically to the key of the input/output the control is connected to.
   // However sometimes you want to specify it by yourself for example if you want to add a control to an array of
@@ -13,28 +13,28 @@ export interface ControlSchema {
   identifier?: string;
 }
 
-export class FlowControl extends Rete.Control {
-  component: Component
+export class FlowControl<S> extends Rete.Control {
+  component: ComponentPublicInstance
 
-  props: FlowControlProps
+  props: FlowControlProps<S>
 
-  constructor (component: Component, emitter: NodeEditor, key: string, value: unknown, isValid: (input: unknown) => boolean, node: ReteNode) {
+  constructor (component: ComponentPublicInstance, emitter: NodeEditor, key: string, value: S, isValid: (input: S) => boolean, node: ReteNode) {
     super(key)
     this.component = component
     this.props = { emitter, propertyKey: key, value: value, isValid: isValid, node }
   }
 }
 
-interface FlowControlProps {
+interface FlowControlProps<T> {
   readonly emitter: NodeEditor
   readonly propertyKey: string
-  value: unknown
-  readonly isValid: (input: unknown) => boolean
+  value: T
+  readonly isValid: (input: T) => boolean
   readonly node?: ReteNode
 }
 
 export function createControl (
-  component: Component,
+  component:ComponentPublicInstance,
   emitter: NodeEditor,
   node: ReteNode,
   key: string,

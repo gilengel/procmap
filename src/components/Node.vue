@@ -70,7 +70,13 @@ $context-menu-round: 7px;
 $socket-size: 10px;
 $socket-margin: 10px;
 .output-container {
-  justify-content: space-between;
+  justify-content: flex-end;
+}
+
+.node {
+  color: black;
+
+  min-width: 200px;
 }
 /*
 .selected::before {

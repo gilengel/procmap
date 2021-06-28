@@ -1,5 +1,5 @@
 lines (37 sloc)  798 Bytes
-  
+
 <template>
   <div class="row">
     <div class="output-title col">{{ pin.name }}</div>
@@ -39,7 +39,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .row {
-  width: 100%;
   justify-content: space-between;
 }
 .output-title {

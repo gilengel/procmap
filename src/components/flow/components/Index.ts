@@ -1,26 +1,12 @@
-
+/*
 import InputComponent from './Input'
 import OutputComponent from './Output'
 import SplitObjectComponent from './SplitObject'
 import TextComponent from './Text'
+*/
 
-import { Component } from 'rete'
 
-export interface MetaFlowCategory {
-  readonly label: string;
-  readonly icon: string;
-
-  readonly components: Array<MetaFlowComponent>
-}
-
-export interface MetaFlowComponent {
-  readonly id: string;
-  readonly label: string;
-  readonly icon: string;
-  readonly component: Component,
-  readonly defaultData?: Record<string, unknown>
-}
-
+/*
 const basicCategory: MetaFlowCategory = {
   label: 'Basic',
   icon: '',
@@ -55,7 +41,9 @@ const basicCategory: MetaFlowCategory = {
     },
   ]
 }
+*/
 
+/*
 // Unfortunatly vue does not support Maps for v-for which is necessary to display the registered components.
 // Therefore we use an Array, see https://github.com/vuejs/vue/issues/6644
 export function getRegisteredComponentCategories (): Array<MetaFlowCategory> {
@@ -73,3 +61,4 @@ export function findRegisteredComponentById (id: string): MetaFlowComponent | un
 
   return undefined
 }
+*/

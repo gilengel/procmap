@@ -1,18 +1,22 @@
+import { MetaFlowComponent } from 'src/models/Flow';
 
 import { Node, NodeEditor } from 'rete'
 
-import { findRegisteredComponentById } from 'src/components/flow/components/Index'
+//import { findRegisteredComponentById } from 'src/components/flow/components/Index'
 
 import { createNode } from './Utils'
 
-function install(editor: NodeEditor) {
+
+function install(editor: NodeEditor, nodes: Map<string, MetaFlowComponent>) {
   editor.view.container.addEventListener('dragover', e => e.preventDefault())
   editor.view.container.addEventListener('drop', (e: DragEvent) => {
     if (!e.dataTransfer) return
 
     const id = e.dataTransfer.getData('componentId')
+    const component = nodes.get(id)
 
-    const component = findRegisteredComponentById(id)
+
+
     if (!component) throw new Error(`Component ${id} not found`)
 
     // force update the mouse position
@@ -23,7 +27,9 @@ function install(editor: NodeEditor) {
     }).catch(e => {
       console.error(e)
     })
+
   })
+
 }
 
 export default {

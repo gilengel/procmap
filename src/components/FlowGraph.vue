@@ -1,27 +1,27 @@
 <template>
   <q-splitter v-model="leftToolbar" style="height: 100%">
     <template #before>
-      <flow-graph-node-list :nodes="nodes" />
+      <flow-graph-node-list :categories="categories" />
     </template>
 
     <template #after>
-      <flow-graph-editor :nodes="nodes" />
+      <flow-graph-editor :categories="categories" />
     </template>
   </q-splitter>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import FlowGraphNodeList from 'components/FlowGraphNodeList.vue';
+import FlowGraphNodeList from 'components/FlowGraphNodesList.vue';
 import FlowGraphEditor from 'components/FlowGraphEditor.vue';
-import { MetaFlowCategory } from 'src/components/flow/components/Index';
+import { MetaFlowCategory } from 'src/models/flow/Meta';
 
 export default defineComponent({
   name: 'FlowGraph',
   components: { FlowGraphNodeList, FlowGraphEditor },
 
   props: {
-    nodes: {
+    categories: {
       type: Array as PropType<Array<MetaFlowCategory>>,
       required: true,
     },
