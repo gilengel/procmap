@@ -1,3 +1,4 @@
+/*
 import { Element, ElementAttribute } from 'src/layouts/FormModel'
 import { defineComponent } from 'vue'
 import { Getter, Action } from 'vuex-class'
@@ -36,3 +37,4 @@ export default defineComponent({
   @Getter('element')
   getElement!: (uuid: string) => Element
 })
+*/

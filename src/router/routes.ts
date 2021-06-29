@@ -18,7 +18,13 @@ const routes: RouteRecordRaw[] = [
     ]
   },
 
-
+  {
+    path: '/ui_builder',
+    component: () => import('src/layouts/UiBuilderLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/UiBuilder.vue') }
+    ]
+  },
 /*
   // Route to create forms
   {

@@ -183,6 +183,7 @@ export default defineComponent({
 
   methods: {
     persistFlowModel(node: JSON) {
+        console.log(node)
       this.q.notify({
         type: 'warning',
         message: 'updated',
