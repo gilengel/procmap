@@ -9,3 +9,8 @@ export default defineComponent({
 })
 </script>
 
+<style lang="scss">
+#q-app {
+    //background: green;
+}
+</style>
