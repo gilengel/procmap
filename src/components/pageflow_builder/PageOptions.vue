@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { NewPage } from 'src/models/Page';
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 
 import { Page } from 'src/models/Page'
 

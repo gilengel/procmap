@@ -10,7 +10,7 @@
 import { defineComponent } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
-import { Style, StyleColors } from 'src/models/Style'
+import { Style } from 'src/models/Style'
 /*
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import { Style } from 'src/store/Style'

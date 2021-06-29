@@ -25,7 +25,7 @@ import {
   ElementConnection,
 } from '../models/Grid';
 
-import { createTextElement } from 'src/store/GridModule';
+//import { createTextElement } from 'src/store/GridModule';
 
 import draggable from 'vuedraggable';
 import { mapActions, mapGetters } from 'vuex';
@@ -35,9 +35,10 @@ export default defineComponent({
 
   components: {
     StyleSelector,
-    WidgetLayout
+    WidgetLayout,
+
+    //draggable,
     /*
-    draggable,
     LayoutRow,
     ButtonOptions,
     TextOptions,

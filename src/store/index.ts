@@ -9,7 +9,7 @@ import {
 import Page from './page/index'
 import SelectedElements from './selectedElements/index'
 import Model from './model/index'
-import GridModule from './grid/index'
+import Grid from './grid/index'
 import Style from './style/index'
 
 export interface StateInterface {
@@ -32,7 +32,7 @@ export const storeKey: InjectionKey<VuexStore<StateInterface>> = Symbol('vuex-ke
 export default store(function (/* { ssrContext } */) {
   const Store = createStore<StateInterface>({
     modules: {
-      GridModule,
+      Grid,
       Model,
       Page,
       SelectedElements,

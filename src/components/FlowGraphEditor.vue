@@ -12,10 +12,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, watch, toRefs, reactive } from 'vue';
+import { defineComponent, PropType, watch, reactive } from 'vue';
 import 'regenerator-runtime/runtime';
 
-import Rete, { Component, Node as ReteNode, NodeEditor } from 'rete';
+import Rete, { Component, Node as ReteNode } from 'rete';
 import { Data } from 'rete/types/core/data';
 import ConnectionPlugin from 'rete-connection-plugin';
 import VueRenderPlugin from 'src/plugins/rete-vue/Index';

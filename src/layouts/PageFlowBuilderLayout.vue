@@ -123,23 +123,6 @@ const routingNodes: Array<MetaFlowCategory> = [
   },
 ];
 
-interface Widget {
-  i: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  movable: boolean;
-  component: string;
-  properties?: Record<string, unknown>;
-}
-
-interface View {
-  id: string;
-  name: string;
-  widgets: Array<Widget>;
-}
-
 export default defineComponent({
   name: 'MainLayout',
 

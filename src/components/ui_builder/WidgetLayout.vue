@@ -1,36 +1,76 @@
 <template>
-  <h1>Widget Layout</h1>
   <div class="row">
     <div class="col-2">
       <ElementList
         @startDragging="widgetDraggingStarted"
         @stopDragging="widgetDraggingStopped"
       />
+      <!--
       <OutputOptions :uuid="selectedElement.uuid" :model="selectedElement" />
+      -->
     </div>
     <div class="col-8">
+      <span style="color: white">{{grid.rows}}</span>
+      <ul>
+        <li style="color: salmon" v-for="(row, index) in grid.rows" v-bind:key="index">{{row}}</li>
+      </ul>
+
+      <draggable
+        :list="grid.rows"
+        item-key="name"
+        class="list-group"
+        ghost-class="ghost"
+        @start="dragging = true"
+        @end="dragging = false"
+      >
+        <template #item="{ row, row_index }">
+          <div>
+            <span style="color: orange">{{ row }}</span>
+
+            <LayoutRow
+              dataKey="itemId"
+              dataValue="Row"
+              :linkModeActive="linkModeActive"
+              :deleteRow="this['Grid/deleteRow']"
+              :model="row"
+              :rowIndex="row_index"
+              :key="row_index"
+            />
+          </div>
+        </template>
+      </draggable>
+      <span style="color: white">{{grid.rows}}</span>
+
+
+      <!--
       <draggable
         handle=".drag-handle"
         class="dragArea list-group"
         v-bind="dragOptions"
         @start="drag = true"
         @end="drag = false"
+        v-model="grid.rows"
+        tag="transition-group"
+        :component-data="{name:'fade'}"
       >
-        <transition-group type="transition" :name="!drag ? 'flip-list' : null">
+        <template #item="{row, row_index}" type="transition" :name="!drag ? 'flip-list' : null">
+
           <LayoutRow
             dataKey="itemId"
             dataValue="Row"
             :linkModeActive="linkModeActive"
-            :deleteRow="deleteRow"
-            :model="row"
+            :deleteRow="this['Grid/deleteRow']"
+            :model="{row}"
             :rowIndex="row_index"
             :key="row_index"
-            v-for="(row, row_index) in grid.rows"
           />
-        </transition-group>
+          <div>{{row}}, {{row_index}}</div>
+        </template>
       </draggable>
+      -->
     </div>
     <div class="col-2 options-container" ref="options_container">
+      <!--
       <ButtonOptions
         :uuid="selectedElement.uuid"
         :model="selectedElement"
@@ -60,6 +100,7 @@
         :model="selectedElement"
         v-else
       />
+      -->
     </div>
   </div>
 </template>
@@ -67,17 +108,20 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-/*
+import { mapGetters, mapActions } from 'vuex';
+
+
 import LayoutRow from 'components/ui_builder/LayoutRow.vue';
+/*
 import ButtonOptions from 'components/ui_builder/ButtonOptions.vue';
 import OutputOptions from 'components/ui_builder/OutputOptions.vue';
 import TextOptions from 'components/ui_builder/TextOptions.vue';
 import HeadingOptions from 'components/ui_builder/HeadingOptions.vue';
 import ConnectionOptions from 'components/ui_builder/ConnectionOptions.vue';
 import ToggleButton from 'components/ToggleButton.vue';
-import ElementList from 'components/ui_builder/ElementList.vue';
 */
-import { Action, Getter } from 'vuex-class';
+import ElementList from 'components/ui_builder/ElementList.vue';
+
 
 import {
   Grid,
@@ -90,61 +134,46 @@ import {
 import draggable from 'vuedraggable';
 
 export default defineComponent({
-  components: [
-    /*
+  components: {
+
     draggable,
+    ElementList,
+
     LayoutRow,
+    /*
     ButtonOptions,
     TextOptions,
     HeadingOptions,
     ToggleButton,
     ConnectionOptions,
-    ElementList,
+
     OutputOptions,
     */
-  ],
-  /*
-  @Getter('selectedModels')
-  getSelectedElements!: () => Array<any>;
+  },
 
-  @Getter('grid')
-  grid!: () => Grid;
+  computed: {
+    selectedElement(): Element | undefined {
+      const elements = this['SelectedElements/selectedModels']() as Element[];
 
-  @Getter('connections')
-  connections!: () => Array<ElementConnection>;
+      if (elements.length !== 1) {
+        return;
+      }
 
-  @Action('addRow')
-  addRow!: (row: Row) => void;
+      let element = undefined;
+      for (let item of elements) {
+        element = item;
+      }
 
-  @Action('deleteRow')
-  deleteRow!: (rowIndex: number) => void;
+      return element;
+    },
 
-  @Action('removeAllSelectedElementsAndModels')
-  clearSelectedElements!: () => void;
-
-  @Action('addSelectedElementAndModel')
-  addSelectedElement!: (param: {
-    element: string;
-    model: any;
-    clearPreviousSelected: boolean;
-  }) => void;
-*/
+    grid() : Grid {
+      return this['Grid/grid']() as Grid
+    }
+  },
 
   /*
-  get selectedElement(): Element | {} {
-    const elements = this.getSelectedElements;
-
-    if (elements.length !== 1) {
-      return {};
-    }
-
-    let element = null;
-    for (let item of elements) {
-      element = item;
-    }
-
-    return element;
-  }
+  get
   */
 
   data() {
@@ -184,7 +213,11 @@ export default defineComponent({
   },
 
   methods: {
-    dragOptions() {
+    ...mapGetters(['SelectedElements/selectedModels', 'Grid/grid', 'Grid/connections']),
+    ...mapActions(['Grid/addRow', 'Grid/deleteRow', 'Grid/removeAllSelectedElementsAndModels', 'addSelectedElementAndModel']),
+
+    dragOptions() : Record<string, unknown> {
+
       return {
         animation: 200,
         group: 'description',
@@ -205,11 +238,15 @@ export default defineComponent({
   mounted() {
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Delete') {
-        (this.getSelectedElements as unknown as Set<Element>).forEach(
+        // TODO reenable this
+        console.log('Delete element')
+        /*
+        (this['Grid/getSelectedElements']() as unknown as Set<Element>).forEach(
           (element: Element) => {
             //element.column.element = null;
           }
         );
+        */
       }
     });
   },

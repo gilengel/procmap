@@ -23,6 +23,7 @@
     "uuid": "^8.3.2",
     "uuidv4": "^6.2.10",
     "vue-grid-layout": "git+https://github.com/lvjunhao/vue-grid-layout.git",
+    "vuedraggable": "^4.0.3",
     "vuex": "^4.0.1",
     "vuex-module-decorators": "^1.0.1"
   },
