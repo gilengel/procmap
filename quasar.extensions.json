@@ -8,6 +8,8 @@
     ]
   },
   "@quasar/testing": {
-    "harnesses": []
+    "harnesses": [
+      "unit-jest"
+    ]
   }
 }
