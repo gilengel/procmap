@@ -10,36 +10,26 @@
       -->
     </div>
     <div class="col-8">
-      <span style="color: white">{{grid.rows}}</span>
-      <ul>
-        <li style="color: salmon" v-for="(row, index) in grid.rows" v-bind:key="index">{{row}}</li>
-      </ul>
-
       <draggable
-        :list="grid.rows"
-        item-key="name"
+        v-model="rows"
+        item-key="id"
         class="list-group"
         ghost-class="ghost"
         @start="dragging = true"
         @end="dragging = false"
       >
-        <template #item="{ row, row_index }">
-          <div>
-            <span style="color: orange">{{ row }}</span>
-
-            <LayoutRow
-              dataKey="itemId"
-              dataValue="Row"
-              :linkModeActive="linkModeActive"
-              :deleteRow="this['Grid/deleteRow']"
-              :model="row"
-              :rowIndex="row_index"
-              :key="row_index"
-            />
-          </div>
+        <template #item="{ element: row, index: row_index }">
+          <LayoutRow
+            dataKey="itemId"
+            dataValue="Row"
+            :linkModeActive="linkModeActive"
+            :deleteRow="this['Grid/deleteRow']"
+            :model="row"
+            :rowIndex="row_index"
+            :key="row_index"
+          />
         </template>
       </draggable>
-      <span style="color: white">{{grid.rows}}</span>
 
 
       <!--
@@ -76,13 +66,13 @@
         :model="selectedElement"
         v-if="selectedElement && selectedElement.type === 'Button'"
       />
-
+-->
       <TextOptions
-        :uuid="selectedElement.uuid"
+        :uuid="selectedElement?.uuid"
         :model="selectedElement"
-        v-else-if="selectedElement && selectedElement.type === 'Text'"
+        v-if="selectedElement && selectedElement.type === 'Text'"
       />
-
+<!--
       <HeadingOptions
         :uuid="selectedElement.uuid"
         :model="selectedElement"
@@ -112,10 +102,11 @@ import { mapGetters, mapActions } from 'vuex';
 
 
 import LayoutRow from 'components/ui_builder/LayoutRow.vue';
+import TextOptions from 'components/ui_builder/TextOptions.vue';
 /*
 import ButtonOptions from 'components/ui_builder/ButtonOptions.vue';
 import OutputOptions from 'components/ui_builder/OutputOptions.vue';
-import TextOptions from 'components/ui_builder/TextOptions.vue';
+
 import HeadingOptions from 'components/ui_builder/HeadingOptions.vue';
 import ConnectionOptions from 'components/ui_builder/ConnectionOptions.vue';
 import ToggleButton from 'components/ToggleButton.vue';
@@ -124,22 +115,24 @@ import ElementList from 'components/ui_builder/ElementList.vue';
 
 
 import {
+  Row,
   Grid,
   Element,
   ElementType,
-  Row,
-  ElementConnection,
 } from 'src/models/Grid';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 import draggable from 'vuedraggable';
 
 export default defineComponent({
   components: {
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     draggable,
     ElementList,
 
     LayoutRow,
+    TextOptions,
     /*
     ButtonOptions,
     TextOptions,
@@ -152,6 +145,19 @@ export default defineComponent({
   },
 
   computed: {
+    ...mapGetters(['Grid/grid']),
+
+    rows: {
+      get(): Row[] {
+        return this.grid.rows
+      },
+
+      set(rows: Row[]) {
+        void this.$store.dispatch('Grid/setRows', rows)
+      }
+    },
+
+
     selectedElement(): Element | undefined {
       const elements = this['SelectedElements/selectedModels']() as Element[];
 
@@ -168,7 +174,8 @@ export default defineComponent({
     },
 
     grid() : Grid {
-      return this['Grid/grid']() as Grid
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      return this['Grid/grid'] as Grid
     }
   },
 
@@ -213,7 +220,7 @@ export default defineComponent({
   },
 
   methods: {
-    ...mapGetters(['SelectedElements/selectedModels', 'Grid/grid', 'Grid/connections']),
+    ...mapGetters(['SelectedElements/selectedModels', 'Grid/connections']),
     ...mapActions(['Grid/addRow', 'Grid/deleteRow', 'Grid/removeAllSelectedElementsAndModels', 'addSelectedElementAndModel']),
 
     dragOptions() : Record<string, unknown> {
@@ -290,10 +297,6 @@ line {
     border-radius: 50% !important;
     width: 42px;
     height: 42px;
-  }
-
-  > button:not(:last-of-type) {
-    //margin-right: 0.5em;
   }
 }
 </style>

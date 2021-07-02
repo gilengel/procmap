@@ -10,7 +10,7 @@
 import { defineComponent } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
-import { Style } from 'src/models/Style'
+import { useQuasar } from 'quasar'
 /*
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import { Style } from 'src/store/Style'
@@ -21,13 +21,15 @@ export default defineComponent({
   computed: {
       isDark: {
           get(): boolean {
-            const style = this['Style/currentStyle']() as Style
+            return this.q.dark.isActive
+            //const style = this['Style/currentStyle']() as Style
 
-            return style === Style.Dark
+            //return style === Style.Dark
           },
 
           set(newValue: boolean) {
-              void this['Style/setStyle'](newValue ? Style.Dark : Style.Light)
+            this.q.dark.set(newValue);
+            //void this['Style/setStyle'](newValue ? Style.Dark : Style.Light)
           }
       }
   },
@@ -35,9 +37,15 @@ export default defineComponent({
   methods: {
       ...mapActions(['Style/setStyle']),
       ...mapGetters(['Style/currentStyle'])
+  },
+
+  setup() {
+    const q = useQuasar();
+
+    return {
+      q
+    }
   }
-
-
 })
 </script>
 

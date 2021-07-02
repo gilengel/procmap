@@ -1,25 +1,23 @@
 <template>
   <div class="q-pa-md">
-    <q-input dark outlined bottom-slots v-model="text" dense>
+    <q-input outlined bottom-slots v-model="text" dense>
       <template v-slot:append>
         <q-icon name="search" />
       </template>
     </q-input>
 
+
     <draggable
-      class="q-list q-list--bordered q-list--separator q-list--dark"
-      tag="transition-group"
+      class="q-list q-list--bordered q-list--separator"
+      tag="div"
       v-model="list"
       :group="{ name: 'widget', pull: 'clone', put: false }"
-      v-bind="dragOptions"
-      @start="onStart"
-      @end="onEnd"
-      :move="onMoveCallback"
-      item-key="id"
+      item-key="name"
+      @change="log"
+      :sort="false"
     >
       <template #item="{ element }">
         <q-item
-
           clickable
           v-ripple
           class="list-group-item"
@@ -44,7 +42,7 @@
 import { defineComponent } from 'vue';
 import draggable from 'vuedraggable';
 
-interface ListItem {
+export interface ListItem {
   name: string;
   order: number;
   fixed: boolean;
@@ -91,6 +89,10 @@ export default defineComponent({
   },
 
   methods: {
+    log: function(evt: unknown) {
+      window.console.log(evt);
+    },
+
     onStart() {
       this.$emit('startDragging');
     },
@@ -99,14 +101,15 @@ export default defineComponent({
       this.$emit('stopDragging');
     },
 
-    onMoveCallback(evt: unknown, originalEvent: unknown): boolean {
-      /*
-      const targetClassList = evt.related.classList as DOMTokenList;
+    onMoveCallback(evt: Record<string, unknown>): boolean {
+      console.log(evt)
 
-      if (targetClassList.contains('layout-row')) {
+      //const targetClassList = evt.related.classList as DOMTokenList;
+
+      //if (targetClassList.contains('layout-row')) {
         //return false;
-      }
-      */
+      //}
+
 
       //console.log(evt.related)
 

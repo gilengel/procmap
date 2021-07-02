@@ -17,17 +17,11 @@ import StyleSelector from 'components/StyleSelector.vue';
 import WidgetLayout from 'components/ui_builder/WidgetLayout.vue';
 
 import {
-  Grid,
-  Element,
-  ElementType,
-  Row,
-  Column,
-  ElementConnection,
+  ElementType
 } from '../models/Grid';
 
 //import { createTextElement } from 'src/store/GridModule';
 
-import draggable from 'vuedraggable';
 import { mapActions, mapGetters } from 'vuex';
 
 export default defineComponent({

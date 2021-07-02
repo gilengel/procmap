@@ -6,6 +6,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { StringTransform } from 'src/models/String'
 
 const mutation: MutationTree<GridStateInterface> = {
+  _setRows(state, rows: Array<Row>) {
+    state._grid?.rows.splice(0)
+
+
+
+    for(const row of rows) {
+      state._grid?.rows.push(row)
+    }
+
+  },
+
   _addRow(state, row: Row) {
     state._grid?.rows.push(row)
   },

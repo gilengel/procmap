@@ -75,7 +75,7 @@ import getEmitter from 'src/components/EmitterComponent';
 import { GetOne, UpdateOne } from '../models/Backend';
 import { useQuasar } from 'quasar';
 
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 
 
 import { convertReteNode2NewPage } from 'src/converters/FlowGraphConverter';

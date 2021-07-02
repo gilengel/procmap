@@ -12,11 +12,11 @@ const actions: ActionTree<ModelStateInterface, StateInterface> = {
    */
    addSelectedElementAndModel(state, params: { element: string, model: unknown, clearPreviousSelected: boolean }) {
      if (params.clearPreviousSelected) {
-       this.commit('_clearSelectedElements')
-       this.commit('_removeAllSelectedElementsAndModels', null);
+       this.commit('SelectedElements/_clearSelectedElements')
+       this.commit('SelectedElements/_removeAllSelectedElementsAndModels', null);
      }
 
-     this.commit('_addSelectedElementAndModel', { elementId: params.element, model: params.model })
+     this.commit('SelectedElements/_addSelectedElementAndModel', { elementId: params.element, model: params.model })
    },
 
    /**

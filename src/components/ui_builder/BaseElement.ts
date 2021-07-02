@@ -1,40 +1,71 @@
-/*
-import { Element, ElementAttribute } from 'src/layouts/FormModel'
-import { defineComponent } from 'vue'
-import { Getter, Action } from 'vuex-class'
-import IModel from '../../store/Model'
-import { mixins } from "vue-class-component";
-import { Selectable } from '../../mixins/Selectable'
-import { ElementConnection } from 'src/models/Grid';
 
-import { mapActions, mapGetters } from 'vuex';
+import { Element } from 'src/models/Grid';
+import { defineComponent, PropType } from 'vue'
+import { Store } from 'vuex'
+
+import { v4 as uuidv4 } from 'uuid'
+import { mapActions } from 'vuex';
+
+export function getValueOfAttribute(name: string, model: Element) : undefined | unknown {
+  const attribute = model.attributes.find(attribute => attribute.name === name);
+
+  if(attribute === undefined) {
+    return undefined;
+  }
+
+  return (attribute === undefined) ? undefined : attribute.value
+}
+
+export function setValueOfAttribute (name: string, value: unknown, model: Element, store: Store<unknown>) {
+  void store.dispatch('Grid/updateElementAttribute', { element: model, name: name, value: value })
+}
+
+
 export default defineComponent({
-    props: {
-        uuid: String,
-        model: Object
+  props: {
+    model: {
+      required: true,
+      type: Object as PropType<Element>
+    }
+  },
+
+  methods: {
+    ...mapActions(['SelectedElements/removeAllSelectedElementsAndModels', 'SelectedElements/addSelectedElementAndModel']),
+
+    registerListeners() {
+      (this.$el as HTMLElement).addEventListener('click', (e) => this.clickEvent(e))
+      document.body.addEventListener('click', () => this.bodyClickEvent());
     },
 
-    methods: {
-        ...mapActions(['Style/setStyle']),
-        ...mapActions(['Grid/updateElementAttributes', 'Grid/setConnectionValue']),
-        
-        getValueOfAttribute<T>(name: string): unknown {
-            const element = this.model as unknown as Element;
-            const attribute = element.attributes.find(attribute => attribute.name === name) as ElementAttribute;
-            if(attribute === undefined) {
-              return undefined;
-            }
-            return (attribute === undefined) ? undefined : attribute.value as T
-          },
+    unregisterListeners() {
+      (this.$el as HTMLElement).removeEventListener('click', (e) => this.clickEvent(e))
+      document.body.addEventListener('click', () => this.bodyClickEvent());
+    },
 
-          setValueOfAttribute(name: string, value: unknown): Promise<unknown> {
-              return this['Grid/updateElementAttributes']({ element: this.model, name: name, value: value })
-          }        
+    clickEvent(event: MouseEvent) {
+      event.stopPropagation()
+
+      void this['SelectedElements/addSelectedElementAndModel']({ element: (this.$el as HTMLElement).id, model: this.model, clearPreviousSelected: !event.ctrlKey })
+    },
+
+    bodyClickEvent() {
+      //console.log(event)
     }
-    
+  },
 
-    /*
-  @Getter('element')
-  getElement!: (uuid: string) => Element
-})
-*/
+  mounted() {
+    this.registerListeners();
+
+    (this.$el as HTMLElement).id = uuidv4();
+  },
+
+  beforeUnmount() {
+    this.unregisterListeners();
+  }
+
+
+
+
+
+
+});

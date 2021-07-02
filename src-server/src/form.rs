@@ -4,7 +4,6 @@ use std::error::Error;
 use std::fs::File;
 use std::path::Path;
 use std::io::BufReader;
-use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ElementType {

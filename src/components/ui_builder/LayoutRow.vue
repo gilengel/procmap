@@ -1,6 +1,46 @@
 <template>
-  <div class="layout-row">
-    <span style="color: white">{{model}}</span>
+  <div class="layout-row" v-bind:class="{ active: !linkModeActive }">
+    <div class="actions" v-if="!linkModeActive">
+      <q-btn
+        class="drag-handle"
+        flat
+        round
+        color="white"
+        icon="las la-arrows-alt"
+      />
+      <q-btn
+        flat
+        round
+        color="white"
+        icon="las la-trash-alt"
+        @click="deleteRow(rowIndex)"
+      />
+    </div>
+    <div class="row" ref="container">
+      <LayoutColumn
+        dataKey="itemId"
+        :linkModeActive="linkModeActive"
+        :columnIndex="col_index"
+        :rowIndex="rowIndex"
+        :model="column"
+        :class="colClass(col_index)"
+        @splitColumn="_splitColumn"
+        @deleteColumn="_deleteColumn"
+        :splitDisabled="column.width <= 2"
+        v-for="(column, col_index) in model.columns"
+        v-bind:key="col_index"
+      >
+      </LayoutColumn>
+
+
+      <div
+        class="splitter"
+        :style="splitterStyleFn(i)"
+        v-for="(n, i) in model.columns.length - 1"
+        v-bind:key="i"
+        @mousedown="dragMouseDown($event, i)"
+      ></div>
+    </div>
   </div>
 </template>
 
@@ -15,9 +55,13 @@ import { mapActions, mapGetters } from 'vuex';
 export default defineComponent({
   name: 'LayoutRow',
 
+  components: {
+    LayoutColumn
+  },
+
   props: {
     minColSize: {
-      required: true,
+      required: false,
       type: Number,
       default: 2,
       validator: (x: number) => x > 0 && x <= 12,
@@ -25,7 +69,7 @@ export default defineComponent({
 
     // Maximal size for one column
     maxColSize: {
-      required: true,
+      required: false,
       type: Number,
       default: 11,
       validator: (x: number) => x > 0 && x <= 12,
@@ -42,7 +86,6 @@ export default defineComponent({
       required: true,
       type: Boolean,
       default: false,
-      validator: (x: number) => typeof x === 'number' && x >= 0,
     },
 
     model: {
@@ -103,7 +146,7 @@ export default defineComponent({
       'deleteRow',
       'Grid/splitColumn',
       'Grid/deleteColumn',
-      'updateColumnWidth',
+      'Grid/updateColumnWidth',
     ]),
     ...mapGetters([]),
 
@@ -214,11 +257,11 @@ export default defineComponent({
           previousColSizes;
 
         const newColumnSizes = this.restrictNewColumnSizes(flexSize);
-        void this.updateColumnWidth({
+        void this['Grid/updateColumnWidth']({
           column: this.model.columns[this.selectedSplitterIndex],
           newWidth: newColumnSizes.left,
         });
-        void this.updateColumnWidth({
+        void this['Grid/updateColumnWidth']({
           column: this.model.columns[this.selectedSplitterIndex + 1],
           newWidth: newColumnSizes.right,
         });
@@ -226,7 +269,6 @@ export default defineComponent({
     },
 
     closeDragElement() {
-      console.log('=)=');
       document.onmouseup = null;
       document.onmousemove = null;
 

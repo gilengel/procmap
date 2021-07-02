@@ -1,43 +1,84 @@
 <template>
-<h1>LayoutColumn</h1>
-<!--
   <div class="layout-col" v-bind:class="{ active: !linkModeActive }">
     <div class="actions" v-if="!linkModeActive">
-      <q-btn dark flat round color="white" icon="las la-plus">
-        <q-menu dark>
-          <q-list style="min-width: 100px">
-            <template v-for="element in allowedElements" :key="element">
-              <q-item
-                clickable
-                v-close-popup
-                @click="addElement(element)"
-
-              >
-                <q-item-section>{{ element }}</q-item-section>
-              </q-item>
-            </template>
-          </q-list>
-        </q-menu>
-      </q-btn>
       <q-btn
         :disable="splitDisabled"
-        dark
         flat
         round
         color="white"
         icon="las la-columns"
-        @click="splitColumn(columnIndex)"
+        @click="$emit('splitColumn', columnIndex)"
       />
       <q-btn
-        dark
         flat
         round
         color="white"
         icon="las la-trash-alt"
-        @click="deleteColumn(columnIndex)"
+        @click="$emit('deleteColumn', columnIndex)"
       />
     </div>
+    <draggable
+      :list="list"
+      item-key="id"
+      group="widget"
+      @start="dragging = true"
+      @end="dragging = false"
+      @change="elementAdded"
+    >
+      <template #item="{ element }">
+        <div>
+          <!--
+          <TextElement
+            data-key="itemId"
+            :model="model.element"
+            :dataValue="model.element.type"
+            :active="linkModeActive"
+            editable="true"
+            v-if="model && model.element && model.element.type === 'Text'"
+          />
+          -->
 
+          <ButtonElement
+            data-key="itemId"
+            :model="model.element"
+            :dataValue="model.element.type"
+            :active="linkModeActive"
+            editable="true"
+            v-if="model && model.element && model.element.type === 'Button'"
+            @keyup.native="removeElementFromColumn(model)"
+          />
+
+          <TextElement
+            data-key="itemId"
+            :model="model.element"
+            :dataValue="model.element.type"
+            :active="linkModeActive"
+            :editable="true"
+            v-if="model && model.element && model.element.type === 'Text'"
+          />
+
+          <HeadingElement
+            data-key="itemId"
+            :model="model.element"
+            :dataValue="model.element.type"
+            :active="linkModeActive"
+            :editable="true"
+            v-if="model && model.element && model.element.type === 'Heading'"
+          />
+<!--
+          <MapElement
+            data-key="itemId"
+            :model="model.element"
+            :dataValue="model.element.type"
+            :active="linkModeActive"
+            editable="true"
+            v-if="model && model.element && model.element.type === 'Map'"
+          />
+          -->
+        </div>
+      </template>
+    </draggable>
+    <!--
     <draggable
       @change="elementAdded"
       :list="list"
@@ -45,14 +86,7 @@
       ghost-class="ghost"
       :disabled="linkModeActive"
     >
-    <TextElement
-      data-key="itemId"
-      :model="model.element"
-      :dataValue="model.element.type"
-      :active="linkModeActive"
-      editable="true"
-      v-if="model && model.element && model.element.type === 'Text'"
-    />
+
 
     <ButtonElement
       data-key="itemId"
@@ -81,38 +115,58 @@
       editable="true"
       v-if="model && model.element && model.element.type === 'Map'"
     />
+
     </draggable>
+    -->
   </div>
-  -->
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 
+
+import ButtonElement from './Button.vue';
+import TextElement from './Text.vue';
+
+import HeadingElement from './Heading.vue';
 /*
-import ButtonElement from "./ButtonElement.vue";
-import TextElement from "./TextElement.vue";
-import HeadingElement from "./HeadingElement.vue";
 import MapElement from "./MapElement.vue";
 */
 import { mapActions } from 'vuex';
+import { v4 as uuidv4 } from 'uuid';
+
+import { ListItem } from 'src/components/ui_builder/ElementList.vue'
 
 import draggable, { ChangeEvent } from 'vuedraggable';
 import {
   Column,
-  Element,
   ElementType,
   ElementAttribute,
   ElementAttributeType,
 } from 'src/models/Grid';
 
-import { v4 as uuidv4 } from 'uuid';
+function string2ElementType(value: string) : ElementType | undefined {
+  switch(value) {
+    case 'Button': return ElementType.Button;
+    case 'Text' : return ElementType.Text;
+    case 'Row' : return ElementType.Row;
+    case 'Heading' : return ElementType.Heading;
+    case 'Map' : return ElementType.Map;
+  }
+
+  return undefined
+}
 
 export default defineComponent({
   name: 'LayoutColumn',
 
   components: {
-    draggable
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    draggable,
+    ButtonElement,
+    TextElement,
+    HeadingElement
+
     /*
     ButtonElement,
     TextElement,
@@ -122,21 +176,26 @@ export default defineComponent({
   },
 
   props: {
+
     // Minimal size for one column
     columnIndex: {
       required: true,
       type: Number,
+      /*
       validator(x) {
         return typeof x === 'number' && x >= 0 && x < 12;
       },
+      */
     },
 
     linkModeActive: {
       required: true,
       type: Boolean,
+      /*
       validator(x) {
         return typeof x === 'boolean';
       },
+      */
     },
 
     model: {
@@ -144,68 +203,43 @@ export default defineComponent({
       type: Object as PropType<Column>,
     },
 
-    splitDisable: {
+    splitDisabled: {
       required: true,
-      type: Function as PropType<(colIndex: number) => void>
-    },
-
-    splitColumn: {
-      required: true,
-      type: Function as PropType<(colIndex: number) => void>
-    },
-
-    deleteColumn: {
-      required: true,
-      type: Function as PropType<(colIndex: number) => void>
-    },
-
-    click: {
-      required: true,
-      type: Function as PropType<(element: Element) => void>
+      type: Boolean,
     }
   },
 
   data() {
     return {
       list: [
-        { name: 'John', id: 0 },
-        { name: 'Joao', id: 1 },
-        { name: 'Jean', id: 2 },
       ],
 
       allowedElements: ['Button', 'Text', 'Heading'] as ElementType[],
     };
   },
 
-  /*
-  @Action("addElementToColumn")
-  addElementToColumn!: (param: { column: Column; element: Element }) => void;
-
-  @Action("removeElementFromColumn")
-  removeElementFromColumn!: (column: Column) => void;
-*/
-
   methods: {
     ...mapActions(['Grid/addElementToColumn', 'Grid/removeElementFromColumn']),
 
-    elementAdded(evt: ChangeEvent<unknown>) {
-      // TODO reenable it
-      /*
+    elementAdded(evt: ChangeEvent<ListItem>) {
+      // To Enum / number
+
+
       if (evt.added) {
-        this.addElement(
-          ElementType[evt.added.element.name as keyof typeof ElementType]
-        );
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        this.addElement(string2ElementType(evt.added.element.name) as ElementType);
       }
 
       if (evt.removed) {
-        void this['Grid/removeElementFromColumn'](this.model);
+        //void this['Grid/removeElementFromColumn'](this.model);
       }
-      */
+
+      return false;
     },
 
     addElement(widgetType: ElementType) {
+      console.log(widgetType)
       const widgetAttributes = new Array<ElementAttribute>();
-      const uuid = uuidv4();
       if (widgetType === ElementType.Button) {
         widgetAttributes.push({
           name: 'type',
@@ -260,19 +294,17 @@ export default defineComponent({
       if (widgetType === ElementType.Heading) {
       }
 
-      // TODO
-      /*
+
       void this['Grid/addElementToColumn']({
         column: this.model,
         element: {
-          uuid: uuid,
+          uuid: uuidv4(),
           type: widgetType,
           attributes: widgetAttributes,
-        },
+        }
       });
-      */
-    },
-  },
+    }
+  }
 });
 </script>
 
