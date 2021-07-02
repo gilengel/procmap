@@ -22,21 +22,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
-import BaseElement, { getValueOfAttribute, setValueOfAttribute } from './BaseElement'
+import { defineComponent } from 'vue'
+import BaseElement from './BaseElement'
 import { useStore } from 'vuex'
 import { storeKey } from 'src/store'
 
+import textElement from 'src/composables/TextElement'
+
 export default defineComponent({
   extends: BaseElement,
-
-  props: {
-    editable: {
-      required: true,
-      type: Boolean,
-      default: () => false
-    }
-  },
 
   data() {
     return {
@@ -49,7 +43,8 @@ export default defineComponent({
   comnputed: {
 
     variable(): string {
-      return this.getValue('variable', this.model) as string
+      //return this.getValue('variable', this.model) as string
+      return 'variable'
     },
 
     isConnected(): boolean {
@@ -61,7 +56,9 @@ export default defineComponent({
     },
 
     classList(): Array<string> {
-      return this.getValue('classList', this.model) as string[]
+      //return this.getValue('classList', this.model) as string[]
+
+      return []
     }
   },
 
@@ -95,36 +92,10 @@ export default defineComponent({
 
   setup(props) {
     const store = useStore(storeKey)
-    const getValue = getValueOfAttribute;
-    const setValue = setValueOfAttribute;
-
-    const withLabel = computed({
-      get(): boolean {
-        return getValue('withLabel', props.model) as boolean
-      },
-
-      set(value: boolean) {
-        setValue('withLabel', value, props.model, store)
-      }
-    })
-
-    const label = computed(() =>
-      getValue('label', props.model) as string
-    );
-
-    const type = computed(() =>
-      getValue('type', props.model) as string
-    );
-
-
 
     return {
-      store,
-      getValue,
-      setValue,
-      withLabel,
-      label,
-      type
+        ...textElement(props.model, store),
+        store
     }
   }
 

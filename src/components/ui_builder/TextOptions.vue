@@ -1,14 +1,9 @@
 <template>
   <div class="column option-column">
     <h1 class="text-subtitle1">Text</h1>
-      <q-toggle
-        v-model="withLabel"
-        label="With Label"
-        color="primary"
-      />
+    <q-toggle v-model="withLabel" label="With Label" color="primary" />
 
     <q-input
-      dark
       standout
       v-model="variableInput"
       label="Variable Identifier"
@@ -17,7 +12,6 @@
     />
 
     <q-input
-      dark
       standout
       v-model="labelInput"
       label="Variable Identifier"
@@ -28,21 +22,22 @@
     <q-option-group
       v-model="typeGroup"
       :options="typeOptions"
-      dark
       color="primary"
     />
   </div>
 </template>
 
 <script lang="ts">
-import TextElement from './Text.vue'
-import { getValueOfAttribute, setValueOfAttribute } from './BaseElement'
+import BaseElement from './BaseElement';
 
-import { defineComponent, PropType, computed } from 'vue'
-import { Element } from 'src/models/Grid';
+import { defineComponent, computed, watch, ref } from 'vue';
 import { useStore } from 'vuex';
 
-import { storeKey } from 'src/store'
+import { storeKey } from 'src/store';
+import { getValueOfAttribute, setValueOfAttribute } from 'src/components/ui_builder/BaseElement'
+
+
+import textElement from 'src/composables/TextElement';
 
 export enum TextType {
   Password = 'password',
@@ -51,25 +46,11 @@ export enum TextType {
   URL = 'url',
   Time = 'time',
   Date = 'date',
-  Text = 'text'
+  Text = 'text',
 }
 
-
 export default defineComponent({
-  extends: TextElement,
-
-  props: {
-    model: {
-      required: true,
-      type: Object as PropType<Element>
-    },
-
-    editable: {
-      required: true,
-      type: Boolean,
-      default: () => false
-    }
-  },
+  extends: BaseElement,
 
   data() {
     return {
@@ -82,86 +63,54 @@ export default defineComponent({
         { label: 'URL', value: TextType.URL },
         { label: 'Time', value: TextType.Time },
         { label: 'Date', value: TextType.Date },
-        { label: 'Text', value: TextType.Text }
+        { label: 'Text', value: TextType.Text },
       ],
-
-      typeGroup : 'text'
-    }
+    };
   },
-
-  mounted() {
-    /*
-    const type = this.typeInput;
-
-    if(type) {
-      this.typeGroup = type;
-    }
-    */
-  },
-
-
-/*
-  @Watch('typeGroup')
-  onChildChanged(val: String, oldVal: String) {
-    this.setValueOfAttribute("type", val);
-  }
-  */
-
-
-
 
   setup(props) {
-    const store = useStore(storeKey)
-    const getValue = getValueOfAttribute;
-    const setValue = setValueOfAttribute;
-
-    const labelInput = computed({
-      get () {
-        return getValue('label', props.model) as string;
-      },
-      set (value: string) {
-        setValue('label', value, props.model, store);
-      }
-    })
+    const store = useStore(storeKey);
 
     const variableInput = computed({
-      get () {
-        return getValue('variable', props.model) as string;
+      get(): boolean {
+        return getValueOfAttribute('variable', props.model) as boolean;
       },
 
-      set (value: string) {
-        setValue('variable', value, props.model, store);
-      }
-    })
+      set(value: boolean) {
+        setValueOfAttribute('variable', value, props.model, store);
+      },
+    });
 
-/*
-    const typeInput = computed({
-      get () {
-        return props.type;
+    const labelInput = computed({
+      get(): boolean {
+        return getValueOfAttribute('label', props.model) as boolean;
       },
 
-      set (value: string) {
-        setValue('label', value, props.model, store);
-      }
-    })
-    */
+      set(value: boolean) {
+        setValueOfAttribute('label', value, props.model, store);
+      },
+    });    
+
+    const typeGroup = ref('text')
+    watch(typeGroup, (type) => {
+        setValueOfAttribute('type', type, props.model, store);
+    })    
 
     return {
+      ...textElement(props.model, store),
       store,
-      getValue,
-      labelInput,
       variableInput,
-      //typeInput
-    }
-  }
-})
+      labelInput,
+      typeGroup
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>
 .option-column {
   padding-left: 1em;
   padding-right: 1em;
-  color: white;
 
   .preview {
     display: flex;

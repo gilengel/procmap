@@ -60,17 +60,17 @@
       -->
     </div>
     <div class="col-2 options-container" ref="options_container">
-      <!--
+      
       <ButtonOptions
         :uuid="selectedElement.uuid"
         :model="selectedElement"
         v-if="selectedElement && selectedElement.type === 'Button'"
       />
--->
+
       <TextOptions
         :uuid="selectedElement?.uuid"
         :model="selectedElement"
-        v-if="selectedElement && selectedElement.type === 'Text'"
+        v-else-if="selectedElement && selectedElement.type === 'Text'"
       />
 <!--
       <HeadingOptions
@@ -103,8 +103,8 @@ import { mapGetters, mapActions } from 'vuex';
 
 import LayoutRow from 'components/ui_builder/LayoutRow.vue';
 import TextOptions from 'components/ui_builder/TextOptions.vue';
-/*
 import ButtonOptions from 'components/ui_builder/ButtonOptions.vue';
+/*
 import OutputOptions from 'components/ui_builder/OutputOptions.vue';
 
 import HeadingOptions from 'components/ui_builder/HeadingOptions.vue';
@@ -133,9 +133,9 @@ export default defineComponent({
 
     LayoutRow,
     TextOptions,
-    /*
+    
     ButtonOptions,
-    TextOptions,
+    /*
     HeadingOptions,
     ToggleButton,
     ConnectionOptions,

@@ -17,51 +17,19 @@ import { useStore } from 'vuex';
 
 import { storeKey } from 'src/store'
 
-import BaseElement, { getValueOfAttribute } from './BaseElement'
+import BaseElement from './BaseElement'
 
+import buttonElement from 'src/composables/ButtonElement'
 
 export default defineComponent({
   extends: BaseElement,
 
-  computed: {
-    type(): string {
-      return this.getValue('type', this.model) as string;
-    },
-
-    label(): string {
-      return this.getValue('label', this.model) as string;
-    },
-
-    isHighlighted(): boolean {
-      return this.getValue('isHighlighted', this.model) as boolean;
-    },
-
-    icon(): string {
-      return this.getValue('icon', this.model) as string;
-    },
-
-    hasIcon(): boolean {
-      return this.getValue('hasIcon', this.model) as boolean;
-    },
-
-    previewIcon() {
-      let icon;
-
-      if (this.hasIcon && this.icon !== '') {
-        icon = this.icon;
-      }
-
-      return icon;
-    },
-  },
-
-  setup() {
+  setup(props) {
     const store = useStore(storeKey)
-    const getValue = getValueOfAttribute;
 
     return {
       store,
-      getValue
+      ...buttonElement(props.model, store)
     }
   }
 });

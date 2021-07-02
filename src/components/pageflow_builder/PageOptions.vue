@@ -99,9 +99,6 @@ export default defineComponent({
 .widget {
   height: 100%;
 }
-.widget-content {
-  color: white;
-}
 .option-column {
   padding-left: 1em;
   padding-right: 1em;

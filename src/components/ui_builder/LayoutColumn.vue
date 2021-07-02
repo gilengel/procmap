@@ -45,7 +45,7 @@
             :active="linkModeActive"
             editable="true"
             v-if="model && model.element && model.element.type === 'Button'"
-            @keyup.native="removeElementFromColumn(model)"
+            @keyup="removeElementFromColumn(model)"
           />
 
           <TextElement
@@ -88,15 +88,7 @@
     >
 
 
-    <ButtonElement
-      data-key="itemId"
-      :model="model.element"
-      :dataValue="model.element.type"
-      :active="linkModeActive"
-      editable="true"
-      v-if="model && model.element && model.element.type === 'Button'"
-      @keyup.native="removeElementFromColumn(model)"
-    />
+
 
     <HeadingElement
       data-key="itemId"
@@ -238,7 +230,6 @@ export default defineComponent({
     },
 
     addElement(widgetType: ElementType) {
-      console.log(widgetType)
       const widgetAttributes = new Array<ElementAttribute>();
       if (widgetType === ElementType.Button) {
         widgetAttributes.push({

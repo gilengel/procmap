@@ -17,7 +17,7 @@ export function getValueOfAttribute(name: string, model: Element) : undefined | 
 }
 
 export function setValueOfAttribute (name: string, value: unknown, model: Element, store: Store<unknown>) {
-  void store.dispatch('Grid/updateElementAttribute', { element: model, name: name, value: value })
+  void store.dispatch('Grid/updateElementAttributes', { element: model, name: name, value: value })
 }
 
 
