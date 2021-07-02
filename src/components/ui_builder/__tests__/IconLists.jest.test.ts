@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 
 import IconListComponent from 'src/components/ui_builder/IconList.vue'
 
-test('increments value on click', () => {
+test('correctly renders', () => {
     const wrapper = mount(IconListComponent, {
         props: {
                 group: {
