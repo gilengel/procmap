@@ -27,7 +27,7 @@ import BaseElement from './BaseElement'
 import { useStore } from 'vuex'
 import { storeKey } from 'src/store'
 
-import textElement from 'src/composables/TextElement'
+import textElement from 'src/componsables/TextElement'
 
 export default defineComponent({
   extends: BaseElement,

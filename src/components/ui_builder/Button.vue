@@ -19,7 +19,7 @@ import { storeKey } from 'src/store'
 
 import BaseElement from './BaseElement'
 
-import buttonElement from 'src/composables/ButtonElement'
+import buttonElement from 'src/componsables/ButtonElement'
 
 export default defineComponent({
   extends: BaseElement,

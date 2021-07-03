@@ -1,6 +1,6 @@
 <template>
   <div class="option">
-    <h1 class="text-subtitle1 text-white">{{label}}</h1>
+    <h1 class="text-subtitle1">{{label}}</h1>
     <slot></slot>
   </div>
 </template>

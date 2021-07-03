@@ -25,7 +25,7 @@
       @end="dragging = false"
       @change="elementAdded"
     >
-      <template #item="{ element }">
+      <template #item="{ }">
         <div>
           <!--
           <TextElement

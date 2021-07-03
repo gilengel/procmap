@@ -18,6 +18,8 @@ node_modules
 
 /src-server/target
 
+/test/jest/coverage
+
 # BEX related directories and files
 /src-bex/www
 /src-bex/js/core

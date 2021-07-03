@@ -37,7 +37,7 @@ import { storeKey } from 'src/store';
 import { getValueOfAttribute, setValueOfAttribute } from 'src/components/ui_builder/BaseElement'
 
 
-import textElement from 'src/composables/TextElement';
+import textElement from 'src/componsables/TextElement';
 
 export enum TextType {
   Password = 'password',
@@ -89,12 +89,12 @@ export default defineComponent({
       set(value: boolean) {
         setValueOfAttribute('label', value, props.model, store);
       },
-    });    
+    });
 
     const typeGroup = ref('text')
     watch(typeGroup, (type) => {
         setValueOfAttribute('type', type, props.model, store);
-    })    
+    })
 
     return {
       ...textElement(props.model, store),

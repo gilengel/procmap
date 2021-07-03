@@ -1,6 +1,5 @@
 import { ref } from 'vue'
 import axios, { AxiosError } from 'axios'
-import { getHeapStatistics } from 'v8'
 
 export interface Icon {
     name: string,
@@ -31,8 +30,8 @@ export default function getIconsFromBackend(url: string) {
                 return
             }
 
-            status.value = error.response.status        
-        })        
+            status.value = error.response.status
+        })
     }
 
     return {

@@ -48,7 +48,7 @@ module.exports = {
   // See https://github.com/vuejs/vue-jest/issues/188#issuecomment-620750728
   moduleFileExtensions: ['vue', 'js', 'jsx', 'json', 'ts', 'tsx'],
   moduleNameMapper: {
-    '^quasar$': 'quasar/dist/quasar.common.js',
+    //'^quasar$': 'quasar/dist/quasar.common.js',
     '^~/(.*)$': '<rootDir>/$1',
     '^src/(.*)$': '<rootDir>/src/$1',
     '^app/(.*)$': '<rootDir>/$1',

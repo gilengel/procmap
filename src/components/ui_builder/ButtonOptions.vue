@@ -26,21 +26,21 @@
       <q-toggle v-model="hasIconInput" color="primary" label="With Icon?" />
     </Option>
 
-    <!--
+
     <Option label="Icon">
-        <IconList v-for="group in groupedIcons" v-if="groupedIcons" :group="group" @setIcon="updateIcon" />
+        <IconList :group="{ label: 'All'}" @setIcon="updateIcon"/>
     </Option>
-    -->
   </div>
 </template>
 
 <script lang="ts">
 import BaseElement from './BaseElement';
+import IconList from 'src/components/ui_builder/IconList.vue'
 import Option from './Option.vue'
 import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex';
 import { storeKey } from 'src/store'
-import buttonElement from 'src/composables/ButtonElement'
+import buttonElement from 'src/componsables/ButtonElement'
 import { getValueOfAttribute, setValueOfAttribute } from 'src/components/ui_builder/BaseElement'
 
 export interface Button {
@@ -55,7 +55,8 @@ export default defineComponent({
   extends: BaseElement,
 
   components: {
-      Option
+      Option,
+      IconList
   },
 
   setup(props) {
@@ -92,12 +93,17 @@ export default defineComponent({
       },
     });
 
+    const updateIcon = (icon: string) => {
+      setValueOfAttribute('icon', icon, props.model, store);
+    }
+
     return {
       store,
       ...buttonElement(props.model, store),
       isHighlightedInput,
       hasIconInput,
-      labelInput
+      labelInput,
+      updateIcon
     }
   }
 })
