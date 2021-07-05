@@ -15,8 +15,12 @@
         item-key="id"
         class="list-group"
         ghost-class="ghost"
-        @start="dragging = true"
-        @end="dragging = false"
+        @start="drag = true"
+        @end="drag = false"
+        :component-data="{
+          type: 'transition-group',
+          name: !drag ? 'flip-list' : null,
+        }"
       >
         <template #item="{ element: row, index: row_index }">
           <LayoutRow
@@ -30,37 +34,8 @@
           />
         </template>
       </draggable>
-
-
-      <!--
-      <draggable
-        handle=".drag-handle"
-        class="dragArea list-group"
-        v-bind="dragOptions"
-        @start="drag = true"
-        @end="drag = false"
-        v-model="grid.rows"
-        tag="transition-group"
-        :component-data="{name:'fade'}"
-      >
-        <template #item="{row, row_index}" type="transition" :name="!drag ? 'flip-list' : null">
-
-          <LayoutRow
-            dataKey="itemId"
-            dataValue="Row"
-            :linkModeActive="linkModeActive"
-            :deleteRow="this['Grid/deleteRow']"
-            :model="{row}"
-            :rowIndex="row_index"
-            :key="row_index"
-          />
-          <div>{{row}}, {{row_index}}</div>
-        </template>
-      </draggable>
-      -->
     </div>
     <div class="col-2 options-container" ref="options_container">
-      
       <ButtonOptions
         :uuid="selectedElement.uuid"
         :model="selectedElement"
@@ -72,7 +47,7 @@
         :model="selectedElement"
         v-else-if="selectedElement && selectedElement.type === 'Text'"
       />
-<!--
+      <!--
       <HeadingOptions
         :uuid="selectedElement.uuid"
         :model="selectedElement"
@@ -100,7 +75,6 @@ import { defineComponent } from 'vue';
 
 import { mapGetters, mapActions } from 'vuex';
 
-
 import LayoutRow from 'components/ui_builder/LayoutRow.vue';
 import TextOptions from 'components/ui_builder/TextOptions.vue';
 import ButtonOptions from 'components/ui_builder/ButtonOptions.vue';
@@ -113,27 +87,22 @@ import ToggleButton from 'components/ToggleButton.vue';
 */
 import ElementList from 'components/ui_builder/ElementList.vue';
 
-
-import {
-  Row,
-  Grid,
-  Element,
-  ElementType,
-} from 'src/models/Grid';
+import { Row, Grid, Element, ElementType } from 'src/models/Grid';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 import draggable from 'vuedraggable';
 
+import getEmitter from 'src/components/EmitterComponent';
+import { UI_ELEMENT_REMOVED } from 'src/boot/mitt';
 export default defineComponent({
   components: {
-
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     draggable,
     ElementList,
 
     LayoutRow,
     TextOptions,
-    
+
     ButtonOptions,
     /*
     HeadingOptions,
@@ -149,14 +118,13 @@ export default defineComponent({
 
     rows: {
       get(): Row[] {
-        return this.grid.rows
+        return this.grid.rows;
       },
 
       set(rows: Row[]) {
-        void this.$store.dispatch('Grid/setRows', rows)
-      }
+        void this.$store.dispatch('Grid/setRows', rows);
+      },
     },
-
 
     selectedElement(): Element | undefined {
       const elements = this['SelectedElements/selectedModels']() as Element[];
@@ -173,10 +141,10 @@ export default defineComponent({
       return element;
     },
 
-    grid() : Grid {
+    grid(): Grid {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      return this['Grid/grid'] as Grid
-    }
+      return this['Grid/grid'] as Grid;
+    },
   },
 
   /*
@@ -221,10 +189,15 @@ export default defineComponent({
 
   methods: {
     ...mapGetters(['SelectedElements/selectedModels', 'Grid/connections']),
-    ...mapActions(['Grid/addRow', 'Grid/deleteRow', 'Grid/removeAllSelectedElementsAndModels', 'addSelectedElementAndModel']),
+    ...mapActions([
+      'Grid/addRow',
+      'Grid/deleteRow',
+      'Grid/removeAllSelectedElementsAndModels',
+      'Grid/removeElementFromColumn',
+      'addSelectedElementAndModel',
+    ]),
 
-    dragOptions() : Record<string, unknown> {
-
+    dragOptions(): Record<string, unknown> {
       return {
         animation: 200,
         group: 'description',
@@ -244,33 +217,28 @@ export default defineComponent({
 
   mounted() {
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Delete') {
-        // TODO reenable this
-        console.log('Delete element')
-        /*
-        (this['Grid/getSelectedElements']() as unknown as Set<Element>).forEach(
-          (element: Element) => {
-            //element.column.element = null;
-          }
-        );
-        */
+      if (e.key !== 'Delete' || !this.selectedElement) {
+        return;
       }
+
+      this['Grid/removeElementFromColumn'](this.selectedElement?.column)
+      .then(() => this.emitter?.emit(UI_ELEMENT_REMOVED, this.selectedElement as Element))
+      .catch((e) => console.error(e))
     });
+  },
+
+  setup() {
+    const emitter = getEmitter();
+
+    return {
+      emitter,
+    };
   },
 });
 </script>
 
 <style lang="scss">
 $size: 24px;
-.ghost {
-  //border: solid 2px salmon;
-  border-radius: 4px;
-
-  color: $primary;
-  //height: $size;
-
-  overflow: collapse;
-}
 
 .options-container {
   //border: solid 2px $primary;
@@ -298,5 +266,25 @@ line {
     width: 42px;
     height: 42px;
   }
+}
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
+.no-move {
+  transition: transform 0s;
+}
+.ghost {
+  opacity: 0.5;
+  background: rgba($primary, 0.1);
+}
+.list-group {
+  min-height: 20px;
+}
+.list-group-item {
+  cursor: move;
+}
+.list-group-item i {
+  cursor: pointer;
 }
 </style>

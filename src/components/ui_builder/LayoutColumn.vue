@@ -18,26 +18,17 @@
       />
     </div>
     <draggable
-      :list="list"
+      v-model="list"
       item-key="id"
       group="widget"
+      class="drop-zone"
+      v-bind="dragOptions"
       @start="dragging = true"
       @end="dragging = false"
       @change="elementAdded"
     >
-      <template #item="{ }">
+      <template #item="{}">
         <div>
-          <!--
-          <TextElement
-            data-key="itemId"
-            :model="model.element"
-            :dataValue="model.element.type"
-            :active="linkModeActive"
-            editable="true"
-            v-if="model && model.element && model.element.type === 'Text'"
-          />
-          -->
-
           <ButtonElement
             data-key="itemId"
             :model="model.element"
@@ -65,57 +56,14 @@
             :editable="true"
             v-if="model && model.element && model.element.type === 'Heading'"
           />
-<!--
-          <MapElement
-            data-key="itemId"
-            :model="model.element"
-            :dataValue="model.element.type"
-            :active="linkModeActive"
-            editable="true"
-            v-if="model && model.element && model.element.type === 'Map'"
-          />
-          -->
         </div>
       </template>
     </draggable>
-    <!--
-    <draggable
-      @change="elementAdded"
-      :list="list"
-      group="widget"
-      ghost-class="ghost"
-      :disabled="linkModeActive"
-    >
-
-
-
-
-    <HeadingElement
-      data-key="itemId"
-      :model="model.element"
-      :dataValue="model.element.type"
-      :active="linkModeActive"
-      editable="true"
-      v-if="model && model.element && model.element.type === 'Heading'"
-    />
-
-    <MapElement
-      data-key="itemId"
-      :model="model.element"
-      :dataValue="model.element.type"
-      :active="linkModeActive"
-      editable="true"
-      v-if="model && model.element && model.element.type === 'Map'"
-    />
-
-    </draggable>
-    -->
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-
+import { defineComponent, PropType, reactive, computed, ref } from 'vue';
 
 import ButtonElement from './Button.vue';
 import TextElement from './Text.vue';
@@ -127,7 +75,8 @@ import MapElement from "./MapElement.vue";
 import { mapActions } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ListItem } from 'src/components/ui_builder/ElementList.vue'
+import { Element } from 'src/models/Grid';
+import { ListItem } from 'src/components/ui_builder/ElementList.vue';
 
 import draggable, { ChangeEvent } from 'vuedraggable';
 import {
@@ -137,16 +86,25 @@ import {
   ElementAttributeType,
 } from 'src/models/Grid';
 
-function string2ElementType(value: string) : ElementType | undefined {
-  switch(value) {
-    case 'Button': return ElementType.Button;
-    case 'Text' : return ElementType.Text;
-    case 'Row' : return ElementType.Row;
-    case 'Heading' : return ElementType.Heading;
-    case 'Map' : return ElementType.Map;
+import { UI_ELEMENT_ADDED } from 'src/boot/mitt'
+
+import getEmitter from 'src/components/EmitterComponent';
+
+function string2ElementType(value: string): ElementType | undefined {
+  switch (value) {
+    case 'Button':
+      return ElementType.Button;
+    case 'Text':
+      return ElementType.Text;
+    case 'Row':
+      return ElementType.Row;
+    case 'Heading':
+      return ElementType.Heading;
+    case 'Map':
+      return ElementType.Map;
   }
 
-  return undefined
+  return undefined;
 }
 
 export default defineComponent({
@@ -157,37 +115,19 @@ export default defineComponent({
     draggable,
     ButtonElement,
     TextElement,
-    HeadingElement
-
-    /*
-    ButtonElement,
-    TextElement,
     HeadingElement,
-    MapElement,
-    */
   },
 
   props: {
-
     // Minimal size for one column
     columnIndex: {
       required: true,
       type: Number,
-      /*
-      validator(x) {
-        return typeof x === 'number' && x >= 0 && x < 12;
-      },
-      */
     },
 
     linkModeActive: {
       required: true,
       type: Boolean,
-      /*
-      validator(x) {
-        return typeof x === 'boolean';
-      },
-      */
     },
 
     model: {
@@ -198,14 +138,11 @@ export default defineComponent({
     splitDisabled: {
       required: true,
       type: Boolean,
-    }
+    },
   },
 
   data() {
     return {
-      list: [
-      ],
-
       allowedElements: ['Button', 'Text', 'Heading'] as ElementType[],
     };
   },
@@ -213,17 +150,36 @@ export default defineComponent({
   methods: {
     ...mapActions(['Grid/addElementToColumn', 'Grid/removeElementFromColumn']),
 
-    elementAdded(evt: ChangeEvent<ListItem>) {
+    foo() {
+      //this.dragging = true
+      console.log('addded');
+    },
+
+    elementAdded(evt: ChangeEvent<ListItem | Element>) {
       // To Enum / number
 
+      const isListItem = (p: unknown): p is ListItem =>
+        (p as Record<string, unknown>).name !== undefined;
+      const isElementItem = (p: unknown): p is Element =>
+        (p as Record<string, unknown>).uuid !== undefined;
 
       if (evt.added) {
+        const element = evt.added?.element as unknown;
+        if (isListItem(element)) {
+          this.addElement(string2ElementType(element.name) as ElementType);
+        }
+
+        if (isElementItem(element)) {
+          void this['Grid/addElementToColumn']({
+            column: this.model,
+            element: element
+          });
+        }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        this.addElement(string2ElementType(evt.added.element.name) as ElementType);
       }
 
       if (evt.removed) {
-        //void this['Grid/removeElementFromColumn'](this.model);
+        void this['Grid/removeElementFromColumn'](this.model);
       }
 
       return false;
@@ -285,21 +241,62 @@ export default defineComponent({
       if (widgetType === ElementType.Heading) {
       }
 
-
-      void this['Grid/addElementToColumn']({
-        column: this.model,
-        element: {
+      const element : Element = reactive({
           uuid: uuidv4(),
           type: widgetType,
           attributes: widgetAttributes,
+          classList: [],
+        });
+
+
+
+      this['Grid/addElementToColumn']({
+        column: this.model,
+        element: element
+      }).then(() => {
+
+        this.emitter?.emit(UI_ELEMENT_ADDED, element)
+      }).catch((e) => {
+        console.error(e)
+      })
+    },
+  },
+
+  setup(props) {
+    const emitter = getEmitter();
+
+    const tempList = ref([] as Element[]);
+    const list = computed({
+      get(): Element[] {
+        const a = new Array<Element>();
+
+        if (props.model.element) {
+          a.push(props.model.element);
         }
-      });
-    }
-  }
+
+        return a;
+      },
+
+      set(value: Element[]) {
+        tempList.value = value;
+      },
+    });
+
+    const dragOptions = {
+      animation: 200,
+      disabled: false,
+    };
+
+    return {
+      list,
+      dragOptions,
+      emitter
+    };
+  },
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .layout-col {
   position: relative;
   border: 1px solid rgb(100, 100, 100);
@@ -340,22 +337,6 @@ export default defineComponent({
   }
 }
 
-.active:hover {
-  outline: solid 2px $primary;
-}
-/*
-.layout-col:hover::after {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    content: ' ';
-    filter: blur(4px);
-    background: salmon;
-}
-*/
 .layout-col:hover > .actions {
   visibility: visible;
 }
@@ -363,4 +344,24 @@ export default defineComponent({
 .layout-col:first-of-type {
   border-left: 1px solid rgb(100, 100, 100);
 }
+
+.drop-zone {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+
+  .sortable-ghost,
+  .sortable-choosen {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border: solid 2px $primary;
+    background: rgba(255, 255, 255, 0.6);
+  }
+}
+
 </style>

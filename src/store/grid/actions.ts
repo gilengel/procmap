@@ -77,13 +77,10 @@ const actions: ActionTree<GridStateInterface, StateInterface> = {
     this.commit('Grid/_removeConnectionTransformation', param)
   },
 
-
-  //@Action({ commit: '_addElementToColumn', rawError: true })
   addElementToColumn(state, param: { column: Column, element: Element }) {
     this.commit('Grid/_addElementToColumn', param)
   },
 
-  //@Action({ commit: '_removeElementFromColumn', rawError: true })
   removeElementFromColumn(state, column: Column) {
     this.commit('Grid/_removeElementFromColumn', column)
   }

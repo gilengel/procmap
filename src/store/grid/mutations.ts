@@ -9,11 +9,11 @@ const mutation: MutationTree<GridStateInterface> = {
   _setRows(state, rows: Array<Row>) {
     state._grid?.rows.splice(0)
 
-
-
     for(const row of rows) {
       state._grid?.rows.push(row)
     }
+
+    console.log(state._grid?.rows)
 
   },
 
@@ -158,6 +158,7 @@ const mutation: MutationTree<GridStateInterface> = {
   },
 
   _addElementToColumn(state, param: { column: Column, element: Element }) {
+    param.element.column = param.column
     param.column.element = param.element
   },
 

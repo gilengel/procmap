@@ -4,23 +4,55 @@
       <q-toolbar-title shrink style="margin-right: 2em"
         >Widget Builder</q-toolbar-title
       >
+
+      <q-btn-toggle
+        v-model="model"
+        push
+        flat
+        toggle-color="primary"
+        :options="[
+          { value: 'one', slot: 'one' },
+          { value: 'two', slot: 'two' },
+        ]"
+      >
+        <template v-slot:one>
+          <div>
+            <q-icon name="las la-link" />
+          </div>
+        </template>
+
+        <template v-slot:two>
+          <div>
+            <q-icon name="las la-project-diagram" />
+          </div>
+        </template>
+      </q-btn-toggle>
+
       <q-space />
       <StyleSelector />
     </q-toolbar>
-    <WidgetLayout />
+    <WidgetLayout v-show="model == 'one'" />
+
+    <div style="flex-grow: 1">
+      <ElementDataFlowGraph
+        :graph="graph"
+        :categories="categories"
+        v-show="model == 'two'"
+      />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import StyleSelector from 'components/StyleSelector.vue';
 import WidgetLayout from 'components/ui_builder/WidgetLayout.vue';
+import ElementDataFlowGraph from 'components/ui_builder/ElementDataFlowGraph.vue'
+import getEmitter from 'src/components/EmitterComponent';
 
-import {
-  ElementType
-} from '../models/Grid';
+import { ElementType } from '../models/Grid';
 
-//import { createTextElement } from 'src/store/GridModule';
+import { getRegisteredComponentCategories } from 'src/models/flow/ui_builder/Index';
 
 import { mapActions, mapGetters } from 'vuex';
 
@@ -30,6 +62,7 @@ export default defineComponent({
   components: {
     StyleSelector,
     WidgetLayout,
+    ElementDataFlowGraph,
 
     //draggable,
     /*
@@ -89,11 +122,21 @@ export default defineComponent({
 
       drag: false,
       rowDraggingDisabled: false,
-      model: 'two',
+      model: 'one',
 
       linkModeActive: false,
     };
-  }
+  },
+
+  setup() {
+    const emitter = getEmitter();
+
+    const categories = computed(() => {
+      return getRegisteredComponentCategories();
+    });
+
+    return { categories, emitter };
+  },
 });
 </script>
 

@@ -8,12 +8,12 @@
 
 
     <draggable
+      v-model="list"
+      item-key="name"
       class="q-list q-list--bordered q-list--separator"
       tag="div"
-      v-model="list"
+      v-bind="dragOptions"
       :group="{ name: 'widget', pull: 'clone', put: false }"
-      item-key="name"
-      @change="log"
       :sort="false"
     >
       <template #item="{ element }">
@@ -52,6 +52,7 @@ export default defineComponent({
   name: 'ElementList',
 
   components: {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     draggable,
   },
 
@@ -63,9 +64,7 @@ export default defineComponent({
       drag: false,
       dragOptions: {
         animation: 200,
-        group: 'description',
         disabled: false,
-        ghostClass: 'ghost',
       },
     };
   },

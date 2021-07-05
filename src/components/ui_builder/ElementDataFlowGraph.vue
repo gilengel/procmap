@@ -5,7 +5,7 @@
     </template>
 
     <template #after>
-      <FlowGraphEditor :categories="categories" :graph="graph" />
+      <ElementDataFlowGraphEditor :categories="categories" :graph="graph" />
     </template>
   </q-splitter>
 </template>
@@ -13,12 +13,12 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import FlowGraphNodeList from 'components/FlowGraphNodesList.vue';
-import FlowGraphEditor from 'components/FlowGraphEditor.vue';
+import ElementDataFlowGraphEditor from 'components/ui_builder/ElementDataFlowGraphEditor.vue';
 import { MetaFlowCategory } from 'src/models/flow/Meta';
 
 export default defineComponent({
   name: 'FlowGraph',
-  components: { FlowGraphNodeList, FlowGraphEditor },
+  components: { FlowGraphNodeList, ElementDataFlowGraphEditor },
 
   props: {
     categories: {

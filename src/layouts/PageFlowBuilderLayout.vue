@@ -61,23 +61,18 @@
 </template>
 
 <script lang="ts">
+
 import { defineComponent, reactive } from 'vue';
 import { TempFlow } from 'src/models/Flow';
 import { Node as ReteNode } from 'rete';
 import { Data, NodeData, NodesData } from 'rete/types/core/data';
-
 import { GridLayout, GridItem } from 'vue-grid-layout';
 import FlowGraphWidget from 'src/components/widgets/FlowGraphWidget.vue';
 import PageOptions from 'src/components/pageflow_builder/PageOptions.vue';
-
 import getEmitter from 'src/components/EmitterComponent';
-
 import { GetOne, UpdateOne } from '../models/Backend';
 import { useQuasar } from 'quasar';
-
-import { mapActions } from 'vuex'
-
-
+import { mapActions } from 'vuex';
 import { convertReteNode2NewPage } from 'src/converters/FlowGraphConverter';
 
 import {
@@ -85,7 +80,7 @@ import {
   FLOW_GRAPH_IMPORTED,
   FLOW_NODE_SELECTED,
   FLOW_GRAPH_MANUALLY_CHANGED,
-} from 'src/events';
+} from 'src/boot/mitt';
 
 import {
   StartFlowComponent,
@@ -133,24 +128,15 @@ export default defineComponent({
     PageOptions,
   },
 
-  //flowGraph: { id: 'test' },
-
   data() {
     return {
       draggable: true,
       resizable: true,
       colNum: 12,
       index: 0,
-
-      //currentRouterGraph: [] as Array<ReteNode>,
-
       hasSelectedNode: false,
       selectedNode: '',
-
       graphModel: null as TempFlow | null,
-
-
-
       reteNodes: [] as Array<ReteNode>,
     };
   },

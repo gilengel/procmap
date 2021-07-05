@@ -11,20 +11,20 @@ export const darkTheme = {
 
 export const lightTheme = {
     name: 'Light',
-    primary: '#cce6ff',
-    secondary: '#0052a3',
-    accent: '#f57b00',
+    primary: '#1976D2',
+    secondary: '#26A69A',
+    accent: '#9C27B0',
     dark: '#ffffff'
 };
 
 export interface StyleStateInterface {
   /**
-   * 
+   *
    */
    _styleColors: StyleColors;
 
    /**
-    * 
+    *
     */
    _style: Style;
 
