@@ -1,26 +1,10 @@
-# nantu (nantu_app)
+<div align="center">
+  <h1>Vue3 Frontend Playground</h1>
 
-A Quasar Framework app
+  <p>
+    <strong>Currently not in development, might be depreceated soon</strong>
+  </p>
+</div>
 
-## Install the dependencies
-```bash
-npm install
-```
-
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
-
-### Lint the files
-```bash
-npm run lint
-```
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+# About
+Test project to learn Vue3 in detail. Currently not further developed - parts might be migrated into https://github.com/gilengel/proc-server 
